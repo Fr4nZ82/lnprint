@@ -35,9 +35,9 @@ module.exports = {
   feesUpdateTime:         300000,
   geonamesUpdateTime:     604800000,
   sslOptions: {
-    key:    fs.readFileSync(path.resolve(__dirname,'sslcert/private.key')),
-    cert:   fs.readFileSync(path.resolve(__dirname,'sslcert/certificate.crt')),
-    ca:     fs.readFileSync(path.resolve(__dirname,'sslcert/ca_bundle.crt'))
+    key:    fs.readFileSync(path.resolve(__dirname,'../../lnPrintCfgFiles/sslcert/private.key')),
+    cert:   fs.readFileSync(path.resolve(__dirname,'../../lnPrintCfgFiles/sslcert/certificate.crt')),
+    ca:     fs.readFileSync(path.resolve(__dirname,'../../lnPrintCfgFiles/sslcert/ca_bundle.crt'))
   },
   staticOptions: {
     //dotfiles:   'allow', //activate this when need to renew ssl cert
@@ -66,9 +66,9 @@ module.exports = {
   },
   LND: {
     host:          '192.168.1.153:10009',
-    cert:          fs.readFileSync(path.resolve(__dirname,'.cf/cert')).toString(),
-    macaroon:      fs.readFileSync(path.resolve(__dirname,'.cf/macaroon')).toString(),
-    password:      fs.readFileSync(path.resolve(__dirname,'.cf/pw')).toString(),
+    cert:          fs.readFileSync(path.resolve(__dirname,'../../lnPrintCfgFiles/.cf/cert')).toString(),
+    macaroon:      fs.readFileSync(path.resolve(__dirname,'../../lnPrintCfgFiles/.cf/macaroon')).toString(),
+    password:      fs.readFileSync(path.resolve(__dirname,'../../lnPrintCfgFiles/.cf/pw')).toString(),
     maxPaymentFee: 100
   }
 }
