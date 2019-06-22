@@ -507,6 +507,7 @@ LnPrint.modal = {
       //console.log(modalData)
       LnPrint.req.preset(modalData.product.preset,(preset)=>{
         $('.draftreq-form').formRender({formData: preset.formData})
+        $('.formBuilder-injected-style').remove();
       })
     }
   }
