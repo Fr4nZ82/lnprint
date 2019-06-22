@@ -2,7 +2,7 @@ var rebootCounter = 0, _running = false
 
 //MAIN WRAPPER FUNCTION
 var LnPrint = ()=>{
-  ////ciao
+ 
   var config      = require('./cfg'),
       fs          = require('fs'),
       path        = require('path'),
