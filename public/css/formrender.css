@@ -142,13 +142,15 @@
     height:auto
    }
    .rendered-form .form-control {
-    height:34px;
-    display:block;
-    width:100%;
-    padding:6px 12px;
-    font-size:14px;
-    line-height:1.42857143;
-    border-radius:4px
+    height: auto;
+    display: block;
+    width: 100%;
+    padding: 6px 12px;
+    font-size: 14px;
+    line-height: 1.42857143;
+    border-radius: 4px;
+    color: white;
+    background-color: #fff3;
    }
    .rendered-form .form-control:focus {
     outline:0;
