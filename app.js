@@ -1,5 +1,5 @@
 var rebootCounter = 0, _running = false
-//test for github notification on slack
+//test2 for github notification on slack
 //MAIN WRAPPER FUNCTION
 var LnPrint = ()=>{
  
