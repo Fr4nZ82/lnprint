@@ -155,20 +155,20 @@ router.get('/admin', function(req,res){
           toEJS.socketConnected = 'no'
           toEJS.data.page.name = 'admin'
           req.session.data.page.name = 'admin'
-          allSockets.forEach((sock)=>{
+          allSockets.forEach( sock => {
             if(sock.user == req.session.user){
               toEJS.socketConnected = 'yes'
             }
           })
           toEJS.goHome = 'no'
           res.render('admin.ejs', toEJS, function(err,html){
-            if(err) console.error(err)
+            if(err) return console.error(err)
             pauselog(req, '#!!-GET/admin-')
             res.send(html)
           })
         }
       }
-    }).catch(error => { console.log(error) })
+    }).catch(error => { return console.log(error) })
   }else{
     req.session.data.page.name = 'home'
     allSockets.forEach((sock)=>{
