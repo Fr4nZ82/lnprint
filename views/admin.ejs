@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<% if (!data){ %>
+<% console.log('#!!-EJS- NESSUN DATO PER RENDERIZZARE LA PAGINA!!!!! ERRORE'); %>
+<% }else{ %>
+<% if(socketConnected == 'no'){ %>
+<script>var socketConnected = 'no';</script>
+<% console.log('#!!-EJS- nella pagina che renderizzo imposto socketConnected = no'); %>
+<% }else{ %>
+<script>var socketConnected = 'yes';</script>
+<% } %>
+<% if(goHome == 'yes'){ %>
+<script>var goHome = 'yes';</script>
+<% console.log('#!!-EJS- nella pagina che renderizzo imposto goHome = yes'); %>
+<% }else{ %>
+<script>var goHome = 'no';</script>
+<% console.log('#!!-EJS- nella pagina che renderizzo imposto goHome = no'); %>
+<% } %>
+<% } %>
+<% //console.log(locals); %>
+<html lang="en" dir="ltr">
+<head>
+  <% include ./partial/common/head %>
+
+
+    <% include ./partial/common/navbarAdmin %>
+
+
+    <link rel="stylesheet" href="css/addproductform.css" type="text/css" />
+    <link rel="stylesheet" href="css/editpreset.css" type="text/css" />
+
+    <script>var thisPageName = 'admin';</script>
+    <script type="text/javascript" src="js/plugin/zxing.min.js">                </script>
+    <script type="text/javascript" src="js/plugin/jquery-ui.min.js">            </script>
+    <script type="text/javascript" src="js/plugin/formBuilder.js">              </script>
+    <script type="text/javascript" src="js/plugin/jquery.fileupload.js">        </script>
+    <script type="text/javascript" src="js/plugin/jquery.iframe-transport.js">  </script>
+    <script type="text/javascript" src="js/plugin/jquery.fancy-fileupload.js">  </script>
+    <script type="text/javascript" src="js/plugin/cropper.js">                  </script>
+    <script type="text/javascript" src="js/plugin/jquery-cropper.js">           </script>
+    <script type="text/javascript" src="js/scripts/dashboard.js">               </script>
+    <script type="text/javascript" src="js/scripts/dashboard-elements.js">      </script>
+    <script type="text/javascript" src="js/scripts/admin.js">                   </script>
+    <script type="text/javascript" src="js/scripts/admin-elements.js">          </script>
+    <script type="text/javascript" src="js/scripts/admin-req.js">               </script>
+
+    <!--[if lte IE 8]><script type="text/javascript" src="js/plugin/excanvas.js"></script><![endif]-->
+
+    <div id="wrapper" class="wrapper">
+
+      <!-- Sidebar -->
+      <ul id="thesidebar" class="thesidebar sidebar navbar-nav">
+        <li class="nav-item active">
+          <a class="nav-link" href="javascript:void(0);" onclick="LnPrint.admin.draw.overview(Udata.user);">
+            <i class="fas fa-fw fa-table"></i>
+            <span>Overview</span>
+          </a>
+        </li>
+        <li class="nav-item active">
+          <a class="nav-link" href="javascript:void(0);" onclick="LnPrint.admin.draw.users(Udata.user);">
+            <i class="fas fa-fw fa-users"></i>
+            <span>Users</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="javascript:void(0);" onclick="LnPrint.admin.draw.messages(Udata.user);">
+            <i class="fas fa-fw fa-envelope"></i>
+            <span>Messages</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="javascript:void(0);" onclick="LnPrint.admin.draw.node(Udata.user);">
+            <i class="fas fa-fw fa-bolt"></i>
+            <span>LND node</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="javascript:void(0);" onclick="LnPrint.admin.draw.products(Udata.user);">
+            <i class="fas fa fa-archive"></i>
+            <span>Products</span></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="javascript:void(0);" onclick="LnPrint.admin.draw.works(Udata.user);">
+            <i class="fas fa-fw fa-print"></i>
+            <span>Works</span></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="javascript:void(0);" onclick="LnPrint.admin.draw.shipments(Udata.user);">
+            <i class="fas fa-fw fa-shopping-cart"></i>
+            <span>Cart</span></a>
+        </li>
+      </ul>
+
+      <div id="content-wrapper">
+
+
+      </div>
+      <!-- /.content-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+
+    <% include ./partial/common/footer %>
+</body>
+<script src="js/scripts/effects.js"></script>
+<script src="js/scripts/utils.js"></script>
+<script src="js/scripts/req.js"></script>
+<script src="js/scripts/modal.js"></script>
+<script src="js/scripts/modal-elements.js"></script>
+<script src="js/scripts/onload.js"></script>
+</html>

@@ -1,0 +1,26 @@
+{
+  "short_name": "LNPrintings",
+  "name": "Lightning Printings",
+  "icons": [
+    {
+      "src": "img/icon192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/img/icon512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#181b1b",
+  "display": "standalone",
+  "scope": "/",
+  "theme_color": "#a6ffdc",
+  "permissions": {
+    "video-capture": {
+      "description": "Required to capture QR code photo"
+    }
+  }
+}

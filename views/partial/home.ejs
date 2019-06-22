@@ -1,0 +1,85 @@
+<script>var thisPageName = 'home';</script>
+<div id='hwdiv' class="container">
+  <br><h4>
+  <a id="SBSG" class="badge badgeT" href="javascript:void(0);"
+  onclick="LnPrint.scrollToId('#SBSG',-5);">Step by step guide</a></h4>
+  <p class="badgeh" onclick="LnPrint.modal.new({from:'guide',name:'nodeInfo'})">
+  Optional: open a channel with our node</p>
+  <p class="badgep" id="step1">
+    Obviosly, for payments, you can use your already existing channels; open a
+    new channel with our node, owever, increase your and us LN routing
+    capability. If You deposit satoshis and let them in your account
+    you can use the channel for routing purpose. You can retrive your unspent
+    satoshis whenever you want without any additional costs. Incrase the
+    routing capability of the network is good for you, for us, and for all
+    LN users!
+  </p>
+  <% if(!locals.user){  %>
+    <p class="badgeh" id="step2" onclick="LnPrint.modal.new({from:'guide',name:'keyQuery'})">
+  <% }else{  %>
+    <p class="badgeh" id="step2" onclick="LnPrint.modal.new({from:'guide',name:'userInfo'})">
+  <% }  %>
+  Save your key!</p>
+  <p class="badgep">
+    No need e-mail, no need password, no need your data.
+    We generate a random private and public key using bitcoin standards.
+    We do not save your private key in the database but we save the correspondings public key.
+    Copy the private key and save it in a safe place.
+    Only with this key you can login in the application.
+  </p>
+  <p class="badgeh" onclick="">
+  Products and works</p>
+  <p class="badgep">
+    <span class="willbe">
+    This app is special, you can use it for shopping in any lightning shop out
+    of there and you can use it to order products and works that will be added
+    on our databases...<br>
+    Each product has different specifications and prices.<br>
+    Select the various options, write special requests in the appropriate
+    field. The email is not mandatory, but you can enter one to
+    receive notifications and drafts.<br>Some products need a small
+    pre-payment to prepare a draft; This is because there is a little work
+    to do, to show you the result. Also without this
+    payment anyone could spam, make us do this work and then disappear.</span>
+  </p>
+  <p class="badgeh">
+  Waiting the draft</p>
+  <p class="badgep">
+    <span class="willbe">
+    When you order a work we send that work to the production and in few hours
+    the draft will be ready. If you have specified the email we will send
+    you a notification, otherwise you can see your draft in your dashboard.<br>
+    If you accept the draft specifies how many copies you want and pay the work,
+    otherwise you can tell us what to modify and / or request another draft
+    (the second draft is always free);</span>
+  </p>
+  <p class="badgeh">
+  Wait the production</p>
+  <p class="badgep">
+    <span class="willbe">
+    You can see the status of your print in your dashboard. If you have
+    specified the email, a notification will be sent to you at
+    the end of the job.</span>
+  </p>
+  <p class="badgeh">
+  Shipping</p>
+  <p class="badgep">
+    <span class="willbe">
+    Decide on the shipping method, fill in the forum with your address
+    and pay the shipping cost (this can also be done during production).
+    As soon the work and the payment is done, we send you the package.</span>
+  </p>
+  <p class="badgeh">
+  Order more!!</p>
+  <p class="badgep">
+    <span class="willbe">
+    At any time you can order other copies of a work already done,
+    there are no limits to the number of copies. For example, if you
+    order 1000 flyers and you realize you need another 100:
+    no problem, reopen the work and order another 100 copies by paying
+    the invoice.</span>
+  </p>
+
+  <br>
+
+</div>

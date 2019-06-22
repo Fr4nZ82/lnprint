@@ -1,0 +1,54 @@
+<!-- NAVBAR -->
+<nav id="naviga" class="navbar sticky-top navbar-dark navbar-expand-sm" style="border-bottom-left-radius: 0;border-bottom-right-radius: 0">
+
+  <!-- NAVBAR CONTENT DIV -->
+  <div id="navbarcontentdiv" class="container-fluid" style="">
+
+    <!-- SMALL LOGO -->
+    <a id="logosmalla" class="navbar-brand navbar-nav" href="javascript:void(0);"
+    onclick="window.location.replace('/')" style="padding: 0px;">
+      <img id="logosmall" src="/img/lnprint.png" alt="">
+    </a>
+    <a style="color:#a60000;text-align:center;">Admin</a>
+    <!-- /SMALL LOGO -->
+    <div class="collapse navbar-collapse" id="navbarlinks"></div>
+
+    <!-- NAVBAR ICONS -->
+    <div id="navicons" class="row">
+
+      <!-- HAMBURGER -->
+      <button id="hamburger"
+        class="navbar-toggler"
+        type="button"
+        data-toggle="collapse"
+        data-target="#navbarlinks"
+        aria-controls="#navbarlinks"
+        aria-expanded="false"
+        aria-label="Toggle navigation">
+          <i class="fa fa-bars navbar-icon"></i>
+      </button>
+      <!-- /HAMBURGER -->
+
+      <% if(!!locals.user){  %>
+        <!-- USER AND BELL -->
+        <div id="userandbell" class="row">
+          <a id="usericon" class="fas fa-fw fa-user-circle navbar-icon"
+          href="javascript:void(0);" onclick="LnPrint.modal.new({from:'usericon',name:'userInfo'})">
+          </a>
+        </div>
+        <!-- /USER AND BELL -->
+      <% } %>
+    </div>
+    <!-- /NAVBAR ICONS -->
+
+
+
+
+  </div>
+  <!-- /NAVBAR CONTENT DIV -->
+
+</nav>
+<!-- /NAVBAR -->
+
+
+<!-- DYNAMIC MODAL -->

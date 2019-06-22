@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<% if (!data){ %>
+<% console.log('#!!-EJS- NESSUN DATO PER RENDERIZZARE LA PAGINA!!!!! ERRORE'); %>
+<% }else{ %>
+<% if(socketConnected == 'no'){ %>
+<script>var socketConnected = 'no';</script>
+<% console.log('#!!-EJS- nella pagina che renderizzo imposto socketConnected = no'); %>
+<% }else{ %>
+<script>var socketConnected = 'yes';</script>
+<% } %>
+<% if(goHome == 'yes'){ %>
+<script>var goHome = 'yes';</script>
+<% console.log('#!!-EJS- nella pagina che renderizzo imposto goHome = yes'); %>
+<% }else{ %>
+<script>var goHome = 'no';</script>
+<% console.log('#!!-EJS- nella pagina che renderizzo imposto goHome = no'); %>
+<% } %>
+<% } %>
+<% //console.log(locals); %>
+
+  <% include ./partial/common/head %>
+
+
+
+
+  <% include ./partial/common/navbar %>
+
+  <% if (data.page.name == 'home'){ %>
+  <% console.log('#!!-EJS- RENDER DI HOME'); %>
+  <% include ./partial/home %>
+  <% } %>
+
+  <% if (data.page.name == 'products'){ %>
+  <% console.log('#!!-EJS- RENDER DI PRODUCTS'); %>
+  <% include ./partial/products %>
+  <% } %>
+
+  <% if (data.page.name == 'dashboard' && user != ''){ %>
+  <% console.log('#!!-EJS- RENDER DI DASHBOARD'); %>
+  <% include ./partial/dashboard %>
+  <% } %>
+
+  <% include ./partial/common/footer %>
+
+</body>
+<script src="js/scripts/effects.js"></script>
+<script src="js/scripts/utils.js"></script>
+<script src="js/scripts/req.js"></script>
+<script src="js/scripts/modal.js"></script>
+<script src="js/scripts/modal-elements.js"></script>
+<script src="js/scripts/onload.js"></script>
+</html>

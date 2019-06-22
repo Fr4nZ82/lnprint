@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+
+
+<script>var socketConnected = 'no';</script>
+
+
+
+<script>var goHome = 'no';</script>
+
+
+
+
+<html lang="en" dir="ltr">
+<head>
+
+<meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#a6ffdc"/>
+<meta name="Description" content="lightningnetwork lightning network wallet print pdf">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="img/favicon.png" type="image/png" />
+
+
+<title>LightningPrintings</title>
+</head>
+<body id="thebody" class="container-fluid height100">
+  <div id=backLoading style="mix-blend-mode: darken;background-color: #000000;position: absolute;top: 0;left: 0;height: 100%;width: 100%;z-index: 9999998;">
+    <div id="loading"
+    style="mix-blend-mode: hard-light;background: url('../img/lightning800.gif') no-repeat center center;background-color: #1d1d1d;background-size: cover;position: absolute;top: 0;left: 0;height: 100%;width: 100%;z-index: 9999999;">
+    </div>
+  </div>
+
+  <script src="js/scripts/globalvars.js"></script>
+  <script src="js/plugin/jquery.min.js"></script>
+  <script src="js/plugin/popper.min.js"></script>
+  <script src="js/plugin/mybootstrap.bundle.js"></script>
+  <script src="js/plugin/autosize.min.js"></script>
+  <script src="js/plugin/socket.io.js"></script>
+  <script src="js/plugin/datatables/datatables.min.js"></script>
+
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+  <link rel="stylesheet" href="/css/styles.css" type="text/css" />
+  <link rel="stylesheet" href="/css/datatables.css" type="text/css" />
+
+
+
+
+
+
+<!-- INTESTATION -->
+
+<div id="logobig" class="container-fluid">
+  <div class="row align-items-center justify-content-center">
+    <div id="logoimgdiv" class="col-sm-6">
+        <img  src="/img/lnprint_big.png" class="img-fluid" alt="Responsive image" maxwidth="410px">
+    </div>
+    <div class="col-sm-6"><br>
+      <!-- <div id="debug-container"></div>
+      <button class="refresh-button" onclick="getDebugInfo()">Refresh </button> -->
+
+
+
+      <h6 id="intestationText" class="text-white text-center">
+        Lightning Printings is a place<br>where you can upload your pdf,<br>
+        view a photo of the printed result,<br>order many copy as you
+        want<br>and pay the work using<br>
+        <a class="linkondark font-weight-bold" href="https://lightning.network/" target="_blank">
+        lightning network</a>.
+        <br>
+        <br>
+        First time here?<br>Follow the
+        <a class="linkondark font-weight-bold" href="javascript:void(0);" onclick="scrollToId('#SBSG',-78);">
+        step by step guide</a><br> to easly print your pdf!
+        <br>
+        <br>
+        Registered user?<br>Go directly to your
+
+          <a id="dashboardIntestation" class="linkondark font-weight-bold toDashboardLinks" href="javascript:void(0);"
+          onclick="modal.new({from:'dashboard',name:'keyQuery'})">dashboard</a>
+
+        <br><br>
+      </h6>
+    </div>
+  </div>
+</div>
+<!-- /INTESTATION -->
+
+
+<!-- NAVBAR -->
+<nav id="naviga" class="navbar sticky-top navbar-dark navbar-expand-sm"
+
+  >
+
+  <!-- NAVBAR CONTENT DIV -->
+  <div id="navbarcontentdiv" class="container-fluid">
+
+    <!-- SMALL LOGO -->
+
+    <a id="logosmalla" class="navbar-brand navbar-nav" href="javascript:void(0);"
+    onclick="$('html,body').stop().animate({scrollTop:0}, 500);" style="padding: 0px;">
+
+      <img id="logosmall" src="/img/lnprint.png" alt="">
+    </a>
+    <!-- /SMALL LOGO -->
+
+    <!-- NAVBAR LINKS -->
+    <div class="collapse navbar-collapse" id="navbarlinks">
+      <ul id="navButtons" class="navbar-nav mr-auto">
+        <li class="nav-item  active ">
+
+          <a class="nav-link" href="javascript:void(0);"
+          onclick="$('html,body').stop().animate({scrollTop:0}, 500);">Home</a>
+
+        </li>
+        <li class="nav-item ">
+
+          <a class="nav-link" href="javascript:void(0);" onclick="changepage('products');">Products</a>
+
+        </li>
+        <li class="nav-item ">
+
+            <a id="dashboardNav" class="nav-link toDashboardLinks" href="javascript:void(0);"
+            onclick="modal.new({from:'dashboard',name:'keyQuery'})">Dashboard</a>
+
+        </li>
+      </ul>
+    </div>
+    <!-- /NAVBAR LINKS -->
+
+    <!-- NAVBAR ICONS -->
+    <div id="navicons" class="row">
+
+      <!-- HAMBURGER -->
+      <button id="hamburger"
+        class="navbar-toggler"
+        type="button"
+        data-toggle="collapse"
+        data-target="#navbarlinks"
+        aria-controls="#navbarlinks"
+        aria-expanded="false"
+        aria-label="Toggle navigation">
+          <i class="fa fa-bars navbar-icon"></i>
+      </button>
+      <!-- /HAMBURGER -->
+
+
+    </div>
+    <!-- /NAVBAR ICONS -->
+
+  </div>
+  <!-- /NAVBAR CONTENT DIV -->
+
+</nav>
+<!-- /NAVBAR -->
+
+
+<!-- DYNAMIC MODAL -->
+
+
+
+
+  <script>var thisPageName = 'home';</script>
+<div id='hwdiv' class="container">
+  <br><h4>
+  <a id="SBSG" class="badge badgeT" href="javascript:void(0);"
+  onclick="scrollToId('#SBSG',-5);">Step by step guide</a></h4>
+  <p class="badgeh" onclick="modal.new({from:'guide',name:'nodeInfo'})">
+  <a class="linkondark" href="javascript:void(0);">
+  Optional: open a channel with our node</a></p>
+  <p class="badgep" id="step1">
+    Obviosly, for payments, you can use your already existing channels; open a
+    new channel with our node, owever, increase your and us LN routing
+    capability. If You deposit satoshis and let them in your account
+    you can use the channel for routing purpose. You can retrive your unspent
+    satoshis whenever you want without any additional costs. Incrase the
+    routing capability of the network is good for you, for us, and for all
+    LN users!
+  </p>
+
+    <p class="badgeh" id="step2" onclick="modal.new({from:'guide',name:'keyQuery'})">
+
+
+  <a class="linkondark" href="javascript:void(0);">
+  Generate a new key</a></p>
+  <p class="badgep">
+    Note that this is a real bitcoin private key, we do not save it in the
+    database but we save the correspondings public key and btc address.
+    Copy the private key and save it in a safe place. This key is not used for
+    payments in the application; we use it as a login key and, if you don't want
+    to reveal your public btc address we can use it (or any other address you want)
+    in case of refounds, if is not possible to use LN.
+  </p>
+  <p class="badgeh" onclick="modal.new({from:'guide',name:'products'})">
+  <a class="linkondark" href="javascript:void(0);">
+  Select a product and upload your pdf</a></p>
+  <p class="badgep">
+    Each product has different specifications and prices. Note that also the
+    characteristics of the pdf you will upload will change according to
+    the type of product.<br>
+    Select the various options, write special requests in the appropriate
+    field. The email is not mandatory, but you can enter one to
+    receive notifications and drafts.<br>Take note of the unitary cost of
+    your printings, you may need to know the total cost of your work to
+    open a channel with the appropriate amount of satoshis.<br>We need a small
+    payment of 1$ to accept your pdf; This is because to print the draft and
+    send you the picture there is a little work to do. Also without this
+    payment anyone could upload pdf, make us do this work and then disappear.
+  </p>
+  <p class="badgeh">
+  Wait the draft</p>
+  <p class="badgep">
+    At this point we send the work to the typography and in few hours
+    the draft will be ready. If you have specified the email we will send
+    you a notification, otherwise you can see your draft in your dashboard.
+  </p>
+  <p class="badgeh">
+  Accept or decline</p>
+  <p class="badgep">
+    If you accept the draft specifies how many copies you want and pay the work,
+    otherwise you can tell us what to modify and / or send another pdf and
+    request another draft (the second draft is always free);
+  </p>
+  <p class="badgeh">
+  Wait the production</p>
+  <p class="badgep">
+    You can see the status of your print in your dashboard. If you have
+    specified the email, a notification will be sent to you at
+    the end of the job.
+  </p>
+  <p class="badgeh">
+  Shipping</p>
+  <p class="badgep">
+    Decide on the shipping method, fill in the forum with your address
+    and pay (this can also be done during production).
+    As soon the work and the payment is done, we send you the package.
+  </p>
+  <p class="badgeh">
+  Print more!!</p>
+  <p class="badgep">
+    At any time you can print other copies of a work already done,
+    there are no limits to the number of copies. For example, if you
+    printed 1000 flyers and you realize you need another 100:
+    no problem, reopen the work and order another 100 copies by paying
+    the invoice.
+  </p>
+
+  <br>
+
+</div>
+
+  <div class="sticky-footer" id="footer">
+  <div style="padding-top: 0.3rem;padding-bottom: 0.1rem;display: block;">
+    <div style="padding: 0;">
+      <p id="copyright" class="text-center text-muted" style="margin-bottom: 0.4rem;font-size-adjust: 0.42;">
+        © Copyright 2018 Fr4nZ82@gmail.com
+        <button href="javascript:void(0);" onclick="modal.new({from:'donate',name:'deposit'})"
+        style="border-style: ridge;border-width: medium;border-radius: 8px;border-color: #a6ffdc;color: #a6ffdc;margin-left: 8px;height: 20px;"
+        class="text-center btn btn-dark btn-sm">
+          <span style="top: -8px;position: relative;">
+            Donate
+          </span>
+        </button>
+      </p>
+    </div>
+  </div>
+</div>
+
+
+</body>
+<script src="js/scripts/effects.js"></script>
+<script src="js/scripts/utils.js"></script>
+<script src="js/scripts/links.js"></script>
+<script src="js/scripts/modal.js"></script>
+<script src="js/scripts/modal-elements.js"></script>
+<script src="js/scripts/onload.js"></script>
+</html>

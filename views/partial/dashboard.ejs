@@ -1,0 +1,47 @@
+<script>var thisPageName = 'dashboard';</script>
+<script type="text/javascript" src="js/scripts/dashboard.js"></script>
+<script type="text/javascript" src="js/scripts/dashboard-elements.js"></script>
+<script type="text/javascript" src="js/plugin/zxing.min.js"></script>
+
+<div id="wrapper" class="wrapper">
+
+  <!-- Sidebar -->
+  <ul id="thesidebar" class="thesidebar sidebar navbar-nav">
+    <li class="nav-item active">
+      <a class="nav-link" href="javascript:void(0);" onclick="LnPrint.dashboard.draw.overview(Udata.user);">
+        <i class="fas fa-fw fa-table"></i>
+        <span>Overview</span>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="javascript:void(0);" onclick="LnPrint.dashboard.draw.messages(Udata.user);">
+        <i class="fas fa-fw fa-envelope"></i>
+        <span>Messages</span>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="javascript:void(0);" onclick="LnPrint.dashboard.draw.founds(Udata.user);">
+        <i class="fab fa-fw fa-btc"></i>
+        <span>Founds</span>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="javascript:void(0);" onclick="LnPrint.dashboard.draw.works(Udata.user);">
+        <i class="fas fa-fw fa-print"></i>
+        <span>Works</span></a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="javascript:void(0);" onclick="LnPrint.dashboard.draw.shipments(Udata.user);">
+        <i class="fas fa-fw fa-shopping-cart"></i>
+        <span>Cart</span></a>
+    </li>
+  </ul>
+
+  <div id="content-wrapper">
+
+
+  </div>
+  <!-- /.content-wrapper -->
+
+</div>
+<!-- /#wrapper -->

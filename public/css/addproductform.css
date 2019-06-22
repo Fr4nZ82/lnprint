@@ -1,0 +1,74 @@
+.prendered-div{
+  background-color: #0007 !important;
+  border-radius: 0.5rem !important;
+  padding: 0.2rem !important;
+}
+.prendered-div .pform-group{
+  margin-left: 0 !important;
+  margin-bottom: 8px !important;
+  background-color: #fff1 !important;
+  border-radius: 0.5rem !important;
+  padding: 0.3rem !important;
+}
+.prendered-div .pform-control{
+  display: block;
+  width: 100%;
+  height: calc(1.5em + 0.75rem + 2px);
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5;
+  background-clip: padding-box;
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  padding: 2px !important;
+  padding-left: 2px !important;
+  border-width: 0;
+  border-color: rgba(#000000, 0);
+  font-size-adjust: 0.45 !important;
+  padding-left: 5px !important;
+  background-color: #0006 !important;
+  color: #fff !important;
+}
+.prendered-div .pform-textarea{
+  height: auto;
+}
+.prendered-div .pform-required{
+  color: #c40000;
+}
+.prendered-div .ptooltip-element{
+  color: #fff;
+  background: #000;
+  width: 16px;
+  height: 16px;
+  border-radius: 8px;
+  display: inline-block;
+  text-align: center;
+  line-height: 16px;
+  margin: 0 5px;
+  font-size: 12px;
+}
+.prendered-div .pricesseparator{
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+.prendered-div .pconvertedprice{
+  color: #fff;
+  background: #0005;
+  border-radius: 8px;
+  display: inline-block;
+  text-align: center;
+  line-height: 16px;
+  font-size: 12px;
+  padding-right: 10px;
+  padding-left: 10px;
+  margin-left: 10px;
+  margin-right: 6px;
+  padding-top: 1.5px;
+  padding-bottom: 3px;
+}
+.prendered-div .pFieldNotMatch{
+  border-style: solid !important;
+  border-width: medium !important;
+  border-color: rgba(255, 0, 0, 0.86) !important;
+}
