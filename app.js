@@ -3,7 +3,7 @@ var rebootCounter = 0, _running = false
 //MAIN WRAPPER FUNCTION
 var LnPrint = ()=>{
  
-  var config      = require('./cfg'),//commento vladyslav
+  var config      = require('./cfg'),
       fs          = require('fs'),
       path        = require('path'),
       sharp       = require('sharp'),
