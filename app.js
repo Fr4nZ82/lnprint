@@ -43,13 +43,13 @@ var LnPrint = ()=>{
 
   _running = true
 
-  httpServer = http.createServer((i,o)=>{
+  var httpServer = http.createServer((i,o)=>{
     o.writeHead(302,{Location:config.httpsUrl})
     o.end()
   })
 
-  http2Server = http2.createServer(config.sslOptions,app)
-  io=sio(http2Server)
+  var http2Server = http2.createServer(config.sslOptions,app)
+  var io=sio(http2Server)
 
   //UPDATE ON CHAIN TX FUNCTION                                                                       UPDATE ON CHAIN TX FUNCTION
   var updateOctx = (cb)=>{
