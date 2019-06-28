@@ -40,7 +40,7 @@ module.exports = {
     ca:     fs.readFileSync(path.resolve(__dirname,'../../lnPrintCfgFiles/sslcert/ca_bundle.crt'))
   },
   staticOptions: {
-    //dotfiles:   'allow', //activate this when need to renew ssl cert
+    dotfiles:   'allow',
     etag:       true,
     extensions: ['html','htm'],
     index:      false,
@@ -74,13 +74,13 @@ module.exports = {
 }
 
             //ADMIN KEY:  L24aD7Hmkg4ZYi7GxxWZGGtdGxWToSqWdo1aazNsjYbnLYTV1MHA
-            //ROOT KEY:   KyqNH2XQzbJCVdnk9sszVGubhJrArVvV8KFyH6dL5vSYANwZAazk
+            //ROOT KEY:   KyqNH2XQzbJCVdnk9sszVGubhJrArVvV8KFyH6dL5vSYANwZAazk non ancora implementata
 // 607c15fc8b18f3d9e24a4a14cb870ef2w7+RXa51Nur6GUyPh7/oCusn/ZAccjI9NT8DtBlk55tmoPOpXmoGQOn/xSBq5xTKLOW68bdsCK9VqCqcpwvdVg==
 // dispositivo hardware per gli artigiani ed i negozi online.
 // Questo comprenderebbe un full node di btc con LND (su raspberry o simili) con le seguenti interfacce: una interfaccia da amministratore per gestire i prodotti e il nodo LND, una interfaccia web per i clienti, una api che permette ad altri server web di accedere ai prodotti in modo da poter creare dei "accentratori" che elencano tutti i prodotti di tutti, una interfaccia per gestire i pagamenti del cliente che si reca fisicamente in negozio.
 // L'interfaccia web per il cliente comprende anche un "web ln wallet", pensato per rendere facili promozioni, coupon regalo ecc, che permette al cliente di depositare e prelevare btc sia con normali tx sia con ln.
-// lightningprintings.com puoi entrare con questa chiave per vedere l'admin interface: L4YsUhbposFPnkVNS9oVZikN1MGh1WG8aTmSvRVjQKqyFkkVKXy4
+// lightningprintings.com puoi entrare con questa chiave per vedere l'admin interface: L24aD7Hmkg4ZYi7GxxWZGGtdGxWToSqWdo1aazNsjYbnLYTV1MHA
 
 /*dispositivo hardware per gli artigiani ed i negozi online. Questo comprenderebbe un full node di btc con LND (su raspberry o simili) con le seguenti interfacce: una interfaccia da amministratore per gestire i prodotti e il nodo LND, una interfaccia web per i clienti, una api che permette ad altri server web di accedere ai prodotti in modo da poter creare dei "accentratori" che elencano tutti i prodotti di tutti, una interfaccia per gestire i pagamenti del cliente che si reca fisicamente in negozio.
 L'interfaccia web per il cliente comprende anche un "web ln wallet", pensato per rendere facili promozioni, coupon regalo ecc, che permette al cliente di depositare e prelevare btc sia con normali tx sia con ln.
-https://lightningprintings.com puoi entrare con questa chiave per vedere l'admin interface: L4YsUhbposFPnkVNS9oVZikN1MGh1WG8aTmSvRVjQKqyFkkVKXy4*/
+https://lightningprintings.com puoi entrare con questa chiave per vedere l'admin interface: L24aD7Hmkg4ZYi7GxxWZGGtdGxWToSqWdo1aazNsjYbnLYTV1MHA*/
