@@ -52,7 +52,7 @@ module.exports = {
   },
   sessionOptions: {
     //dbname: ' name ', //only if not the same of mongoose
-    secret:            '196jkd93jgvmsxloewwlg9438kfvk340903ewwjg0pw8ep94',
+    secret:            fs.readFileSync(path.resolve(__dirname,'../../lnPrintCfgFiles/sessionSecret')).toString(),
     cookieName:        'LightningPrintings',
     resave:            true,
     saveUninitialized: true,
