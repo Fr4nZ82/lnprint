@@ -1,7 +1,7 @@
-// window.onerror = function(error, url, line) {
-//     alert('error: '+error+'  line: '+line)
+// window.onerror = function(error, url, line) { //used for debugging on apple mobile devices
+//     alert('error: '+error+'  line: '+line) 
 // }
-var scanner
+
 var socketA = io()
 socketA.on('connect',function(){
   //console.log('NUOVO SOCKET CONNESSO:',socketA)
