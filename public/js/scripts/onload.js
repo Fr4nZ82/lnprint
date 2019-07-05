@@ -2,16 +2,16 @@
 //     alert('error: '+error+'  line: '+line) 
 // }
 
-var socketA = io()
-socketA.on('connect',function(){
-  //console.log('NUOVO SOCKET CONNESSO:',socketA)
+var ioSock = io()
+ioSock.on('connect',function(){
+  //console.log('NUOVO SOCKET CONNESSO:',ioSock)
 })
-socketA.on('disconnect',function(){
-  //console.log('#!!-onLoad- socket disconnesso:',socketA)
+ioSock.on('disconnect',function(){
+  //console.log('#!!-onLoad- socket disconnesso:',ioSock)
 })
 
 //DEPOSIT EVENTS
-socketA.on('deposit_done', function (socketData) {
+ioSock.on('deposit_done', function (socketData) {
   //console.log('#!!-onLoad- socket emit deposit_done:',socketData)
   //console.log('#!!-onLoad- deposit FULMINE!!!')
   LnPrint.modal.new({name: 'fulmine',from: 'eventDeposit', paymentData: 'none',autoclose:true})
@@ -30,7 +30,7 @@ socketA.on('deposit_done', function (socketData) {
     LnPrint.redraw()
   }
 })
-socketA.on('ocdeposit_done', function (socketData) {
+ioSock.on('ocdeposit_done', function (socketData) {
   //console.log('#!!-onLoad- socket emit ocdeposit_done:',socketData)
   Udata.user.account.balance += socketData.amt
   socketData.date = new Date(socketData.date)
@@ -43,7 +43,7 @@ socketA.on('ocdeposit_done', function (socketData) {
 })
 
 //WITHDRAW EVENTS
-socketA.on('withdraw_done', function (socketData) {
+ioSock.on('withdraw_done', function (socketData) {
   //console.log('#!!-onLoad- socket emit withdraw_done:',socketData)
   //console.log('#!!-onLoad- withdraw FULMINE!!!')
   LnPrint.modal.new({name: 'fulmine', from: 'eventWithdraw', paymentData: socketData,autoclose:true})
@@ -54,14 +54,14 @@ socketA.on('withdraw_done', function (socketData) {
     LnPrint.redraw()
   }
 })
-socketA.on('withdraw_fail', function (socketData) {
+ioSock.on('withdraw_fail', function (socketData) {
   //console.log('#!!-onLoad- socket emit withdraw_fail:',socketData)
   //console.log('#!!-onLoad- withdraw notify error')
   LnPrint.notifyMsg(socketData.LnPrint.notifyMsg,a=>LnPrint.modal.close(2))
 })
 
 //CHANNELS DISCLOSURE EVENT
-socketA.on('channels_disclosure', function (socketData) {
+ioSock.on('channels_disclosure', function (socketData) {
   //console.log('#!!-onLoad- socket emit channels_disclosure:',socketData)
   Udata.user.account.userRemotePubkeys=socketData
   if(thisPageName == 'dashboard'){
