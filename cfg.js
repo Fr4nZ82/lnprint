@@ -58,12 +58,6 @@ module.exports = {
     saveUninitialized: true,
     maxAge:            (1000 * 60 * 60 * 24 * 1) //1 day in millisecond
   },
-  sassOptions: {
-    src:      __dirname + '/views/scss',
-    dest:     __dirname + '/public/css',
-    debug:    false,
-    prefix:   '/css',  // Where prefix is at <link rel:"stylesheets" href:"prefix/style.css"/>
-  },
   LND: {
     host:          '192.168.1.153:10009',
     cert:          fs.readFileSync(path.resolve(__dirname,'../../lnPrintCfgFiles/.cf/cert')).toString(),

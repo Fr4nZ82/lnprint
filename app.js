@@ -18,7 +18,6 @@ var LnPrint = ()=>{
       Session     = require('express-session'),
       MongoStore  = require('connect-mongo')(Session),
       mongo       = require('mongodb'),
-      sassMdlw    = require('node-sass-middleware'),
       uglifyEs    = require('uglify-es'),
       compression = require('compression'),
       minify      = require('express-minify'),
@@ -446,7 +445,6 @@ var LnPrint = ()=>{
           app.use(helmet())
           app.use(express.urlencoded({extended: true}))
           app.use(session)
-          app.use(sassMdlw(config.sassOptions))
           if(config.minify){
             app.use(compression())
             app.use(function(req, res, next){
