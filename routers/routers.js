@@ -128,90 +128,6 @@ router.get('/', function(req,res){
   res.send(basePage)
 })
 
-// router.get('/', function(req,res){
-//   console.log('#!!-GET/- richiesta GET / arrivata:')
-//   if(req.session.data.page.name == 'admin'){req.session.data.page.name = 'home'}
-//   let toEJS = req.session
-//   console.log("toEJS",toEJS)
-
-//   toEJS.socketConnected = 'no'
-//   if(!req.session.user){
-//     toEJS.user = ''
-//   }else{
-//     if(req.userSocketIds.length > 0){
-//       toEJS.socketConnected = 'yes'
-//     }
-//   }
-//   if(!!req.session.data.uploading){
-//     delete req.session.data.uploading
-//     console.log('#!!-GET/- Ho cancellato req.data.uploading... ma non dovrebbe esserci!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
-//   }
-//   toEJS.goHome = 'no'
-//   //console.log('#!!-GET/- render index.ejs con questi dati: ',toEJS)
-//   res.render('index.ejs', toEJS, function(err,html){
-//     if(err) console.error(err)
-//     pauselog(req, '#!!-GET/-')
-//     res.send(html)
-//   })
-// })
-
-// router.get('/admin', function(req,res){
-//   var toEJS
-//   console.log('#!!-GET/- richiesta GET /admin arrivata:')
-//   if(!!req.session.user){
-//     MDB.collection('users').findOne({ _id: req.session.user })
-//     .then(result => {
-//       if(result !== null){
-//         if(result.admin === true){
-//           req.session.admin = true
-//           toEJS = JSON.parse( JSON.stringify( req.session ) )
-//           toEJS.socketConnected = 'no'
-//           toEJS.data.page.name = 'admin'
-//           req.session.data.page.name = 'admin'
-//           allSockets.forEach( sock => {
-//             if(sock.user == req.session.user){
-//               toEJS.socketConnected = 'yes'
-//             }
-//           })
-//           toEJS.goHome = 'no'
-//           res.render('admin.ejs', toEJS, function(err,html){
-//             if(err) return console.error(err)
-//             pauselog(req, '#!!-GET/admin-')
-//             res.send(html)
-//           })
-//         }
-//       }
-//     }).catch(error => { return console.log(error) })
-//   }else{
-//     req.session.data.page.name = 'home'
-//     allSockets.forEach((sock)=>{
-//       if(sock.user == req.session.user){
-//         //console.log(io.sockets)
-//         LNP.io.sockets.connected[sock._id].disconnect(true)
-//       }
-//     })
-//     if(!!req.session.admin){delete req.session.admin}
-//     console.log('#!!-.POST/-'+req.body.type+'- rispondo al client con:',{ok: 'ok'})
-//     pauselog(req, '#!!-.POST/-'+req.body.type)
-//     toEJS = JSON.parse( JSON.stringify( req.session ) )
-//     toEJS.socketConnected = 'no'
-//     allSockets.forEach((sock)=>{
-//       if(sock.user == req.session.user){
-//         toEJS.socketConnected = 'yes'
-//       }
-//     })
-//     if(!req.session.user){
-//       toEJS.user = ''
-//     }
-//     toEJS.goHome = 'yes'
-//     res.render('index.ejs', toEJS, function(err,html){
-//       if(err) console.error(err)
-//       pauselog(req, '#!!-GET/-')
-//       res.send(html)
-//     })
-//   }
-// })
-
 //****************************************************************************************[ POST / ]
 router.post('/', function(req,res){
   console.log('#!!-.POST/-- richiesta POST / type: '+req.body.type+' arrivata')
@@ -285,7 +201,6 @@ router.post('/', function(req,res){
 
     //*********************************************************************body.type='req_user_data'
 }else if(req.body.type == 'req_user_data') {
-      console.log(req.session)
       console.log('#!!-.POST/-'+req.body.type+'- controllo se user esiste')
       let clientConf = {
         maxInvoiceAmt: LNP.config.maxInvoiceAmt,
@@ -395,6 +310,10 @@ router.post('/', function(req,res){
                     console.log('#!!-.POST/-'+req.body.type+'- ne ho trovata una uguale!:',result)
                     console.log('#!!-.POST/-'+req.body.type+"- assegno l'id utente alla sessione in corso.")
                     req.session.user = result._id
+                    console.log('#!!-.POST/-'+req.body.type+"- se è un admin la sessione prende il valore admin")
+                    if(result.admin === true){
+                      req.session.admin = true
+                    }
                     console.log('#!!-.POST/-'+req.body.type+'- controllo se utente aveva delle vecchie sessioni...')
                     if(result.session.length > 0){
                       console.log('#!!-.POST/-'+req.body.type+'- aveva delle sessioni:',result.session)

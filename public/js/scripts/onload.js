@@ -163,7 +163,11 @@ window.addEventListener("load", function(event) {
 
     if(response.user.admin === true && LnPrint.page != 'admin'){
       $('#navButtons')
-      .append('<li class="nav-item"><a id="adminNav" class="nav-link" href="/admin">Admin</a></li>')
+      .append(`
+        <li class="nav-item">
+        <a id="adminNav" class="nav-link" href="javascript:void(0);"
+        onclick="LnPrint.req.changepage('admin');">Admin</a></li>
+      `)
     }
 
     //STICKYBAR OBSERVER

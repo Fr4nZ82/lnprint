@@ -39,7 +39,7 @@ LnPrint.pagesParts = {
     <nav id="naviga" class="navbar sticky-top navbar-dark navbar-expand-sm"`+(()=>{
       if(page != 'home'){
         return ` style="border-bottom-left-radius: 0;border-bottom-right-radius: 0"`
-      }})()+`>
+      }else{return ''}})()+`>
 
       <div id="navbarcontentdiv" class="container-fluid">
 
@@ -61,7 +61,7 @@ LnPrint.pagesParts = {
           if(!isAdmin || page != 'admin'){return `
           <ul id="navButtons" class="navbar-nav mr-auto">
 
-            <li class="nav-item`+(()=>{if(page=='home'){return ' active'}})()+`">
+            <li class="nav-item`+(()=>{if(page=='home'){return ' active'}else{return ''}})()+`">
               <a class="nav-link" href="javascript:void(0);"
               onclick="`+(()=>{
             if(page=='home'){
@@ -71,7 +71,7 @@ LnPrint.pagesParts = {
             }})()+`">Home</a>
             </li>
 
-            <li class="nav-item`+(()=>{if(page=='products'){return ' active'}})()+`">
+            <li class="nav-item`+(()=>{if(page=='products'){return ' active'}else{return ''}})()+`">
               <a class="nav-link" href="javascript:void(0);"
               onclick="`+(()=>{
             if(page=='products'){
@@ -81,7 +81,7 @@ LnPrint.pagesParts = {
             }})()+`">Products</a>
             </li>
 
-            <li class="nav-item`+(()=>{if(page=='dashboard'){return ' active'}})()+`">
+            <li class="nav-item`+(()=>{if(page=='dashboard'){return ' active'}else{return ''}})()+`">
               <a id="dashboardNav" class="nav-link toDashboardLinks" href="javascript:void(0);"
               onclick="`+(()=>{
             if(loggedUser){
@@ -96,7 +96,7 @@ LnPrint.pagesParts = {
             </li>
 
           </ul>
-          `}})()+`
+          `}else{return ''}})()+`
         </div>
         <!-- /NAVBAR LINKS -->
 
@@ -121,11 +121,11 @@ LnPrint.pagesParts = {
             <!-- USER AND BELL -->
             <div id="userandbell" class="row">
           `+(()=>{
-            if(!isAdmin){return `
+            if(page != 'admin'){return `
               <i id="bellicon" class="fas fa-fw fa-bell navbar-icon">
                 <span id="bellcounts" class="label">23</span>
               </i>
-          `}})()+`
+          `}else{return ''}})()+`
               <a id="usericon" class="fas fa-fw fa-user-circle navbar-icon"
               href="javascript:void(0);" onclick="LnPrint.modal.new({from:'usericon',name:'userInfo'})">
               </a>
