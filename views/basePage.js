@@ -61,7 +61,7 @@ const basePage = `
     <script src="js/scripts/req.js"></script>
     <script src="js/scripts/modal.js"></script>
     <script src="js/scripts/modal-elements.js"></script>
-    <script src="js/scripts/onload2.js"></script>
+    <script src="js/scripts/onload.js"></script>
 
   </html>
 `
