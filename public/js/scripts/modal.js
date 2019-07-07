@@ -37,10 +37,7 @@ LnPrint.modal = {
   new: (modalData,cb)=>{ //AGGIUNGE A FINE PAGINA UN NUOVO MODAL VUOTO CON ID 'dynamicModal'+(modal.active.length-1) E LO APRE
     cb = cb || noop
     var modal = LnPrint.modal
-    //console.log('#!!-modal.new- modal.new function avviata')
-    // if(modal.disabled){
-    //   //console.log('#!!-modal.new- modal è disabilitato')
-    // }else{
+
       var _modalData = {}
       Object.assign(_modalData,modalData)
       var _cb = ()=>{cb()}
@@ -120,7 +117,6 @@ LnPrint.modal = {
           cb: _cb
         })
       }
-    // }
   },
   close: (n,cb)=>{
     cb = cb || noop

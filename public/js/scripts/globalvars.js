@@ -4,7 +4,7 @@ var LnPrint = {
   forward: [],
   intervals: []
 }
-var noop = function(){};
+var noop = function(){}
 var Udata = {
   page: {
     name: 'home',
@@ -18,19 +18,19 @@ var Udata = {
   bitcoinReady: false,
   qrcodeReady: false
 }
-var mobile;
+var mobile
 //LINKS
-var timeouts = 20;
-var ajaxTimeout = 5000;
+var timeouts = 20
+var ajaxTimeout = 5000
 //STICKYBAR
-var navLinkShift;
-var transy,transx;
-var stickyBarHyster = true;
+var navLinkShift
+var transy,transx
+var stickyBarHyster = true
 //MODALS
-var modal = {};
+var modal = {}
 //DASHBOARD
-var dashboard = {};
+var dashboard = {}
 //PRODUCTS
-//var products = {};
+//var products = {}
 //ADMIN
-var admin = {};
+var admin = {}

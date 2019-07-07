@@ -14,7 +14,7 @@ ioSock.on('disconnect',function(){
 ioSock.on('deposit_done', function (socketData) {
   //console.log('#!!-onLoad- socket emit deposit_done:',socketData)
   //console.log('#!!-onLoad- deposit FULMINE!!!')
-  LnPrint.modal.new({name: 'fulmine',from: 'eventDeposit', paymentData: 'none',autoclose:true})
+  LnPrint.modal.new({name: 'fulmine',from: 'eventDeposit', paymentData: 'none',autoclose: true})
   Udata.user.account.balance += socketData.amt
   socketData.date = new Date(socketData.date)
   Udata.user.account.history.push(socketData)
@@ -131,7 +131,6 @@ window.addEventListener("load", function(event) {
       //console.log('ServiceWorker registration failed: ', err)
     })
   }
-
 
   //RELOAD CONTROL
   if(window.performance){
