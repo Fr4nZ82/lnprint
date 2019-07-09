@@ -1,10 +1,10 @@
 LnPrint.req = {
   changepage: (pagename)=>{
-    console.log("#!!-req- Chiamata funzione changepage:")
-    Udata.page.name = pagename
-    console.log('#!!-req- Richiesta post / con data:')
-    console.log(Udata)
-    LnPrint.post(Udata.page,(res)=>{
+    console.log("#!!-req- Chiamata funzione changepage:",pagename)
+    LnPrint.backward.push({func: LnPrint.req.changepage, args:[LnPrint.page]})
+    LnPrint.page = pagename
+    console.log("#!!-req- Chiamata funzione changepage:",LnPrint.page)
+    LnPrint.post({type:'page',name:LnPrint.page},(res)=>{
       console.log("#!!-req- questa è la risposta del server:",res)
       console.log("#!!-req- ricarico la pagina (/)")
       location.reload()

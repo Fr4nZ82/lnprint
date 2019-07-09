@@ -24,8 +24,8 @@ const basePage = `
         </div>
       </div>
 
-      <button id="addAppBtn" class="btn" href="javascript:void(0);">install app</button>
-      <button id="donateBtn" class="btn" href="javascript:void(0);" onclick="LnPrint.modal.new({from:'donate',name:'deposit'})">Donate</button>
+      <button id="addAppBtn" class="btn footerbtn" href="javascript:void(0);">install app</button>
+      <button id="donateBtn" class="btn footerbtn" href="javascript:void(0);" onclick="LnPrint.modal.new({from:'donate',name:'deposit'})">Donate</button>
 
       <script src="js/scripts/globalvars.js"></script>
       <script src="js/scripts/pagesParts.js"></script>
@@ -38,7 +38,9 @@ const basePage = `
       <script src="js/plugin/polyFills.js"></script>
 
       <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+      <link rel="stylesheet" href="/css/bootstrap.css" type="text/css" />
       <link rel="stylesheet" href="/css/styles.css" type="text/css" />
+      
       <link rel="stylesheet" href="/css/datatables.css" type="text/css" />
       <link rel="stylesheet" href="/css/ffuploader.css" type="text/css" />
       <link rel="stylesheet" href="/css/cropper.css" type="text/css" />

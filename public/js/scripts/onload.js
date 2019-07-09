@@ -55,8 +55,7 @@ ioSock.on('withdraw_fail', function (socketData) {
 })
 
 
-
-//INSTALL PROMPT
+//PROGRESSIVE APP INSTALL PROMPT
 $('#addAppBtn').hide()
 let deferredPrompt
 window.addEventListener('beforeinstallprompt', (e) => {
@@ -87,7 +86,6 @@ $('#addAppBtn').on('click', (e) => {
 
 //ONLOAD SCRIPT
 window.addEventListener("load", function(event) {
-  //console.log('#!!-onLoad- Pagina caricata completamente')
 
   //HIDE BACKLOADING IF FIRST ATTEMPT FAIL
   setTimeout(function () {
@@ -101,7 +99,7 @@ window.addEventListener("load", function(event) {
   //SERVICE WORKER
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('sw.js').then(function(registration) {
-      // Registration was successful
+      //Registration was successful
       //console.log('ServiceWorker registration successful with scope: ', registration.scope)
     }, function(err) {
       // registration failed :(
@@ -109,27 +107,30 @@ window.addEventListener("load", function(event) {
     })
   }
   
+  //get data from server to draw pages
   LnPrint.req.getUserData((response)=>{
-    console.log('getUserData response',response)
+
     let loggedUser, isAdmin = response.user.admin || false
+
     LnPrint.page = response.page.name
     LnPrint.conf = response.conf
+
     if(response.user._id !== undefined && response.user._id != ''){
       loggedUser = true
       Udata.user = response.user
+
+      //fix date format for each tx in the user account history
       Udata.user.account.history.forEach((tx,i)=>{
-        ////console.log('a'+Udata.user.account.history[i].date)
         Udata.user.account.history[i].date = new Date(Number(tx.date.toString()))
-        ////console.log('b',Udata.user.account.history[i].date)
       })
+
+      //create the summary for the overview page
       Udata.user.summary = {
         mes: ()=>{return 'ToDo'},
         fou: ()=>{return Udata.user.account.balance},
         wor: ()=>{return 'ToDo'},
         shi: ()=>{return 'ToDo'}
       }
-
-      //console.log('#!!-onLoad- SUMMARY:',Udata.user.summary)
 
     }else{
       loggedUser = false
@@ -139,7 +140,6 @@ window.addEventListener("load", function(event) {
     }
 
     //DRAW PAGES
-    console.log('now draw navbar, input variables are:',LnPrint.page,loggedUser,isAdmin)
     $('#backLoading').after(LnPrint.pagesParts.navbar(LnPrint.page,loggedUser,isAdmin))
 
     if(LnPrint.page == 'home'){
@@ -205,13 +205,12 @@ window.addEventListener("load", function(event) {
       Udata.qrcodeReady = true
     })
   
-    //PREPARE MODALS TO START AND ADJUST THE PAGE WHEN MODAL OPEN :_D
+    //PREPARE MODALS TO START AND CONTROL THAT MODALS IS NOT BUSY FOREVER
     let noForever = 0
     setInterval(function(){
       if(LnPrint.modal.busy > 0){
         noForever++
         if(noForever > 30){
-          //console.log('!!!!!!!!!!!!!!!!!!modal busy forever! Close all modals and set it to 0')
           LnPrint.modal.action.queue = []
           LnPrint.modal.busy = 0
           noForever = 0
@@ -224,22 +223,20 @@ window.addEventListener("load", function(event) {
         noForever = 0
       }
     },300)
+
     $(document).on('show.bs.modal', function (event) {
-      //console.log('#!!-onLoad- on opening modal event:',event)
       var modalData = event.relatedTarget
-      //console.log(modalData.name)
       LnPrint.modal.draw[modalData.name](modalData)
     })
   
-    //REMOVE FOCUS FROM HAMBURGER - probably there is a css property for that :_D
+    //REMOVE FOCUS FROM HAMBURGER WHEN NAVBAR COLLAPSE
     $('#navbarlinks').on('shown.bs.collapse hidden.bs.collapse', ()=>{
       $('#hamburger').blur()
     })
   
-    //CLOSE NAVBAR COLLAPSE WHEN CLICK A LINK
+    //COLLAPSE NAVBAR WHEN CLICK A LINK
     if(mobile()){
       $('.nav-link').on('click',()=>{
-        //console.log('#!!-onLoad- closing collapse navbar')
         $('#navbarlinks').collapse('hide')
       })
     }

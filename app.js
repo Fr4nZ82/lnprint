@@ -671,7 +671,7 @@ var LnPrint = ()=>{
 setInterval(function () {
   if(!_running){
     if(rebootCounter > 0){
-      console.log('RESTARTING APPLICATION FOR THE '+rebootCounter+'TIME...')
+      console.log('RESTARTING APPLICATION FOR THE '+rebootCounter+' TIME...')
     }
     ++rebootCounter
     LnPrint()
