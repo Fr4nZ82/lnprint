@@ -94,7 +94,7 @@ var LnPrint = ()=>{
                         if(destAddr.user != 'noUser' && destAddr.user != ''){                         //if address is binded to an user
                           var txDate = new Date()
                           MDB.collection('users').findOne({_id: destAddr.user},(err,addrUser)=>{      //find that user and..
-                            if(err){return console.log('error finding user',err)}
+                            if(err || !addrUser.account){return console.log('error finding user',err)}
                             addrUserOldTx = addrUser.account.ochistory.map((x)=>{return x.id})
                             if( !addrUserOldTx.includes(txData._id) ){                                //if user onchain history dont already includes this tx
                               MDB.collection('users').findOneAndUpdate(                               //insert it and increment user balance

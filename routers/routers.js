@@ -213,6 +213,11 @@ router.post('/', function(req,res){
           delete actualUser.date_modified
           if(actualUser._id == LNP.config.rootPubKey){
             actualUser.root = true
+            actualUser.admin = true
+          }else if(req.session.admin === true){
+            actualUser.admin = true
+          }else if(actualUser.admin){
+            delete actualUser.admin
           }
           actualUser.account.history.forEach((tx,i)=>{
             actualUser.account.history[i].date = Date.parse(tx.date)
@@ -261,9 +266,6 @@ router.post('/', function(req,res){
                   }
                 }
                 if(validateWallet(userData)){
-                  if(req.body.pubkey == LNP.config.rootPubKey){
-                    userData.admin = true
-                  }
                   console.log('#!!-.POST/-'+req.body.type+'- sono validi quindi li inserisco nel db')
                   MDB.collection('users').insertOne(userData, (error, user)=>{
                     if(error) {return console.log('#!!-.POST/- mongo error',error)}
@@ -311,8 +313,17 @@ router.post('/', function(req,res){
                     console.log('#!!-.POST/-'+req.body.type+"- assegno l'id utente alla sessione in corso.")
                     req.session.user = result._id
                     console.log('#!!-.POST/-'+req.body.type+"- se è un admin la sessione prende il valore admin")
+                    if(result._id == LNP.config.rootPubKey){
+                      if(result.admin !== true){
+                        MDB.collection('users').findOneAndUpdate({_id:result._id},{$set:{admin:true}})
+                      }
+                      result.admin = true
+                    }
                     if(result.admin === true){
                       req.session.admin = true
+                    }else{
+                      req.session.admin = false
+                      delete req.session.admin
                     }
                     console.log('#!!-.POST/-'+req.body.type+'- controllo se utente aveva delle vecchie sessioni...')
                     if(result.session.length > 0){
@@ -343,10 +354,8 @@ router.post('/', function(req,res){
                             if(err){return console.log("#!!-.POST/-"+req.body.type+"- errore lettura db Users:",err)}
                             console.log("#!!-.POST/-"+req.body.type+"- rispondo al client con:",{_id:pubkey,btcaddress:address})
                             pauselog(req, '#!!-.POST/-'+req.body.type)
-                            //let _account = result.account || {balance: 0}
                             let theRes = {
                               _id:pubkey,
-                              //balance: _account.balance,
                               btcaddress:address,
                               notifyMsg:{type:'msg',text:'Logged in!'}
                             }
@@ -382,10 +391,43 @@ router.post('/', function(req,res){
                       })
                     }
                   }else{
-                    console.log('#!!-.POST/-'+req.body.type+'- non ho trovato nessun utente con la stessa pubkey!')
-                    console.log('#!!-.POST/-'+req.body.type+'- rispondo al client con:',{alert: 'Key not found'})
-                    pauselog(req, '#!!-.POST/-'+req.body.type)
-                    return res.json({notifyMsg:{type:'alert',text:'Key not found!'}})
+                    if(pubkey == LNP.config.rootPubKey){
+                      let userData = {
+                        _id: pubkey,
+                        btcaddress: address,
+                        session: [req.session.id],
+                        account: {
+                          balance: 0,
+                          payreq: [], // ONLY PENDING
+                          userRemotePubkeys: [],
+                          history:[],
+                          ochistory:[]
+                        },
+                        admin: true
+                      }
+                      if(validateWallet(userData)){
+                        MDB.collection('users').insertOne(userData, (error, user)=>{
+                          if(error) {return console.log('#!!-.POST/- mongo error',error)}
+                          req.session.user = pubkey
+                          req.session.admin = true
+                          pauselog(req, '#!!-.POST/-'+req.body.type)
+                          return res.json({
+                            _id:pubkey,
+                            btcaddress:address,
+                            notifyMsg:{type:'msg',text:'Logged in!'}
+                          })
+                        })
+                      }else{
+                        console.log('#!!-.POST/-'+req.body.type+'- dati non validi!')
+                        pauselog(req, '#!!-.POST/-'+req.body.type)
+                        res.json({notifyMsg:{ type:'alert', text:'Need a valid wif format private key... How did you do?'}})
+                      }
+                    }else{
+                      console.log('#!!-.POST/-'+req.body.type+'- non ho trovato nessun utente con la stessa pubkey!')
+                      console.log('#!!-.POST/-'+req.body.type+'- rispondo al client con:',{alert: 'Key not found'})
+                      pauselog(req, '#!!-.POST/-'+req.body.type)
+                      return res.json({notifyMsg:{type:'alert',text:'Key not found!'}})
+                    }
                   }
                 }).catch(error => { return console.log(error) })
               }catch(err){
