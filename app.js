@@ -75,10 +75,16 @@ var LnPrint = ()=>{
   //!!CREATE APP REQUIRED FOLDERS
 
   //CREATE HTTP AND HTTPS SERVERS
-  var httpServer = http.createServer((i,o)=>{
-    o.writeHead(302,{Location:config.httpsUrl})
-    o.end()
-  })
+  
+    if(config.onlyHttps){
+      var httpServer = http.createServer((i,o)=>{
+        o.writeHead(302,{Location:config.httpsUrl})
+        o.end()
+      })
+    }else{
+      var httpServer = http.createServer(app)
+    }
+ 
   var http2Server = http2.createServer(config.sslOptions,app)
   var io=sio(http2Server)
   //!!CREATE HTTP AND HTTPS SERVERS
@@ -518,7 +524,6 @@ var LnPrint = ()=>{
           //!!EXPORT USEFULL THINGS FOR OTHER MODULES
 
           //APP SETTINGS/INITIALIZE
-          app.set('view engine', 'ejs')
           app.use(helmet())
           app.use(express.urlencoded({extended: true}))
           app.use(session)
@@ -633,7 +638,11 @@ var LnPrint = ()=>{
 
           //START HTTP SERVER only redirect all to HTTPS
           httpServer.listen(config.ports.http,()=>{
-            console.log('#!!-APP- HTTP Server listening on port '+config.ports.http+' redirect all to https')
+            if(config.onlyHttps){
+              console.log('#!!-APP- HTTP Server listening on port '+config.ports.http+' redirect all to https')
+            }else{
+              console.log('#!!-APP- HTTP Server listening on port '+config.ports.http)
+            }
           })
           //!!START HTTP SERVER
 

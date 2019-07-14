@@ -42,6 +42,9 @@ ioSock.on('ocdeposit_done', function (socketData) {
     }
   })
 })
+ioSock.on('ocdeposit_fail', function(socketData) {
+  LnPrint.notifyMsg(socketData.message)
+})
 
 //WITHDRAW EVENTS
 ioSock.on('withdraw_done', function (socketData) {
@@ -54,7 +57,7 @@ ioSock.on('withdraw_done', function (socketData) {
   }
 })
 ioSock.on('withdraw_fail', function (socketData) {
-  LnPrint.notifyMsg(socketData.message,()=>{LnPrint.modal.close(2)})
+  LnPrint.notifyMsg(socketData.message,()=>{LnPrint.modal.close(all)})
 })
 
 

@@ -1072,13 +1072,15 @@ router.post('/', function(req,res){
         console.log('#!!-.POST/-'+req.body.type+'- è un admin!')
         var formData  = req.body.formData,
             presetName = req.body.name
-        //console.log('#!!-.POST/-'+req.body.type+'- formData just before findOneAndUpdate: ',formData)
         MDB.collection('presets').findOneAndUpdate(
           {name: presetName},
           {$set:{formData: formData}},
           {upsert:true},
           (err,uP)=>{
-            if(err){return console.log('#!!-.POST/-'+req.body.type+'- error',err)}
+            if(err){
+              console.log('#!!-.POST/-'+req.body.type+'- error',err)
+              return res.json({message:{type:'alert',text:'server error, please refresh and try later'}})
+            }
             pauselog(req, '#!!-.POST/-'+req.body.type)
             return res.json({ok:'ok',message:{type:'notify',text:'PRESET SAVED'}})
           }
@@ -1152,11 +1154,12 @@ router.post('/', function(req,res){
         var productData = req.body.productData
         var productId = new LNP.mongo.ObjectID(productData._id)
         MDB.collection('products').findOneAndDelete({_id: productId},(err,removedProduct)=>{
-          if(err){ return console.log('error',err) }
-          console.log('#!!-.POST/-'+req.body.type+'- vecchio prodotto eliminato dal db')
-          console.log(removedProduct)
+          if(err){
+            console.log('MDB ERROR',err)
+            return res.json({message:{type:'alert',text:'server error, please refresh and try later'}})
+          }
           if(removedProduct.value.photos.length > 0){
-            //remove old photos
+            //TODO remove old photos files
           }
           delete productData._id
           productData.photos = []
@@ -1165,6 +1168,10 @@ router.post('/', function(req,res){
             productData.readyToSell = 0
           }
           MDB.collection('products').insertOne(productData, (err,result)=>{
+            if(err){
+              console.log('MDB ERROR',err)
+              return res.json({message:{type:'alert',text:'server error, product deleted but not updated!'}})
+            }
             console.log('#!!-.POST/-'+req.body.type+'- Inserimento dati nel db effettuato: ', result.ops[0])
             console.log('#!!-.POST/-'+req.body.type+'- numero foto da caricare: ',req.session.data.uploading)
             pauselog(req, '#!!-.POST/-'+req.body.type)

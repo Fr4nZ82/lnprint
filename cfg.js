@@ -18,6 +18,7 @@ module.exports = {
   dev:                    true,
   minify:                 false,
   sourceMapping:          true,
+  onlyHttps:              true, //disable when need to renew ssl certificate from sslforfree.com
   httpsUrl:               "https://lightningprintings.com",
   invoiceExpireTime:      18000000,
   maxInvoiceAmt:          4294967,

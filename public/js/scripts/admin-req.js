@@ -19,62 +19,66 @@ LnPrint.admin.req = {
     LnPrint.post(
       {type: 'remove_product',productId: pId},
       {
-        ifYes:(res)=>{LnPrint.admin.draw.products()}
+        ifYes:(res)=>{
+          LnPrint.admin.draw.products()
+        },
+        ifErr:()=>{
+          LnPrint.standardErrorBehavior()
+        }
       }
     )
   },
   updateProduct: (pData,nPhotos,cb)=>{
-    $.ajax({
-      type: 'POST',
-      url: '/',
-      data: {
-        type: 'update_product',
-        productData: pData,
-        nPhotos: nPhotos
-      },
-      success: function(response){
-        cb(response.productId)
+    LnPrint.post(
+      {type:'update_product', productData: pData, nPhotos: nPhotos},
+      {
+        ifYes:(res)=>{
+          cb(res.productId)
+        },
+        ifErr:()=>{
+          LnPrint.standardErrorBehavior()
+        }
       }
-    })
+    )
   },
   delPreset:(presetName,cb)=>{
-    $.ajax({
-      type: 'POST',
-      url: '/',
-      data: {
-        type: 'del_preset',
-        name:presetName
-      },
-      success: (res)=>{
-        cb(res)
+    LnPrint.post(
+      {type:'del_preset', name: presetName},
+      {
+        ifYes:(res)=>{
+          cb(res)
+        },
+        ifErr:()=>{
+          LnPrint.standardErrorBehavior()
+        }
       }
-    })
+    )
   },
   savePreset:(presetName,formData,cb)=>{
-    $.ajax({
-      type: 'POST',
-      url: '/',
-      data: {
-        type: 'save_preset',
-        formData:formData,
-        name:presetName
-      },
-      success: (res)=>{
-        LnPrint.notifyMsg(res.notifyMsg,()=>{
-          cb()
-        })
+    LnPrint.post(
+      {type:'save_preset', formData: formData, name: presetName},
+      {
+        ifYes:(res)=>{
+          cb(res)
+        },
+        ifErr:()=>{
+          LnPrint.standardErrorBehavior()
+        }
       }
-    })
+    )
   },
   presets: (cb)=>{
-    $.ajax({
-      type: 'POST',
-      url: '/',
-      data: {type: 'req_presets'},
-      success: function(res){
-        cb(res)
+    LnPrint.post(
+      {type:'req_presets'},
+      {
+        ifYes:(res)=>{
+          cb(res)
+        },
+        ifErr:()=>{
+          LnPrint.standardErrorBehavior()
+        }
       }
-    });
+    )
   },
   works: ()=>{
 
