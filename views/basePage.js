@@ -16,7 +16,7 @@ const basePage = `
     </head>
 
     <body id="thebody" class="container-fluid height100">
-      <div id=backLoading style="mix-blend-mode: darken;background-color: #000000;
+      <div id="backLoading" style="mix-blend-mode: darken;background-color: #000000;
       position: fixed;top: 0;left: 0;height: 100%;width: 100%;z-index: 9999998;">
         <div id="loading"
         style="mix-blend-mode:hard-light;background:url('../img/lightning800.gif') no-repeat center center;
