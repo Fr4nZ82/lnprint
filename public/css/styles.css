@@ -224,7 +224,7 @@ input[type=number] {
   padding-bottom: 7px !important;
   margin: 0 !important;
   display: flex !important;
-  background-color: #733838;
+  /* background-color: #733838; */
   height: auto !important;
   align-content: center !important;
   align-items: center !important;
@@ -383,10 +383,16 @@ input[type=number] {
   background-color: #733838 !important;
   color: #e7fffa !important; }
 
+.importantMessage {
+  height: auto !important;
+  background-color: #ff9d1c !important;
+  color: #01130f !important;
+  padding: 10px !important; }
+
 .promptMessage {
   height: auto !important;
-  background-color: #733838 !important;
-  color: #e7fffa !important;
+  background-color: #24aee4 !important;
+  color: #01130f !important;
   padding: 10px !important; }
 
 .promptMessage div {

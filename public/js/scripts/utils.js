@@ -172,47 +172,93 @@ LnPrint.loading = {
     }, 450);
   }
 }
-//ajax abbreviation
-LnPrint.post = (data,success,stopModals)=>{
-  stopModals = stopModals || true
-  if(stopModals){
-    LnPrint.modal.action.waitResponse('wait')
+
+//NOTIFYMSG FORMAT msgData = {type:'msg | alert',text: string}
+LnPrint.notifyMsg = (msgData, cb, cbNo)=>{//ALERT & MESSAGE WITH MODAL
+  cb = cb || noop
+  cbNo = cbNo || noop
+  if(msgData && msgData.text){
+    if(msgData.type == 'alert' || msgData.type == 'notify'){
+      LnPrint.modal.new(
+        {
+          from: 'notifyMsg',
+          name: 'message',
+          type: msgData.type,
+          text: msgData.text,
+          autoclose:true
+        },
+        (theModal)=>{
+          $(theModal).on('hidden.bs.modal',()=>{cb()})
+        }
+      )
+    }else if(msgData.type == 'important'){
+      LnPrint.modal.new(
+        {
+          from: 'notifyMsg',
+          name: 'important',
+          text: msgData.text,
+        },
+        (theModal)=>{
+          $(theModal).on('hidden.bs.modal',()=>{cb()})
+        }
+      )
+    }else if(msgData.type == 'prompt'){
+      LnPrint.modal.new(
+        {
+          from: 'notifyMsg',
+          name: 'prompt',
+          text: msgData.text,
+          cbYes: ()=>{cb()},
+          cbNo: ()=>{cbNo()}
+        }
+      )
+    }
+  }else{
+    return
   }
+}
+
+//Ajax post, actions format: {ifYes: function, ifNo: function, ifErr: function}
+LnPrint.post = (_req,actions)=>{
+  LnPrint.modal.action.waitResponse('wait')
+  actions.ifErr = actions.ifErr || noop
+  console.log('request:',_req)
   $.ajax({
     type: 'POST',
     url: '/',
-    data: data,
+    data: _req,
     success: function(response){
-      if(stopModals){
-        LnPrint.modal.action.waitResponse('done')
+      console.log('response:',response)
+      LnPrint.modal.action.waitResponse('done')
+      LnPrint.loading.hide()
+      if(response){
+        if(response.message){
+          let _msg = response.message
+          LnPrint.notifyMsg(
+            _msg,
+            ()=>{
+              if(_msg.type == 'notify' || _msg.type == 'prompt' || _msg.type == 'important'){
+                actions.ifYes(response)
+              }else if(_msg.type == 'alert'){
+                actions.ifErr(response)
+              }
+            },
+            ()=>{
+              if(_msg.type == 'prompt'){
+                actions.ifNo(response)
+              }
+            }
+          )
+        }else{
+          actions.ifYes(response)
+        }
+      }else{
+        actions.ifErr()
       }
-      success(response)
     }
   })
 }
-//NOTIFYMSG FORMAT msgData = {type:'msg | alert',text: string}
-LnPrint.notifyMsg = (msgData, cb)=>{//ALERT & MESSAGE WITH MODAL
-  cb = cb || noop;
-  if(!!msgData){
-    if(msgData.text){
-      //console.log('#!!-UTILS- c è un messaggio da notificare');
-      LnPrint.modal.new({
-        from: 'notifyMsg',
-        name: 'message',
-        type: msgData.type,
-        text: msgData.text,
-        autoclose:true
-      },(theModal)=>{
-        //console.log('#!!-UTILS- notifica avvenuta, modal chiuso');
-        cb(theModal)
-      })
-    }else{
-      cb('noMsg')
-    }
-  }else{
-    cb('noMsg')
-  }
-}
+
 //VALIDATE FORM FUNCTION
 LnPrint.validateForm = (fieldsObj,buttonId)=>{
   if(Object.keys(fieldsObj).every(function(k){ return fieldsObj[k] === true })){
@@ -229,18 +275,23 @@ LnPrint.copyF = (elem,cb)=>{
   //console.log('copyfunction avviata')
   $('#'+elem).select();
   try {
-    var successful = document.execCommand('copy');
+    var successful = document.execCommand('copy')
     var msg
     if(successful){
-      msg = {text: 'text copied successfully', type: 'msg'};
+      msg = {text: 'text copied', type: 'notify'}
     }else{
-      msg = {text: 'can not copy the key, try to manual copy it', type: 'alert'};
+      msg = {text: 'can not copy the key, try to manual copy it', type: 'alert'}
     }
-    LnPrint.notifyMsg({type:msg.type,text: msg.text});
-    cb()
+    LnPrint.notifyMsg(msg,cb())
   } catch (err) {
-    LnPrint.notifyMsg({type:'alert',text:'Unable to copy text, err: '+err});
+    LnPrint.notifyMsg({type:'alert',text:'Unable to copy text, err: '+err})
   }
+}
+LnPrint.standardErrorBehavior = ()=>{
+  LnPrint.modal.close('all',()=>{
+    location.reload()
+    $(window).scrollTop(0)
+  })
 }
 LnPrint.scrollToId = (elemId,shift,divToScroll,animTime)=>{
   divToScroll = divToScroll || 'html,body'

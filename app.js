@@ -1,4 +1,4 @@
-var rebootCounter = 0, _running = false
+var rebootCounter = -1, _running = false, troubles = false
 
 //MAIN WRAPPER FUNCTION
 var LnPrint = ()=>{
@@ -42,13 +42,46 @@ var LnPrint = ()=>{
 
   _running = true
 
+  //PANIC FUNCTION!
+  var panic = (cause,message)=>{
+    troubles = true
+    console.log('PANIC!!! SHUTTING DOWN IN 10 SECONDS...')
+    setTimeout(()=>{
+      console.error(cause + ' - SHUTTING DOWN THE APPLICATION')
+      process.exit(1)
+    },10000)
+    allSockets.forEach((sock)=>{
+      io.sockets.to(sock._id).emit('messageToAll', {message:{type:'important',text: message}})
+    })
+  }
+  //!!PANIC FUNCTION!
+
+  //CREATE APP REQUIRED FOLDERS
+  fs.isDir = function(dpath) {try{return fs.lstatSync(dpath).isDirectory()}catch(e){return false}}
+  var requiredFolders = [
+    'uploads',
+    'uploads/pphotos',
+    'uploads/userUploads',
+    'dbFailureRecovery'
+  ]
+  requiredFolders.forEach((folder)=>{
+    if(!fs.isDir('./'+folder)){
+      fs.mkdir('./'+folder, (err) => {
+        console.log('#!!-APP- Creating ./'+folder+' folder')
+        if (err) return console.log(err)
+      })
+    }
+  })
+  //!!CREATE APP REQUIRED FOLDERS
+
+  //CREATE HTTP AND HTTPS SERVERS
   var httpServer = http.createServer((i,o)=>{
     o.writeHead(302,{Location:config.httpsUrl})
     o.end()
   })
-
   var http2Server = http2.createServer(config.sslOptions,app)
   var io=sio(http2Server)
+  //!!CREATE HTTP AND HTTPS SERVERS
 
   //UPDATE ON CHAIN TX FUNCTION                                                                       UPDATE ON CHAIN TX FUNCTION
   var updateOctx = (cb)=>{
@@ -93,8 +126,30 @@ var LnPrint = ()=>{
                       txDestAddresses.forEach((destAddr)=>{                                           //then for each
                         if(destAddr.user != 'noUser' && destAddr.user != ''){                         //if address is binded to an user
                           var txDate = new Date()
-                          MDB.collection('users').findOne({_id: destAddr.user},(err,addrUser)=>{      //find that user and..
-                            if(err || !addrUser.account){return console.log('error finding user',err)}
+                          MDB.collection('users').findOne({_id: destAddr.user},(errr,addrUser)=>{     //find that user and..
+                            if(errr || !addrUser.account){                                            //if user can not be found, user must be informed and payment data backed up to a file
+                              let errr = errr || ''
+                              console.log('error finding user',err)
+                              let _datenow = new Date()
+                              let recovery = {
+                                date: _datenow.toISOString(),
+                                user: destAddr.user,
+                                tx_id: txData._id,
+                                amt: txData.tokens,
+                                fee: txData.fee
+                              }
+                              fs.appendFileSync('./dbFailureRecovery/lostOcDeposit',JSON.stringify(recovery,null,2)+'\n')
+                              return allSockets.forEach((sock)=>{
+                                if(sock.user == destAddr.user){
+                                  io.sockets.to(sock._id).emit(
+                                    'ocdeposit_fail',{message:{
+                                      type:'important',
+                                      text:'your onchain deposit was done but because of a server error your account was not updated. Please contact support, your payment data is saved.'
+                                    }}
+                                  )
+                                }
+                              })
+                            }
                             addrUserOldTx = addrUser.account.ochistory.map((x)=>{return x.id})
                             if( !addrUserOldTx.includes(txData._id) ){                                //if user onchain history dont already includes this tx
                               MDB.collection('users').findOneAndUpdate(                               //insert it and increment user balance
@@ -109,8 +164,28 @@ var LnPrint = ()=>{
                                   },
                                 {projection:{'_id':1}},
                                 (err,userId)=>{
-                                  if(err){return console.log('#!!-APP- error',err)}
-                                  console.log(userId.value._id)
+                                  if(err){
+                                    console.log('#!!-APP- error',err)                                 //if this database write fail, user must be informed and payment data backed up to a file
+                                    let _datenow = new Date()
+                                    let recovery = {
+                                      date: _datenow.toISOString(),
+                                      user: destAddr.user,
+                                      tx_id: txData._id,
+                                      amt: txData.tokens,
+                                      fee: txData.fee
+                                    }
+                                    fs.appendFileSync('./dbFailureRecovery/failedOcDeposit',JSON.stringify(recovery,null,2)+'\n')
+                                    return allSockets.forEach((sock)=>{
+                                      if(sock.user == destAddr.user){
+                                        io.sockets.to(sock._id).emit(
+                                          'ocdeposit_fail',{message:{
+                                            type:'important',
+                                            text:'your onchain deposit was done but because of a server error your account was not updated. Please contact support, your payment data is saved.'
+                                          }}
+                                        )
+                                      }
+                                    })
+                                  }
                                   MDB.collection('address').findOneAndUpdate(                         //insert the tx id in the addresses collection and increment amtReceived
                                     {_id: destAddr._id},
                                     {
@@ -436,6 +511,8 @@ var LnPrint = ()=>{
             wif:            wif,
             deepDiff:       deepDiff,
             config:         config,
+            troubles:       troubles,
+            panic:          panic,
             app:            app
           }
           //!!EXPORT USEFULL THINGS FOR OTHER MODULES
@@ -602,53 +679,65 @@ var LnPrint = ()=>{
 
           //INVOICES UPDATE/CLEANING CYCLE
           setInterval(function () {
-            let dn = new Date()
-            MDB.collection('invoices').find( { confirmed: { $ne : true }}).toArray((err,res)=>{
-              if(err){return console.log('#!!-APP- error',err)}
-              res.forEach((inv)=>{
-                if(inv.dateE < dn){
-                  MDB.collection('invoices').deleteOne({_id:inv._id},()=>{
-                    MDB.collection('users').updateOne({_id:inv.user},{$pull:{'account.payreq':inv._id}},()=>{
-                      console.log('#!!-APP- DB UPDATE CYCLE - eliminata zombie invoice',inv._id)
+            if(!troubles){
+              let dn = new Date()
+              MDB.collection('invoices').find( { confirmed: { $ne : true }}).toArray((err,res)=>{
+                if(err){return console.log('#!!-APP- error',err)}
+                res.forEach((inv)=>{
+                  if(inv.dateE < dn){
+                    MDB.collection('invoices').deleteOne({_id:inv._id},()=>{
+                      MDB.collection('users').updateOne({_id:inv.user},{$pull:{'account.payreq':inv._id}},()=>{
+                        console.log('#!!-APP- DB UPDATE CYCLE - eliminata zombie invoice',inv._id)
+                      })
                     })
-                  })
-                }
+                  }
+                })
               })
-            })
+            }
           }, config.zombiesPurificationTime)
           //!!INVOICES UPDATING/CLEANING CYCLE
 
           //ON CHAIN TX UPDATING CYCLE
           setInterval(function () {
-            updateOctx(()=>{})
+            if(!troubles){
+              updateOctx(()=>{})
+            }
           }, config.txCheckingTime)
           //ON CHAIN TX UPDATING CYCLE
 
           //CHANNEL DB SYNC CICLE
           setInterval(function () {
-            updateChannels(()=>{})
+            if(!troubles){
+              updateChannels(()=>{})
+            }
           }, config.channelSyncTime)
           //!!CHANNEL DB SYNC CICLE
 
           //PRICE TICKER UPDATING CYCLE
           setInterval(function () {
-            reqTicker((t)=>{
-              return ticker = t
-            })
+            if(!troubles){
+              reqTicker((t)=>{
+                return ticker = t
+              })
+            }
           }, config.tickerUpdateTime)
           //!!PRICE TICKER UPDATING CYCLE
 
           //FEES UPDATING CYCLE
           setInterval(function () {
-            reqFees((f)=>{
+            if(!troubles){
+              reqFees((f)=>{
                 return bitcoinFees = f
-            })
+              })
+            }
           }, config.feesUpdateTime)
           //!!FEES UPDATING CYCLE
 
           //GEONAMES UPDATING CYCLE
           setInterval(function () {
-            updateGeoNames()
+            if(!troubles){
+              updateGeoNames()
+            }
           }, config.geonamesUpdateTime)
           //!!GEONAMES UPDATING CYCLE
 
@@ -664,12 +753,13 @@ var LnPrint = ()=>{
   })
   //!!CONNECT MONGODB CLIENT NODEJS OFFICIAL DRIVER
 
+  
 }
 //!!MAIN WRAPPER FUNCTION
 
 //START THE APP AND MONITOR IT
 setInterval(function () {
-  if(!_running){
+  if(!_running && !troubles){
     if(rebootCounter > 0){
       console.log('RESTARTING APPLICATION FOR THE '+rebootCounter+' TIME...')
     }
@@ -690,3 +780,4 @@ setInterval(function () {
 // console.log('expire = ',expire)
 // console.log('valid',new Date(1552505409000))
 // console.log('invalid',new Date('1552505409000'))
+

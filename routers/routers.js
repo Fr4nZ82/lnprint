@@ -40,14 +40,24 @@ var pauselog = (req,intestation,mc)=>{
   console.log(intestation + txt)
   console.log(" ")
 }
-var newUser = ()=>{
-  return {
-    balance: 0,
-    payreq: [], // ONLY PENDING
-    userRemotePubkeys: [],
-    history:[],
-    ochistory:[]
+var newUser = (_pubkey,_address,_sessionId,isAdmin)=>{
+  isAdmin = isAdmin || false
+  var user = {
+    _id: _pubkey,
+    btcaddress: _address,
+    session: [_sessionId],
+    account: {
+      balance: 0,
+      payreq: [], // ONLY PENDING
+      userRemotePubkeys: [],
+      history:[],
+      ochistory:[]
+    }
   }
+  if(isAdmin){
+    user.admin = true
+  }
+  return user
 }
 function validatePrivkey(key){
   key = key.toString()
@@ -110,6 +120,9 @@ var controlMiddleware = function(req,res,next){
       next(err)
     }
   }
+  if(LNP.trouble){
+    return res.json({message:{type:'alert',text:'server is shutting down because some trouble, sorry for the inconvenience'}})
+  }
   //console.log('allSockets: ',allSockets)
   //console.log('REQ: ',req)
   pauselog(req, '#!!-MC/-','mc')
@@ -136,7 +149,7 @@ router.post('/', function(req,res){
     if(req.session.user){
       console.log('#!!-.POST/-'+req.body.type+'- cerco nel db i dati utente:')
       MDB.collection('users').findOne({_id:req.session.user}).then(actualUser => {
-        if(actualUser._id && actualUser._id != ""){ //KEY ESISTENTE
+        if(actualUser && actualUser._id && actualUser._id != ""){ //KEY ESISTENTE
           console.log('#!!-.POST/-'+req.body.type+'- ho trovato un utente con lo stesso id!')
           //console.log('actualUser',actualUser)
           if(actualUser._id == LNP.config.rootPubKey){
@@ -144,7 +157,7 @@ router.post('/', function(req,res){
               actualUser.admin = true
               MDB.collection('users').updateOne({_id:actualUser._id},{$set:{'admin': true}},(err)=>{
                 if(err){
-                  let nm = {notifyMsg:{type:'alert',text: 'server error, try later'}}
+                  let nm = {message:{type:'alert',text: 'server error, try later'}}
                   console.log('#!!-.POST/-'+req.body.type+'- errore mongoDB:',error)
                   console.log('#!!-.POST/-'+req.body.type+'- rispondo al client con questi dati:',nm)
                   pauselog(req, '#!!-.POST/-'+req.body.type)
@@ -159,7 +172,8 @@ router.post('/', function(req,res){
           if(ifErr != 'no'){
             ifErr()
           }else{
-            let nm = {notifyMsg:{type:'alert',text: 'user not found in the db'}}
+            delete req.session
+            let nm = {message:{type:'alert',text: 'user not found in the db'}}
             console.log('#!!-.POST/-'+req.body.type+'- rispondo al client con questi dati:',nm)
             pauselog(req, '#!!-.POST/-'+req.body.type)
             return res.json(nm)
@@ -169,7 +183,7 @@ router.post('/', function(req,res){
         if(ifErr != 'no'){
           ifErr(error)
         }else{
-          let nm = {notifyMsg:{type:'alert',text: 'server error, try later'}}
+          let nm = {message:{type:'alert',text: 'server error, try later'}}
           console.log('#!!-.POST/-'+req.body.type+'- errore mongoDB:',error)
           console.log('#!!-.POST/-'+req.body.type+'- rispondo al client con questi dati:',nm)
           pauselog(req, '#!!-.POST/-'+req.body.type)
@@ -228,7 +242,7 @@ router.post('/', function(req,res){
         },
         ()=>{
           pauselog(req, '#!!-.POST/-'+req.body.type)
-          res.json({page:req.session.data.page,user:{_id: ''},conf: clientConf,notifyMsg:{type:'msg',text:'wut?'}})
+          res.json({page:req.session.data.page,user:{_id: ''},conf: clientConf})
         }
       )
 
@@ -238,7 +252,7 @@ router.post('/', function(req,res){
         (actualUser)=>{
           console.log('#!!-.POST/-'+req.body.type+'- User already registered and logged:',actualUser)
           pauselog(req, '#!!-.POST/-'+req.body.type)
-          return res.json({notifyMsg:{type: 'alert', text: 'You are already registered and logged! How did you do?'}})
+          return res.json({message:{type: 'alert', text: 'You are already registered and logged! How did you do?'}})
         },
         ()=>{
           console.log('#!!-.POST/-'+req.body.type+'- controllo se pubkey esiste')
@@ -250,21 +264,10 @@ router.post('/', function(req,res){
               if(result){ //KEY ESISTENTE
                 console.log('#!!-.POST/-'+req.body.type+'- ho trovato un utente con una delle due uguale:',result)
                 pauselog(req, '#!!-.POST/-'+req.body.type)
-                return res.json({notifyMsg:{type: 'alert', text: 'Key already exist! How did you do?'}})
+                return res.json({message:{type: 'alert', text: 'Key already exist! How did you do?'}})
               }else{ //KEY NUOVA
                 console.log('#!!-.POST/-'+req.body.type+'- non ho trovato utenti con una chiave uguale! provo a validare pubkey e btcaddress')
-                let userData = {
-                  _id: req.body.pubkey,
-                  btcaddress: req.body.address,
-                  session: [req.session.id],
-                  account: {
-                    balance: 0,
-                    payreq: [], // ONLY PENDING
-                    userRemotePubkeys: [],
-                    history:[],
-                    ochistory:[]
-                  }
-                }
+                let userData = newUser(req.body.pubkey, req.body.address, req.session.id)
                 if(validateWallet(userData)){
                   console.log('#!!-.POST/-'+req.body.type+'- sono validi quindi li inserisco nel db')
                   MDB.collection('users').insertOne(userData, (error, user)=>{
@@ -276,7 +279,7 @@ router.post('/', function(req,res){
                 }else{
                   console.log('#!!-.POST/-'+req.body.type+'- dati non validi!')
                   pauselog(req, '#!!-.POST/-'+req.body.type)
-                  res.json({notifyMsg:{ type:'alert', text:'Need a valid wif format private key... How did you do?'}})
+                  res.json({message:{ type:'alert', text:'Need a valid wif format private key... How did you do?'}})
                 }
               }
             }).catch(error => { console.log('#!!-.POST/- mongo error',error) })
@@ -292,7 +295,7 @@ router.post('/', function(req,res){
         (actualUser)=>{
           console.log('#!!-.POST/-'+req.body.type+'- User already registered and logged:',actualUser)
           pauselog(req, '#!!-.POST/-'+req.body.type)
-          return res.json({notifyMsg:{type: 'alert', text: 'You are already registered and logged! How did you do?'}})
+          return res.json({message:{type: 'alert', text: 'You are already registered and logged! How did you do?'}})
         },
         ()=>{
           console.log('#!!-.POST/-'+req.body.type+'- controllo se privkey esiste nei dati arrivati dal client')
@@ -354,12 +357,11 @@ router.post('/', function(req,res){
                             if(err){return console.log("#!!-.POST/-"+req.body.type+"- errore lettura db Users:",err)}
                             console.log("#!!-.POST/-"+req.body.type+"- rispondo al client con:",{_id:pubkey,btcaddress:address})
                             pauselog(req, '#!!-.POST/-'+req.body.type)
-                            let theRes = {
+                            return res.json({
                               _id:pubkey,
                               btcaddress:address,
-                              notifyMsg:{type:'msg',text:'Logged in!'}
-                            }
-                            return res.json(theRes)
+                              message:{type:'notify',text:'Logged in!'}
+                            })
                           })
                         }else{
                           console.log('#!!-.POST/-'+req.body.type+'- sessione SCADUTA:')
@@ -371,7 +373,7 @@ router.post('/', function(req,res){
                               _id: pubkey,
                               btcaddress: address,
                               balance: result.account.balance,
-                              notifyMsg: {type:'msg',text:'Logged in!'}
+                              message: {type:'notify',text:'Logged in!'}
                             })
                           })
                         }
@@ -386,25 +388,13 @@ router.post('/', function(req,res){
                           _id: pubkey,
                           btcaddress: address,
                           balance: result.account.balance,
-                          notifyMsg: {type:'msg',text:'Logged in!'}
+                          message: {type:'notify',text:'Logged in!'}
                         })
                       })
                     }
                   }else{
                     if(pubkey == LNP.config.rootPubKey){
-                      let userData = {
-                        _id: pubkey,
-                        btcaddress: address,
-                        session: [req.session.id],
-                        account: {
-                          balance: 0,
-                          payreq: [], // ONLY PENDING
-                          userRemotePubkeys: [],
-                          history:[],
-                          ochistory:[]
-                        },
-                        admin: true
-                      }
+                      let userData = newUser(pubkey,address,req.session.id,true)
                       if(validateWallet(userData)){
                         MDB.collection('users').insertOne(userData, (error, user)=>{
                           if(error) {return console.log('#!!-.POST/- mongo error',error)}
@@ -414,26 +404,26 @@ router.post('/', function(req,res){
                           return res.json({
                             _id:pubkey,
                             btcaddress:address,
-                            notifyMsg:{type:'msg',text:'Logged in!'}
+                            message:{type:'notify',text:'Logged in!'}
                           })
                         })
                       }else{
                         console.log('#!!-.POST/-'+req.body.type+'- dati non validi!')
                         pauselog(req, '#!!-.POST/-'+req.body.type)
-                        res.json({notifyMsg:{ type:'alert', text:'Need a valid wif format private key... How did you do?'}})
+                        res.json({message:{ type:'alert', text:'Need a valid wif format private key... How did you do?'}})
                       }
                     }else{
                       console.log('#!!-.POST/-'+req.body.type+'- non ho trovato nessun utente con la stessa pubkey!')
                       console.log('#!!-.POST/-'+req.body.type+'- rispondo al client con:',{alert: 'Key not found'})
                       pauselog(req, '#!!-.POST/-'+req.body.type)
-                      return res.json({notifyMsg:{type:'alert',text:'Key not found!'}})
+                      return res.json({message:{type:'alert',text:'Key not found!'}})
                     }
                   }
                 }).catch(error => { return console.log(error) })
               }catch(err){
                 console.log('#!!-.POST/-'+req.body.type+'- CHIAVE NON VALIDA O ERRORE LIBRERIA BITCOIN:',err)
                 pauselog(req, '#!!-.POST/-'+req.body.type)
-                res.json({notifyMsg:{type:'alert',text:'Need a valid wif format private key'}})
+                res.json({message:{type:'alert',text:'Need a valid wif format private key'}})
               }
             }else{
               console.log('#!!-.POST/-'+req.body.type+'- CHIAVE NON VALIDA:')
@@ -441,7 +431,7 @@ router.post('/', function(req,res){
               console.log('#!!-.POST/-'+req.body.type+'- rispondo al client con questi dati:')
               console.log({alert: 'Need a valid wif format private key'})
               pauselog(req, '#!!-.POST/-'+req.body.type)
-              res.json({notifyMsg:{type:'alert',text:'Need a valid wif format private key'}})
+              res.json({message:{type:'alert',text:'Need a valid wif format private key'}})
             }
           }
         }
@@ -465,7 +455,7 @@ router.post('/', function(req,res){
       }else{
         console.log('#!!-.POST/-'+req.body.type+'- NON esiste quindi ALERT')
         pauselog(req, '#!!-.POST/-'+req.body.type)
-        res.json({notifyMsg:{type:'alert',text:'can not log out because you are not logged in'}})
+        res.json({message:{type:'alert',text:'can not log out because you are not logged in'}})
       }
 
     //*********************************************************************body.type='req_node_info'
@@ -480,7 +470,10 @@ router.post('/', function(req,res){
 }else if(req.body.type == 'gen_invoice') {
       if(req.body.from){
         if(req.body.amt < LNP.config.maxInvoiceAmt){
-          LNP.lnClient.genInvoice(req.body, (payreq)=>{
+          LNP.lnClient.genInvoice(req.body, (err,payreq)=>{
+            if(err){
+              return res.json({message:{type:'alert',text:'error generating invoice, please try later'}})
+            }
             console.log('INVOICE GENERATA:',payreq)
             if(payreq.from == 'balanceCard'){
               var from = 'deposit'
@@ -538,7 +531,7 @@ router.post('/', function(req,res){
         }else{
           console.log('#!!-.POST/-'+req.body.type+'- max invoice amt exceeded')
           pauselog(req, '#!!-.POST/-'+req.body.type)
-          return res.json({notifyMsg:{type:'alert',text:'max invoice amt exceeded'}})
+          return res.json({message:{type:'alert',text:'max invoice amt exceeded'}})
         }
       }
 
@@ -547,8 +540,9 @@ router.post('/', function(req,res){
       console.log('#!!-.POST/-'+req.body.type+'- richiesta: ',req.body)
       if(req.body.from){
         LNP.lnClient.newAddress((err,newBtcAddr)=>{
-          if(err){return console.log('create new address error: ',err)}
-          console.log('INDIRIZZO GENERATO:', newBtcAddr)
+          if(err){
+            return res.json({message:{type:'alert',text:'error generating address, please try later'}})
+          }
           if(req.body.from == 'balanceCard'){
             var from = 'deposit'
           }else if(req.body.from == 'donate'){
@@ -558,7 +552,7 @@ router.post('/', function(req,res){
           }else{
             console.log('#!!-.POST/-'+req.body.type+'- from inaspettato')
             pauselog(req, '#!!-.POST/-'+req.body.type)
-            return res.json({notifyMsg:{type:'alert',text:'no valid from'}})
+            return res.json({message:{type:'alert',text:'no valid from'}})
           }
           addressData = {
             _id: newBtcAddr.address,
@@ -571,20 +565,24 @@ router.post('/', function(req,res){
             tx: [],
             user: ''
           }
-          console.log(addressData)
           var insertAddress = (aD)=>{
             MDB.collection('addresses').insertOne(aD, (e, addr)=>{
-              if(e){return console.log('#!!-.POST/-'+req.body.type+'- error!',e)}
+              if(e){
+                console.log('#!!-.POST/-'+req.body.type+'- error!',e)
+                return res.json({message:{type:'alert',text:'server error, please refresh and try later'}})
+              }
               console.log('#!!-.POST/-'+req.body.type+'- indirizzo salvato nella collection indirizzi')
               pauselog(req, '#!!-.POST/-'+req.body.type)
-              console.log('ad',aD)
               return res.json(aD)
             })
           }
           ifUser(
             (actualUser)=>{
               MDB.collection('users').updateMany({ _id: req.session.user }, { $addToSet: { 'usedAddress': addressData._id }}, (err)=>{
-                if(err){return console.log('#!!-.POST/-'+req.body.type+'- error!',err)}
+                if(err){
+                  console.log('#!!-.POST/-'+req.body.type+'- error!',err)
+                  return res.json({message:{type:'alert',text:'server error, please refresh and try later'}})
+                }
                 console.log('#!!-.POST/-'+req.body.type+'- indirizzo salvato nella collection users')
                 addressData.user = actualUser._id
                 insertAddress(addressData)
@@ -599,26 +597,19 @@ router.post('/', function(req,res){
       }
     //***********************************************************************body.type='dec_invoice'
 }else if(req.body.type == 'dec_invoice') {
-      console.log('#!!-.POST/-'+req.body.type+'- nuova invoice da decodificare:',req.body)
       if(req.body.invoice){
         let invoice = req.body.invoice
         let prefix = req.body.invoice.substr(0,10)
-
-        console.log("originale invoice",invoice)
-
         if(prefix == "lightning:"){
           invoice = req.body.invoice.substr(10)
         }
-        console.log("invoice now:",invoice)
-        console.log("prefix:",prefix)
         ifUser(
           (actualUser)=>{
             LNP.lnClient.decodeInvoice(invoice, (err,decodedInvoice)=>{
-              if(!!err){
+              if(err){
                 pauselog(req, '#!!-.POST/-'+req.body.type)
-                return res.json({notifyMsg:{type:'alert',text: 'need valid BOLT11 invoice'}})
+                return res.json({message:{type:'alert',text: 'need valid BOLT11 invoice'}})
               }
-              console.log('INVOICE DECODIFICATA, la spedisco al client')
               let di = {
                 invoice: invoice,
                 expires_at: decodedInvoice.expires_at,
@@ -630,9 +621,11 @@ router.post('/', function(req,res){
           },
           ()=>{
             console.log('#!!-.POST/-'+req.body.type+'- only logged users can decode invoice')
-            return res.json({notifyMsg:{type:'alert',text:'8======D'}})
+            return res.json({message:{type:'alert',text:'8=======D'}})
           }
         )
+      }else{
+        res.json({message:{type:'alert',text:'no invoice data to decode!'}})
       }
 
     //***********************************************************************body.type='pay_invoice'
@@ -643,7 +636,7 @@ router.post('/', function(req,res){
           LNP.lnClient.decodeInvoice(req.body.invoice, (err,decodedInvoice)=>{
             if(err){
               pauselog(req, '#!!-.POST/-'+req.body.type)
-              return res.json({notifyMsg:{type:'alert',text: 'need valid BOLT11 invoice'}})
+              return res.json({message:{type:'alert',text: 'need valid BOLT11 invoice'}})
             }
             console.log('#!!-.POST/-'+req.body.type+'- Controllo se il saldo è sufficiente per pagaree l\'invoice')
             if(actualUser.account.balance >= decodedInvoice.tokens){
@@ -653,7 +646,7 @@ router.post('/', function(req,res){
                   if(!resultSended){
                     resultSended = true
                     pauselog(req, '#!!-.POST/-'+req.body.type)
-                    res.json({notifyMsg:{type:'msg',text:'payment take time... wait the result'}})
+                    res.json({message:{type:'notify',text:'payment take time... wait the result'}})
                   }
                   else{
                     pauselog(req, '#!!-.POST/-'+req.body.type)
@@ -666,9 +659,9 @@ router.post('/', function(req,res){
                     resultSended = true
                     let dataForClient = {}
                     if(err[2] == 'payment is in transition'){
-                      dataForClient={notifyMsg:{type:'alert',text:'error: payment is in transition, wait confirmation or timeout'}}
+                      dataForClient={message:{type:'alert',text:'error: payment is in transition, wait confirmation or timeout'}}
                     }else{
-                      dataForClient={notifyMsg:{type:'alert',text:'error: payment error'}}
+                      dataForClient={message:{type:'alert',text:'error: payment error'}}
                     }
                     req.userSocketIds.forEach((sock)=>{
                       console.log('#!!-.POST/-'+req.body.type+'- socket:',sock)
@@ -707,9 +700,19 @@ router.post('/', function(req,res){
                     (err,uRP)=>{
                       if(err){
                         console.log('#!!-.POST/-'+req.body.type+'- error',err)
-                        return res.sendStatus(503)
+                        //if this database write fail, the server must be shutted down for security reason
+                        let _datenow = new Date()
+                        let recovery = {
+                          date: _datenow.toISOString(),
+                          user: req.session.user,
+                          payreq: result.id,
+                          amt: result.tokens,
+                          from: req.body.from,
+                          work: req.body.work || 'withdraw'
+                        }
+                        fs.appendFileSync('./dbFailureRecovery/failedWithdraws',JSON.stringify(recovery,null,2)+'\n')
+                        return LNP.panic('WITHDRAW FAIL!','Something was wrong, a payment was done but the account was not updated because server error. To avoid troubles server go offline until we solve the issue, sorry for the inconvenience')
                       }
-                      console.log('result.hops',result.hops)//Take a look
                       if(result.hops.length == 1){
                         console.log('#!!-.POST/-'+req.body.type+'- il destinatario del pagamento era il primo hop...')
                         let userRemotePubkeys = uRP.value.account.userRemotePubkeys || []
@@ -719,7 +722,8 @@ router.post('/', function(req,res){
                         console.log('#!!-.POST/-'+req.body.type+'- payment channel id',paymentChannel)
                         LNP.updateChannels((err,nodeChannelsList)=>{
                           if(!!err){
-                            return res.json({notifyMsg:{type:'alert',text:'server error, please try later'}})
+                            //TODO: can not respond with json another time! use socket instead
+                            return res.json({message:{type:'alert',text:'server error, please try later'}})
                           }
                           nodeChannelsList.forEach((nodeChan)=>{ //PER OGNI CANALE
                             if(paymentChannel == nodeChan._id){  //SE è LO STESSO CANALE DI QUELLO USATO PER IL WITHDRAW
@@ -749,7 +753,6 @@ router.post('/', function(req,res){
                               res.sendStatus(503)
                             }else{
                               console.log('#!!-.POST/-'+req.body.type+'- Nodi e canali utente salvati nel db:',userRemotePubkeys)
-
                               req.userSocketIds.forEach((sock)=>{
                                 LNP.io.sockets.to(sock).emit(chanMessage, userRemotePubkeys)
                               })
@@ -764,18 +767,18 @@ router.post('/', function(req,res){
               }else{
                 console.log('#!!-.POST/-'+req.body.type+'- max invoice amt exceeded')
                 pauselog(req, '#!!-.POST/-'+req.body.type)
-                return res.json({notifyMsg:{type:'alert',text:'max invoice amt exceeded'}})
+                return res.json({message:{type:'alert',text:'max invoice amt exceeded'}})
               }
             }else{
               console.log('#!!-.POST/-'+req.body.type+'- no founds to pay invoice')
               pauselog(req, '#!!-.POST/-'+req.body.type)
-              return res.json({notifyMsg:{type:'alert',text:'no founds to pay invoice'}})
+              return res.json({message:{type:'alert',text:'no founds to pay invoice'}})
             }
           })
         },
         ()=>{
           pauselog(req, '#!!-.POST/-'+req.body.type)
-          res.json({_id: ''})
+          res.json({message:{type:'alert',text:'You are not logged in! Please refresh and retray'}})
         }
       )
 
@@ -805,22 +808,23 @@ router.post('/', function(req,res){
                   'from': from,
                   'work': req.body.work || 'no_work'}}},
               (err,uB)=>{
-                if(err){console.log('#!!-.POST/-'+req.body.type+'- error',err)}else{
-                  let uAccount = actualUser.account
-                  uAccount.balance = uAccount.balance - req.body.amt
-                  pauselog(req, '#!!-.POST/-'+req.body.type)
-                  return res.json({account:uAccount,notifyMsg:{type:'msg',text:'payment done!'}})
+                if(err){
+                  console.log('#!!-.POST/-'+req.body.type+'- error',err)
+                  return res.json({message:{type:'alert',text:'server error, please refresh and retry'}})
                 }
+                let uAccount = actualUser.account
+                uAccount.balance = uAccount.balance - req.body.amt
+                pauselog(req, '#!!-.POST/-'+req.body.type)
+                return res.json({account:uAccount,message:{type:'notify',text:'payment done!'}})
               })
             }else{
               pauselog(req, '#!!-.POST/-'+req.body.type)
-              return res.json({notifyMsg:{type:'alert',text:'no founds to pay invoice'}})
+              return res.json({message:{type:'alert',text:'no founds to pay invoice'}})
             }
           },
           ()=>{
-            console.log('#!!-.POST/-'+req.body.type+'- NON esiste, rispondo al client con questi dati:',{_id: ''})
             pauselog(req, '#!!-.POST/-'+req.body.type)
-            res.json({_id: ''})
+            return res.json({message:{type:'alert',text:'You are not logged in! Please refresh and retray'}})
           }
         )
       }
@@ -839,15 +843,15 @@ router.post('/', function(req,res){
                   if(err){
                     console.log('#!!-.POST/-'+req.body.type+'- sendCoins error: ',err)
                     if(err[2] && err[2].details === 'transaction output is dust'){
-                      return res.json({notifyMsg:{type:'alert',text:'amount is too low'}})
+                      return res.json({message:{type:'alert',text:'amount is too low'}})
                     }
                     if(err[1] == 'ExpectedAddress'){
-                      return res.json({notifyMsg:{type:'alert',text:'need a valid address'}})
+                      return res.json({message:{type:'alert',text:'need a valid address'}})
                     }
                   }
                   LNP.updateOctx((err,octxInDb,poctxs)=>{
                     if(!!err){
-                      return res.json({notifyMsg:{type:'alert',text:'server error, please try later'}})
+                      return res.json({message:{type:'alert',text:'server error, please refresh and wait while your tx is visible in you history'}})
                     }
                     var octxIds = octxInDb.map((x)=>{return x._id})
                     var thisTxIndex = octxIds.indexOf(txid)
@@ -875,10 +879,22 @@ router.post('/', function(req,res){
                       (err,uRP)=>{
                         if(err){
                           console.log('#!!-.POST/-'+req.body.type+'- error',err)
-                          return res.sendStatus(503)
+                          //if this database write fail, the server must be shutted down for security reason
+                          let _datenow = new Date()
+                          let recovery = {
+                            date: _datenow.toISOString(),
+                            user: req.session.user,
+                            tx_id: thisTx._id,
+                            amt: thisTx.tokens,
+                            fee: thisTx.fee,
+                            created_at: thisTx.created_at,
+                            from: from
+                          }
+                          fs.appendFileSync('./dbFailureRecovery/failedOcWithdraws',JSON.stringify(recovery,null,2)+'\n')
+                          return LNP.panic('OC WITHDRAW FAIL!','Something was wrong, a onchain payment was done but the account was not updated because server error. To avoid troubles server go offline until we solve the issue, sorry for the inconvenience')
                         }
                         pauselog(req, '#!!-.POST/-'+req.body.type)
-                        return res.json({ txData: dataForClient })
+                        return res.json({message:{type:'notify',text:'on chain transaction sended!'}, txData: dataForClient})
                       })
                     }
                   })
@@ -886,13 +902,12 @@ router.post('/', function(req,res){
               }else{
                 console.log('#!!-.POST/-'+req.body.type+'- not enough founds for this tx')
                 pauselog(req, '#!!-.POST/-'+req.body.type)
-                return res.json({notifyMsg:{type:'alert',text:'not enough founds for this tx'}})
+                return res.json({message:{type:'alert',text:'not enough founds for this tx'}})
               }
             },
             ()=>{
-              console.log('#!!-.POST/-'+req.body.type+'- NON esiste, rispondo al client con questi dati:',{_id: ''})
               pauselog(req, '#!!-.POST/-'+req.body.type)
-              res.json({_id: ''})
+              return res.json({message:{type:'alert',text:'You are not logged in! Please refresh and retray'}})
             }
           )
         }
@@ -904,7 +919,10 @@ router.post('/', function(req,res){
 
 }else if(req.body.type == 'req_products') {
       MDB.collection('products').find({}).toArray((err,products)=>{
-        if(err){return console.log('MDB ERROR',err)}
+        if(err){
+          console.log('MDB ERROR',err)
+          return res.json({message:{type:'alert',text:'server error, please refresh and try later'}})
+        }
         var pPlusP = [], mp = '', p, ii, hole = 0
         //console.log('A',products)
         if(products.length){
@@ -934,7 +952,6 @@ router.post('/', function(req,res){
               }
               mp = 'no'
             }
-            //console.log('B '+ii,pPlusP)
             pPlusP[ii - hole].mainPhoto = mp
           }
           pauselog(req, '#!!-.POST/-'+req.body.type)
@@ -953,9 +970,10 @@ router.post('/', function(req,res){
         MDB.collection('products').deleteOne({ _id : productId},(err,result)=>{
           if(err){
             console.log('MDB ERROR',err)
+            return res.json({message:{type:'alert',text:'can not inesrt product, database error'}})
           }else{
             pauselog(req, '#!!-.POST/-'+req.body.type)
-            res.json({ok:'ok'})
+            return res.json({ok:'ok'})
           }
         })
       }
@@ -964,7 +982,10 @@ router.post('/', function(req,res){
 }else if(req.body.type == 'req_product') {
       var productId = new LNP.mongo.ObjectID(req.body.productId)
       MDB.collection('products').findOne({ _id : productId},(err,result)=>{
-        if(err){return console.log('MDB ERROR',err)}
+        if(err){
+          console.log('MDB ERROR',err)
+          return res.json({message:{type:'alert',text:'server error, please refresh and try later'}})
+        }
         if(req.body.photo == 'true'){
           var photoBuffer, fileData
           result.photos.forEach((photo,i)=>{
@@ -1036,7 +1057,10 @@ router.post('/', function(req,res){
 }else if(req.body.type == 'req_preset') {
 
       MDB.collection('presets').findOne({name:req.body.name},(err,preset)=>{
-        if(err){ return console.log('error',err) }
+        if(err){
+          console.log('MDB ERROR',err)
+          return res.json({message:{type:'alert',text:'server error, please refresh and try later'}})
+        }
         console.log('#!!-.POST/-'+req.body.type+'- cerco il presets nel db e lo invio al client:',preset)
         pauselog(req, '#!!-.POST/-'+req.body.type)
         res.json(preset)
@@ -1056,7 +1080,7 @@ router.post('/', function(req,res){
           (err,uP)=>{
             if(err){return console.log('#!!-.POST/-'+req.body.type+'- error',err)}
             pauselog(req, '#!!-.POST/-'+req.body.type)
-            return res.json({ok:'ok',notifyMsg:{type:'msg',text:'PRESET SAVED'}})
+            return res.json({ok:'ok',message:{type:'notify',text:'PRESET SAVED'}})
           }
         )
       }
@@ -1069,7 +1093,7 @@ router.post('/', function(req,res){
         MDB.collection('presets').findOneAndDelete({name: presetName},(err,rP)=>{
           if(err){return console.log('#!!-.POST/-'+req.body.type+'- error',err)}
           pauselog(req, '#!!-.POST/-'+req.body.type)
-          return res.json({ok:'ok',notifyMsg:{type:'msg',text:'PRESET DELETED'}})
+          return res.json({ok:'ok',message:{type:'notify',text:'PRESET DELETED'}})
         })
       }
 
@@ -1093,10 +1117,13 @@ router.post('/', function(req,res){
         console.log('#!!-.POST/-'+req.body.type+'- è un admin!')
         console.log('#!!-.POST/-'+req.body.type+'- controllo che non ci sia un altro prodotto con lo stesso nome')
         MDB.collection('products').findOne({name: productData.name},(err,sameName)=>{
-          if(err){ return console.log('error',err) }
+          if(err){
+            console.log('MDB ERROR',err)
+            return res.json({message:{type:'alert',text:'server error, please refresh and try later'}})
+          }
           if(sameName){
             console.log('#!!-.POST/-'+req.body.type+'- Esiste già un prodotto con lo stesso nome!:',sameName)
-            return res.json({err: 'duplicated product name'})
+            return res.json({message:{type:'alert',text: 'duplicated product name'}})
           }else{
             productData.photos = []
             productData.works = []
@@ -1104,6 +1131,10 @@ router.post('/', function(req,res){
               productData.readyToSell = 0
             }
             MDB.collection('products').insertOne(productData, (err,result)=>{
+              if(err){
+                console.log('MDB ERROR',err)
+                return res.json({message:{type:'alert',text:'server error, please refresh and try later'}})
+              }
               console.log('#!!-.POST/-'+req.body.type+'- Inserimento dati nel db effettuato: ', result.ops[0])
               console.log('#!!-.POST/-'+req.body.type+'- numero foto da caricare: ',req.session.data.uploading)
               pauselog(req, '#!!-.POST/-'+req.body.type)
@@ -1141,13 +1172,14 @@ router.post('/', function(req,res){
           })
         })
       }
-    }
+
+}
 
 
 
   }else{
     pauselog(req, '#!!-.POST/-'+req.body.type)
-    res.json({notifyMsg:{type:'alert',text:'No session found, please refresh'}})
+    res.json({message:{type:'alert',text:'No session found, please refresh'}})
   }
 })
 

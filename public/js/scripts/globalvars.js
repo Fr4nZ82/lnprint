@@ -2,7 +2,13 @@
 var LnPrint = {
   backward: [],
   forward: [],
-  intervals: []
+  intervals: [],
+  bitcoinReady: false,
+  qrcodeReady: false,
+  node: {
+    uri:'',
+    alias:''
+  }
 }
 var noop = function(){}
 var Udata = {
@@ -10,13 +16,7 @@ var Udata = {
     name: 'home',
     type: 'page',
     first: 'no'
-  },
-  node: {
-    uri:'',
-    alias:''
-  },
-  bitcoinReady: false,
-  qrcodeReady: false
+  }
 }
 var mobile
 //LINKS

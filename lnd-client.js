@@ -67,25 +67,23 @@ var lnClient = {
     console.log('#!!-LND- start of the genInvoice function')
     let expire = new Date(Date.now() + config.invoiceExpireTime)//.toISOString(); //EXPIRE AFTER 5 MINUTES
     lnService.createInvoice({expires_at: expire, include_address: true, lnd: lnd, tokens: inv.amt},(error, result) => {
-      if(!!error){
+      if(error){
         console.log("#!!-LND- genInvoice error: ",error);
-        return cb()
-      }else if(result){
-        //console.log('#!!-LND- genInvoice:\n',result);
-        result.dateE = expire
-        result.description = 'toDo'
-        result.from = inv.from
-        result.work = 'toDo'
-        return cb(result)
+        return cb(error)
       }
+      result.dateE = expire
+      result.description = 'toDo'
+      result.from = inv.from
+      result.work = 'toDo'
+      return cb(null,result)
     })
   },
   decodeInvoice: (invoice,cb)=>{
     lnService.decodeInvoice({invoice: invoice, lnd: lnd},(err,result)=>{
       if(!!err){
-        console.log("#!!-LND- decodeInvoice error: ",err);
+        console.log("#!!-LND- decodeInvoice error: ",err)
       }else if(result){
-        console.log('#!!-LND- decodeInvoice result:\n',result);
+        console.log('#!!-LND- decodeInvoice result:\n',result)
       }
       return cb(err,result)
     })
@@ -93,31 +91,31 @@ var lnClient = {
   payInvoice: (invoice,cb)=>{
     lnService.payInvoice({fee: config.LND.maxPaymentFee, invoice: invoice, lnd: lnd},(err,result)=>{
       if(!!err){
-        console.log("#!!-LND- payInvoice error: ",err);
+        console.log("#!!-LND- payInvoice error: ",err)
       }else if(result){
-        console.log('#!!-LND- payInvoice result:\n',result);
+        console.log('#!!-LND- payInvoice result:\n',result)
       }
       return cb(err,result)
     })
   },
   newAddress: (cb)=>{
     lnService.createAddress({lnd},(err,result)=>{
-      if(!!err){
-        console.log("#!!-LND- createAddress error: ",err);
-      }else if(result){
-        console.log('#!!-LND- createAddress result:\n',result);
+      if(err){
+        console.log("#!!-LND- createAddress error: ",err)
+        return cb(err)
       }
+      console.log('#!!-LND- createAddress result:\n',result)
       result.description = 'toDo'
       result.work = 'toDo'
-      return cb(err,result)
+      return cb(null,result)
     })
   },
   sendCoins: (address,tokens,fees,cb)=>{
     lnService.sendToChainAddress({address, lnd, tokens, fees}, (err,txid)=>{
       if(!!err){
-        console.log("#!!-LND- outgoing on chain payment error: ",err);
+        console.log("#!!-LND- outgoing on chain payment error: ",err)
       }else if(row){
-        console.log("#!!-LND- outgoing on chain payment done: ",txid);
+        console.log("#!!-LND- outgoing on chain payment done: ",txid)
       }
       return cb(err,txid)
     })
@@ -131,7 +129,7 @@ var lnClient = {
        if(!!err){
          return cb(err)
        }
-       lnClient.nodeInfo = nodeinfo;
+       lnClient.nodeInfo = nodeinfo
        lnClient.iemitter = lnService.subscribeToInvoices({lnd, console})
        return cb()
       });

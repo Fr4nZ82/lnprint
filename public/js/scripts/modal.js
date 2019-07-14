@@ -9,28 +9,34 @@ LnPrint.modal = {
     waitResponse:(word,cb)=>{
       var modal = LnPrint.modal
       if(word == 'wait'){
-        //console.log('modal disabled')
+        console.log('modal disabled')
         modal.disabled = true
+        console.log('++busy++ waiting server response')
+        ++modal.busy
         modal.action.waiting = setTimeout(function () {
-          //console.log('modal enabled')
+          console.log('modal enabled because server does not respon after timeout')
           modal.disabled = false
+          console.log('--busy-- because server does not respon after timeout')
+          --modal.busy
           modal.close('all')
           modal.action.waiting = false
         }, ajaxTimeout)
       }else if(word == 'done'){
         clearTimeout(modal.action.waiting)
         modal.action.waiting = false
-        //console.log('modal enabled')
+        console.log('modal enabled')
         modal.disabled = false
+        console.log('--busy-- server rosponse arrived')
+        --modal.busy
       }
     },
     waiting: false,
     queue:[],
     spooler:(action,data,cb)=>{
       cb = cb || noop
-      if(LnPrint.modal.busy == 0 && !!Udata.bitcoinReady && !!Udata.qrcodeReady){
-          action(data,cb)
-          LnPrint.modal.action.queue.shift()
+      if(LnPrint.modal.busy == 0 && !!LnPrint.bitcoinReady && !!LnPrint.qrcodeReady){
+        action(data,cb)
+        LnPrint.modal.action.queue.shift()
       }
     }
   },
@@ -42,26 +48,27 @@ LnPrint.modal = {
       Object.assign(_modalData,modalData)
       var _cb = ()=>{cb()}
 
-      //console.log('#!!-modal.new- status dei modal:', JSON.stringify(modal))
+      console.log('#!!-modal.new- status dei modal:', JSON.stringify(modal),modalData)
 
       if(modal.busy === 0){
-        if(!!Udata.bitcoinReady && !!Udata.qrcodeReady){
-          //console.log('#!!-modal.new- Un evento('+modalData.from+') crea un modal('+modalData.name+')')
+        if((!!LnPrint.bitcoinReady && !!LnPrint.qrcodeReady) || _modalData.name == 'message'){
+          console.log('#!!-modal.new- Un evento('+modalData.from+') crea un modal('+modalData.name+')')
 
           ++modal.busy
-          //console.log('++busy++ nuovo modal ('+modalData.name+') add html to DOM...')
+          console.log('++busy++ nuovo modal ('+modalData.name+') add html to DOM...')
           if(modalData.autoclose){
-            ++modal.busy//console.log('++busy++ becouse autoclose')
+            ++modal.busy
+            console.log('++busy++ because autoclose')
           }
 
           modal.active.push(modalData.name)
 
           $('#thebody').append(modal.print.voidModal(modal.active.length-1,(_modalId,_modalNumber)=>{
-            //console.log('#!!-modal.new- modal added to html')
+            console.log('#!!-modal.new- modal added to html')
             _modalData.id = _modalId
             _modalData.number = _modalNumber
             --modal.busy
-            //console.log('--busy-- modal add html to DOM finita: ', _modalId)
+            console.log('--busy-- modal add html to DOM finita: ', _modalId)
           }))
 
           if(_modalData.name == 'fulmine'){
@@ -70,30 +77,30 @@ LnPrint.modal = {
           $(_modalData.id)
           .on('show.bs.modal',function(){
             ++modal.busy
-            //console.log('--busy-- nuovo modal inizio apertura')
+            console.log('++busy++ nuovo modal inizio apertura')
           })
           .on('shown.bs.modal',function(){
-            //console.log('#!!-modal.new- modal showed: ',this)
+            console.log('#!!-modal.new- modal showed: ',this)
             --modal.busy
-            //console.log('--busy-- nuovo modal apertura finita')
+            console.log('--busy-- nuovo modal apertura finita')
             autosize($('.theKey'))
             cb(_modalData.id)
           })
           .on('hidden.bs.modal', function(){
-            //console.log('#!!-onLoad- closed modal: ',this)
+            console.log('#!!-onLoad- closed modal: ',this)
             if(modalData.onClose && typeof modalData.onClose == 'function'){
               modalData.onClose()
             }
             modal.last.modal = $(this).remove()
             modal.active.pop()
           })
-          //console.log(_modalData)
+          console.log(_modalData)
           $(_modalData.id)
           .modal('show',_modalData)
 
         }else{
           $('#backLoading').show().animate({opacity: 1}, 100)
-          //console.log('#!!-modal.new- modal non è pronto, lo metto in coda!')
+          console.log('#!!-modal.new- modal non è pronto, lo metto in coda!')
           modal.action.queue.push({
             action: modal.new,
             data: _modalData,
@@ -110,7 +117,7 @@ LnPrint.modal = {
           })
         }
       }else{
-        //console.log('#!!-modal.new- modal non è pronto, lo metto in coda!')
+        console.log('#!!-modal.new- modal non è pronto, lo metto in coda!')
         modal.action.queue.push({
           action: modal.new,
           data: _modalData,
@@ -124,45 +131,45 @@ LnPrint.modal = {
     var hMOM = modal.active.length-1
 
     if(hMOM > 0){
-      //console.log('#!!-modal.close- modal.close function avviata con n='+n+', active modals: ',modal.active)
+      console.log('#!!-modal.close- modal.close function avviata con n='+n+', active modals: ',modal.active)
       if(n == 'all'){
-        //console.log('#!!-modal.close- chiudo tutti i '+n+' modals, cioè dal '+(hMOM)+' al '+(hMOM))
+        console.log('#!!-modal.close- chiudo tutti i '+n+' modals, cioè dal '+(hMOM)+' al '+(hMOM))
         var _n = 'all'
         n = hMOM
       }else if(n[0]){
-        //console.log('#!!-modal.close- chiudo '+n[1]+' modals, cioè dal '+(hMOM)+' al '+((hMOM)-n[1]))
+        console.log('#!!-modal.close- chiudo '+n[1]+' modals, cioè dal '+(hMOM)+' al '+((hMOM)-n[1]))
         if(n[0] == 'auto'){
           --modal.busy
-          //console.log('--busy-- bacause autoclose')
+          console.log('--busy-- bacause autoclose')
           var _n = {}
           Object.assign(_n,n)
           n = n[1]
         }
       }else{
-        //console.log('#!!-modal.close- chiudo '+n+' modals, cioè dal '+(hMOM)+' al '+((hMOM)-n))
+        console.log('#!!-modal.close- chiudo '+n+' modals, cioè dal '+(hMOM)+' al '+((hMOM)-n))
         var _n = n
       }
 
 
       var _cb = ()=>{cb()}
-      //console.log('#!!-modal.close- se modal.busy è 0 iniza il ciclo di chiusura. modal.busy = ',modal.busy)
+      console.log('#!!-modal.close- se modal.busy è 0 iniza il ciclo di chiusura. modal.busy = ',modal.busy)
       if(modal.busy === 0){
 
         ++modal.busy
-        //console.log('++busy++ inizio ciclo di chiusura')
+        console.log('++busy++ inizio ciclo di chiusura')
 
         var m = hMOM
 
         for(var i=m; i>(m-n); i=(i-1)){
-          //console.log('ciclo chiusura, i = '+i+' modal to close:',$('#dynamicModal'+i))
+          console.log('ciclo chiusura, i = '+i+' modal to close:',$('#dynamicModal'+i))
 
           if(i == (m-n+1)){
             $('#dynamicModal'+i)
             .on('hidden.bs.modal',()=>{
               --modal.busy
-              //console.log('--busy-- fine ciclo di chiusura')
+              console.log('--busy-- fine ciclo di chiusura')
 
-              //console.log('#!!-modal.close- modals chiusi, status dei modal:', JSON.stringify(modal))
+              console.log('#!!-modal.close- modals chiusi, status dei modal:', modal)
               cb()
             })
           }
@@ -172,7 +179,7 @@ LnPrint.modal = {
         }
 
       }else{
-        //console.log('#!!-modal.close- modal non è pronto, lo metto in coda!')
+        console.log('#!!-modal.close- modal non è pronto, lo metto in coda!')
         modal.action.queue.push({
           action: modal.close,
           data: _n,
@@ -180,7 +187,7 @@ LnPrint.modal = {
         })
       }
     }else{
-      //console.log('#!!-modal.close- non ci sono modal da chiudere!')
+      console.log('#!!-modal.close- non ci sono modal da chiudere!')
       cb()
     }
   },
@@ -321,23 +328,21 @@ LnPrint.modal = {
       modalData.after()
     },
     message:(modalData)=>{
-      //console.log('msgToNotifyType: ',modalData.type)
+      console.log('msgToNotify: ',modalData)
       $(modalData.id +' .modal-content')
       .append('<p id="alertText"><h5>'+modalData.text+'</h5></p>')
       .addClass('messageModal')
-      if(modalData.type == 'msg'){
-        ////console.log('cambiacolore x msg')
+      if(modalData.type == 'notify'){
         $(modalData.id +' .modal-content')
         .addClass('notifyMessage messageModalContent')
-      }else{
-        ////console.log('cambiacolore x alert')
+      }else if(modalData.type == 'alert'){
         $(modalData.id +' .modal-content')
         .addClass('alertMessage messageModalContent')
       }
 
       //message modals time to show
-      var timeToShow = modalData.text.length * 65
-      if (timeToShow < 1200){timeToShow = 1200}
+      var timeToShow = modalData.text.length * 75
+      if (timeToShow < 1400){timeToShow = 1400}
       if(timeToShow > 5000){timeToShow = 5000}
 
       setTimeout(function () {
@@ -345,7 +350,6 @@ LnPrint.modal = {
       }, timeToShow)
     },
     prompt:(modalData)=>{
-      //console.log('msgToNotifyType: ',modalData.type)
       $(modalData.id +' .modal-content')
       .append('<p id="alertText"><h5>'+modalData.text+'</h5></p>')
       .append('<div><button class="btn btn-danger" id="promptYesBtn">yes</button>'+
@@ -361,6 +365,15 @@ LnPrint.modal = {
         LnPrint.modal.close(1,()=>{
           cbNo()
         })
+      })
+    },
+    important:(modalData)=>{
+      $(modalData.id +' .modal-content')
+      .append('<p class="importantText">'+modalData.text+'</p>')
+      .append('<div><button class="btn btn-primary" id="importantOkBtn">OK</button></div>')
+      .addClass('messageModal importantMessage messageModalContent')
+      $('#importantOkBtn').on('click',()=>{
+        LnPrint.modal.close(1)
       })
     },
     userInfo:(modalData)=>{

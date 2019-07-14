@@ -3,32 +3,25 @@ LnPrint.admin.req = {
 
   },
   insertProduct: (pData,nPhotos,cb)=>{
-    $.ajax({
-      type: 'POST',
-      url: '/',
-      data: {
-        type: 'insert_product',
-        productData: pData,
-        nPhotos: nPhotos
-      },
-      success: function(response){
-        cb(response.productId)
+    LnPrint.post(
+      {type: 'insert_product',productData: pData,nPhotos: nPhotos},
+      {
+        ifYes:(res)=>{
+          cb(res.productId)
+        },
+        ifErr:()=>{
+          LnPrint.standardErrorBehavior()
+        }
       }
-    })
-  },
-  removeProduct: (pId,cb)=>{
-    cb = cb || noop
-    $.ajax({
-      type: 'POST',
-      url: '/',
-      data: {
-        type: 'remove_product',
-        productId: pId
-      },
-      success: function(response){
-        LnPrint.admin.draw.products()
+    )
+   },
+  removeProduct: (pId)=>{
+    LnPrint.post(
+      {type: 'remove_product',productId: pId},
+      {
+        ifYes:(res)=>{LnPrint.admin.draw.products()}
       }
-    })
+    )
   },
   updateProduct: (pData,nPhotos,cb)=>{
     $.ajax({
