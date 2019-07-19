@@ -39,7 +39,8 @@ LNP.newUser = (pubkey,address,sessionId,isAdmin)=>{
       userRemotePubkeys: [],
       history:[],
       ochistory:[]
-    }
+    },
+    registeredAt: new Date()
   }
   if(isAdmin){
     user.admin = true

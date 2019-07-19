@@ -18,7 +18,7 @@ module.exports = (req,res)=>{
         LNP.pauselog(req, '#!!-.POST/-'+req.body.type)
         return res.json({message:{type:'alert',text:'no valid from'}})
       }
-      addressData = {
+      var addressData = {
         _id: newBtcAddr.address,
         description: newBtcAddr.description,
         dateC: new Date(),
@@ -27,11 +27,12 @@ module.exports = (req,res)=>{
         amtReceived: 0,
         session: req.session.id,
         tx: [],
-        user: ''
+        user: '',
+        docUpdatedAt: new Date()
       }
       var insertAddress = (aD)=>{
-        LNP.MDB.collection('addresses').insertOne(aD, (e, addr)=>{
-          if(e){
+        LNP.MDB.collection('addresses').insertOne(aD, (err, addr)=>{
+          if(err){
             console.log('#!!-.POST/-'+req.body.type+'- error!',e)
             return res.json({message:{type:'alert',text:'server error, please refresh and try later'}})
           }
@@ -42,15 +43,22 @@ module.exports = (req,res)=>{
       }
       LNP.ifUser(req,res,
         (actualUser)=>{
-          LNP.MDB.collection('users').updateMany({ _id: req.session.user }, { $addToSet: { 'usedAddress': addressData._id }}, (err)=>{
-            if(err){
-              console.log('#!!-.POST/-'+req.body.type+'- error!',err)
-              return res.json({message:{type:'alert',text:'server error, please refresh and try later'}})
+          LNP.MDB.collection('users').updateOne(
+            { _id: req.session.user },
+            {
+              $set: { docUpdatedAt: new Date() },
+              $addToSet: { 'usedAddress': addressData._id }
+            },
+            (err)=>{
+              if(err){
+                console.log('#!!-.POST/-'+req.body.type+'- error!',err)
+                return res.json({message:{type:'alert',text:'server error, please refresh and try later'}})
+              }
+              console.log('#!!-.POST/-'+req.body.type+'- indirizzo salvato nella collection users')
+              addressData.user = actualUser._id
+              insertAddress(addressData)
             }
-            console.log('#!!-.POST/-'+req.body.type+'- indirizzo salvato nella collection users')
-            addressData.user = actualUser._id
-            insertAddress(addressData)
-          })
+          )
         },
         ()=>{
           addressData.user = 'noUser'

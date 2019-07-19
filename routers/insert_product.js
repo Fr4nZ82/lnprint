@@ -15,11 +15,14 @@ module.exports = (req,res)=>{
         console.log('#!!-.POST/-'+req.body.type+'- Esiste già un prodotto con lo stesso nome!:',sameName)
         return res.json({message:{type:'alert',text: 'duplicated product name'}})
       }else{
+        var dateNow = new Date()
         productData.photos = []
         productData.works = []
         if(!productData.readyToSell > 0){
           productData.readyToSell = 0
         }
+        productData.createdAt = dateNow
+        productData.docUpdatedAt = dateNow
         LNP.MDB.collection('products').insertOne(productData, (err,result)=>{
           if(err){
             console.log('Mongo db error',err)

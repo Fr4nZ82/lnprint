@@ -28,7 +28,8 @@ module.exports = (req,res)=>{
           work: payreq.work,
           confirmed: false,
           confirmed_at: '',
-          is_outgoing: false
+          is_outgoing: false,
+          docUpdatedAt: new Date()
         }
         function insertInvoice(invData){
           LNP.MDB.collection('invoices').insertOne(invData, (e, invoice)=>{
@@ -42,9 +43,12 @@ module.exports = (req,res)=>{
         }
         LNP.ifUser(req,res,
           (actualUser)=>{
-            LNP.MDB.collection('users').updateMany(
+            LNP.MDB.collection('users').updateOne(
               { _id: req.session.user },
-              { $addToSet: { 'account.payreq': invoiceData._id }},
+              { 
+                $set: { docUpdatedAt: new Date() },
+                $addToSet: { 'account.payreq': invoiceData._id }
+              },
               (err)=>{
                 if(err){return console.log('#!!-.POST/-'+req.body.type+'- error!',err)}
                 console.log('#!!-.POST/-'+req.body.type+'- invoice id saved on users collection')
