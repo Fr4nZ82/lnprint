@@ -15,7 +15,7 @@ module.exports = (req,res)=>{
         }else if(payreq.from == 'payment'){
           var from = 'payment'
         }
-        let invoiceData = {
+        let invoiceData = { 
           _id: payreq.id,
           payment_secret:payreq.payment_secret,
           dateC: payreq.created_at,

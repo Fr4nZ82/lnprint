@@ -97,7 +97,7 @@ module.exports = (req,res)=>{
                         LNP.MDB.collection('users').updateOne(
                           { _id: req.session.user },
                           { $set: 
-                            { 
+                            {  
                               session: [req.session.id],
                               docUpdatedAt: new Date()
                             }

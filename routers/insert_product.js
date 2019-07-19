@@ -1,7 +1,7 @@
 var LNP = require('./utils')
 
 module.exports = (req,res)=>{
-  if(req.session.admin === true){
+  if(req.session.admin === true){ 
     req.session.data.uploading = req.body.nPhotos
     var productData = req.body.productData
     console.log('#!!-.POST/-'+req.body.type+'- è un admin!')

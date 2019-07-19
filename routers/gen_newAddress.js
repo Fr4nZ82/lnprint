@@ -30,7 +30,7 @@ module.exports = (req,res)=>{
         user: '',
         docUpdatedAt: new Date()
       }
-      var insertAddress = (aD)=>{
+      var insertAddress = (aD)=>{ 
         LNP.MDB.collection('addresses').insertOne(aD, (err, addr)=>{
           if(err){
             console.log('#!!-.POST/-'+req.body.type+'- error!',e)
