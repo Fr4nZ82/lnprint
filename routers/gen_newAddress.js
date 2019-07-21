@@ -30,7 +30,7 @@ module.exports = (req,res)=>{
         user: '',
         docUpdatedAt: new Date()
       }
-      var insertAddress = (aD)=>{ 
+      var insertAddress = (aD)=>{
         LNP.MDB.collection('addresses').insertOne(aD, (err, addr)=>{
           if(err){
             console.log('#!!-.POST/-'+req.body.type+'- error!',e)
@@ -43,22 +43,27 @@ module.exports = (req,res)=>{
       }
       LNP.ifUser(req,res,
         (actualUser)=>{
-          LNP.MDB.collection('users').updateOne(
-            { _id: req.session.user },
-            {
-              $set: { docUpdatedAt: new Date() },
-              $addToSet: { 'usedAddress': addressData._id }
-            },
-            (err)=>{
-              if(err){
-                console.log('#!!-.POST/-'+req.body.type+'- error!',err)
-                return res.json({message:{type:'alert',text:'server error, please refresh and try later'}})
+          if(from != 'donation'){
+            LNP.MDB.collection('users').updateOne(
+              { _id: req.session.user },
+              {
+                $set: { docUpdatedAt: new Date() },
+                $addToSet: { 'usedAddress': addressData._id }
+              },
+              (err)=>{
+                if(err){
+                  console.log('#!!-.POST/-'+req.body.type+'- error!',err)
+                  return res.json({message:{type:'alert',text:'server error, please refresh and try later'}})
+                }
+                console.log('#!!-.POST/-'+req.body.type+'- indirizzo salvato nella collection users')
+                addressData.user = actualUser._id
+                insertAddress(addressData)
               }
-              console.log('#!!-.POST/-'+req.body.type+'- indirizzo salvato nella collection users')
-              addressData.user = actualUser._id
-              insertAddress(addressData)
-            }
-          )
+            )
+          }else{
+            addressData.user = 'noUser'
+            insertAddress(addressData)
+          }
         },
         ()=>{
           addressData.user = 'noUser'

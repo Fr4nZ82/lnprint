@@ -92,7 +92,7 @@ $('#addAppBtn').on('click', (e) => {
 
 //ONLOAD SCRIPT
 window.addEventListener("load", function(event) {
-
+  LnPrint.loading.hide()
   //HIDE BACKLOADING IF FIRST ATTEMPT FAIL
   setTimeout(function () {
     $('#backLoading').animate({
@@ -119,7 +119,7 @@ window.addEventListener("load", function(event) {
       }
       LnPrint.adjust(LnPrint.page)
     }, timeouts)
-    
+
     $(window).resize(()=>{
       if(stickyBarHyster){stickyBarHyster = false}else{stickyBarHyster = true}
       LnPrint.adjust(LnPrint.page)

@@ -63,7 +63,7 @@ LnPrint.adjust = (pag)=>{
     ////console.log('trans!!!!!!!!!!!!!')
     trans(transy,transx)
   }
-  $('#backLoading').hide()
+  //$('#backLoading').hide()
 }
 
 LnPrint.drawPage = ()=>{

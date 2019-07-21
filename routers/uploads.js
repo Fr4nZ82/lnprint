@@ -25,13 +25,26 @@ module.exports = function(req, res, next) {
           if(!photosId.includes(fileId)){
             MDB.collection('products').updateOne(
               {_id: productId},
-              {$push: { 'photos': { 'fileId':fileId, 'fileName':fileName }}},
+              {
+                $push: { 'photos': { 'fileId':fileId, 'fileName':fileName }},
+                $set: { docUpdatedAt: new Date() }
+              },
               (err,updated)=>{
                 if(err){console.log('#!!-APP- errore inserimento file name nel db products',err)}
                 if(fileName == product.mainPhoto){
-                  MDB.collection('products').updateOne({_id: productId},{$set:{'mainPhoto':fileId}},(err,u)=>{
-                    if(err){return console.log('MDB ERROR:',err)}
-                  })
+                  MDB.collection('products').updateOne(
+                    {_id: productId},
+                    {
+                      $set:
+                      {
+                        'mainPhoto':fileId,
+                        docUpdatedAt: new Date()
+                      }
+                    },
+                    (err)=>{
+                      if(err){return console.log('MDB ERROR:',err)}
+                    }
+                  )
                 }
                 if(!!uploadProductsFiles.uploading[req.session.user]){
                   uploadProductsFiles.uploading[req.session.user]--

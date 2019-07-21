@@ -160,6 +160,7 @@ var LnPrint = ()=>{
                             if( !addrUserOldTx.includes(txData._id) ){                                //if user onchain history dont already includes this tx
                               MDB.collection('users').findOneAndUpdate(                               //insert it and increment user balance
                                 {_id: destAddr.user},{
+                                  $set:{ docUpdatedAt: new Date() },
                                   $inc:{'account.balance': txData.tokens},
                                   $push:{'account.ochistory':{
                                     id: txData._id,
@@ -195,6 +196,7 @@ var LnPrint = ()=>{
                                   MDB.collection('address').findOneAndUpdate(                         //insert the tx id in the addresses collection and increment amtReceived
                                     {_id: destAddr._id},
                                     {
+                                      $set:{docUpdatedAt: new Date()},
                                       $inc:{ 'amtReceived': txData.tokens },
                                       $push:{ 'tx': { 'id': txData._id } }
                                     }
@@ -590,6 +592,7 @@ var LnPrint = ()=>{
                     MDB.collection('users').findOneAndUpdate(
                     {_id: invoiceOwner.value.user},
                     {
+                      $set:{docUpdatedAt:new Date()},
                       $pull:{'account.payreq':invoiceData.id},
                       $inc:{'account.balance': invoiceData.tokens},
                       $push:{'account.history':{
@@ -695,9 +698,16 @@ var LnPrint = ()=>{
                 res.forEach((inv)=>{
                   if(inv.dateE < dn){
                     MDB.collection('invoices').deleteOne({_id:inv._id},()=>{
-                      MDB.collection('users').updateOne({_id:inv.user},{$pull:{'account.payreq':inv._id}},()=>{
-                        console.log('#!!-APP- DB UPDATE CYCLE - eliminata zombie invoice',inv._id)
-                      })
+                      MDB.collection('users').updateOne(
+                        {_id:inv.user},
+                        {
+                          $set:{docUpdatedAt: new Date()},
+                          $pull:{'account.payreq':inv._id}
+                        },
+                        ()=>{
+                          console.log('#!!-APP- DB UPDATE CYCLE - eliminata zombie invoice',inv._id)
+                        }
+                      )
                     })
                   }
                 })

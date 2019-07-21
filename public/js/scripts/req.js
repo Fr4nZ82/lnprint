@@ -155,7 +155,7 @@ LnPrint.req = {
       {type: 'gen_newAddress', from: from},
       {
         ifYes:(res)=>{
-          if(LnPrint.user){
+          if(LnPrint.user && from != 'donate'){
             if(LnPrint.user.usedAddress){
               LnPrint.user.usedAddress.push(res._id)
             }else{

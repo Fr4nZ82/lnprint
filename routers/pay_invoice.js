@@ -118,17 +118,26 @@ module.exports = (req,res)=>{
                           })
                         }
                       })
-                      LNP.MDB.collection('users').updateOne({_id:req.session.user},{$set:{'account.userRemotePubkeys': userRemotePubkeys}},(err)=>{
-                        if(err){
-                          console.log('#!!-.POST/-'+req.body.type+'- error',err)
-                          res.sendStatus(503)
-                        }else{
-                          console.log('#!!-.POST/-'+req.body.type+'- Nodi e canali utente salvati nel db:',userRemotePubkeys)
-                          req.userSocketIds.forEach((sock)=>{
-                            LNP.io.sockets.to(sock).emit(chanMessage, userRemotePubkeys)
-                          })
+                      LNP.MDB.collection('users').updateOne(
+                        {_id:req.session.user},
+                        {
+                          $set:{
+                            'account.userRemotePubkeys': userRemotePubkeys,
+                            docUpdatedAt: new Date()
+                          }
+                        },
+                        (err)=>{
+                          if(err){
+                            console.log('#!!-.POST/-'+req.body.type+'- error',err)
+                            res.sendStatus(503)
+                          }else{
+                            console.log('#!!-.POST/-'+req.body.type+'- Nodi e canali utente salvati nel db:',userRemotePubkeys)
+                            req.userSocketIds.forEach((sock)=>{
+                              LNP.io.sockets.to(sock).emit(chanMessage, userRemotePubkeys)
+                            })
+                          }
                         }
-                      })
+                      )
                     })
                   }
                 })

@@ -85,15 +85,24 @@ LNP.ifUser = (req,res,ifExist,ifNotExist,ifErr)=>{
         if(actualUser._id == LNP.config.rootPubKey){
           if(actualUser.admin !== true){
             actualUser.admin = true
-            LNP.MDB.collection('users').updateOne({_id:actualUser._id},{$set:{'admin': true}},(err)=>{
-              if(err){
-                let nm = {message:{type:'alert',text: 'server error, try later'}}
-                console.log('#!!-.POST/-'+req.body.type+'- errore mongoDB:',error)
-                console.log('#!!-.POST/-'+req.body.type+'- rispondo al client con questi dati:',nm)
-                LNP.pauselog(req, '#!!-.POST/-'+req.body.type)
-                return res.json(nm)
+            LNP.MDB.collection('users').updateOne(
+              {_id:actualUser._id},
+              {
+                $set:{
+                  'admin': true,
+                  docUpdatedAt: new Date()
+                }
+              },
+              (err)=>{
+                if(err){
+                  let nm = {message:{type:'alert',text: 'server error, try later'}}
+                  console.log('#!!-.POST/-'+req.body.type+'- errore mongoDB:',error)
+                  console.log('#!!-.POST/-'+req.body.type+'- rispondo al client con questi dati:',nm)
+                  LNP.pauselog(req, '#!!-.POST/-'+req.body.type)
+                  return res.json(nm)
+                }
               }
-            })
+            )
           }
         }
         ifExist(actualUser)

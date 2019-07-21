@@ -20,6 +20,8 @@ module.exports = (req,res)=>{
       if(!productData.readyToSell > 0){
         productData.readyToSell = 0
       }
+      productData.createdAt = removedProduct.createdAt
+      productData.docUpdatedAt = new Date()
       LNP.MDB.collection('products').insertOne(productData, (err,result)=>{
         if(err){
           console.log('Mongo db error',err)
