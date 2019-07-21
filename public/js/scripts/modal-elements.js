@@ -105,9 +105,9 @@ LnPrint.modal.print={
     return `
       <div id="keynotification`+ (LnPrint.modal.active.length-1) +`" class="keynotification container-fluid">
         <p class="wb">Your public key is:
-          <br>`+ Udata.user._id +`
+          <br>`+ LnPrint.user._id +`
           <br>and your bitcoin address is:
-          <br>`+ Udata.user.btcaddress +`
+          <br>`+ LnPrint.user.btcaddress +`
         </p>
       </div>
       <button class="btn btn-secondary float-left" id="logOutBtn"
@@ -123,7 +123,7 @@ LnPrint.modal.print={
         <textarea id="theAmount" class="theKey" placeholder="satoshis"></textarea>
       </div>
     `+(()=>{
-      if(!!Udata.user){
+      if(!!LnPrint.user){
         if(from != 'balanceCard'){
           return `
             <button disabled id="payBtn" class="btn btn-success btn-block"
@@ -231,7 +231,7 @@ LnPrint.modal.print={
   },
   invoiceInfoContent:(invoiceInfo,from,work)=>{
     var withdrawDisabled = `disabled`
-    if(Udata.user.account.balance < invoiceInfo.sats){
+    if(LnPrint.user.account.balance < invoiceInfo.sats){
       withdrawDisabled = ``
     }else{
       withdrawDisabled = ``

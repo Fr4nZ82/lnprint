@@ -11,13 +11,6 @@ var LnPrint = {
   }
 }
 var noop = function(){}
-var Udata = {
-  page: {
-    name: 'home',
-    type: 'page',
-    first: 'no'
-  }
-}
 var mobile
 //LINKS
 var timeouts = 20

@@ -65,6 +65,94 @@ LnPrint.adjust = (pag)=>{
   }
   $('#backLoading').hide()
 }
+
+LnPrint.drawPage = ()=>{
+
+  LnPrint.clear.page()
+
+  $('#mainwrapper').append(LnPrint.pagesParts.navbar())
+
+  if(LnPrint.page == 'home'){
+    $('body').css('overflow','auto')
+    $('#naviga').before(LnPrint.pagesParts.intestation())
+    $('#naviga').after(LnPrint.pagesParts.home())
+  }
+  if(LnPrint.page == 'products'){
+    $('body').css('overflow','hidden')
+    $('#naviga').after(LnPrint.pagesParts.products())
+    LnPrint.products.draw.list()
+  }
+  if(LnPrint.page == 'dashboard'){
+    $('body').css('overflow','auto')
+    $('#naviga').after(LnPrint.pagesParts.dashboard())
+    LnPrint.dashboard.draw.overview(LnPrint.user)
+  }
+  if(LnPrint.isAdmin === true){
+    if(LnPrint.page == 'admin'){
+      $('body').css('overflow','auto')
+      $('#naviga').after(LnPrint.pagesParts.admin())
+      LnPrint.admin.draw.overview()
+    }else{
+      $('#navButtons').append(`
+        <li class="nav-item">
+        <a id="adminNav" class="nav-link" href="javascript:void(0);"
+        onclick="LnPrint.req.changepage('admin');">Admin</a></li>
+      `)
+    }
+  }
+
+  if($('#logobig').length){
+    createObserver()
+  }else{
+    $('#logosmall').css('opacity', '1').css('height','35')
+    $('#logosmalla').css('display','flex')
+  }
+  LnPrint.adjust(LnPrint.page)
+
+}
+
+LnPrint.update = (cb)=>{
+  LnPrint.req.getUserData((response)=>{
+    if(response.user){
+
+      LnPrint.isAdmin = response.user.admin || false
+      LnPrint.page = response.page.name
+      LnPrint.conf = response.conf
+
+      if(response.user._id !== undefined && response.user._id != ''){
+        LnPrint.loggedUser = true
+        LnPrint.user = response.user
+
+        //fix date format for each tx in the user account history
+        LnPrint.user.account.history.forEach((tx,i)=>{
+          LnPrint.user.account.history[i].date = new Date(Number(tx.date.toString()))
+        })
+
+        //create the summary for the overview page
+        LnPrint.user.summary = {
+          mes: ()=>{return 'ToDo'},
+          fou: ()=>{return LnPrint.user.account.balance},
+          wor: ()=>{return 'ToDo'},
+          shi: ()=>{return 'ToDo'}
+        }
+
+      }else{
+        LnPrint.loggedUser = false
+        if(LnPrint.user){
+          delete LnPrint.user
+        }
+      }
+      cb()
+      
+
+    }else{
+      LnPrint.req.changepage('home')
+      location.reload()
+    }
+    
+
+  })
+}
 LnPrint.goBackward = (saveForward)=>{
   saveForward = saveForward || true
   var tempFwd = LnPrint.backward.pop()
@@ -84,11 +172,25 @@ LnPrint.redraw = ()=>{
 }
 //DRAWER
 LnPrint.clear = {
-  page: ()=>{
+  contentWrapper: ()=>{
     if($('.ff_fileupload_hidden').length){
       $('.ff_fileupload_hidden').FancyFileUpload('destroy')
     }
     $('#content-wrapper').empty()
+    if(LnPrint.intervals.length){
+      console.log('LnPrint.intervals',LnPrint.intervals)
+      LnPrint.intervals.forEach((interval)=>{
+        console.log('interval to clear:',interval)
+        clearInterval(interval)
+      })
+      LnPrint.intervals = []
+    }
+  },
+  page: ()=>{
+    if($('.ff_fileupload_hidden').length){
+      $('.ff_fileupload_hidden').FancyFileUpload('destroy')
+    }
+    $('#mainwrapper').empty()
     if(LnPrint.intervals.length){
       console.log('LnPrint.intervals',LnPrint.intervals)
       LnPrint.intervals.forEach((interval)=>{

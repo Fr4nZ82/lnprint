@@ -4,19 +4,19 @@ LnPrint.dashboard.print = {
     if(card == 'mes'){
       title = 'Messages';
       icon = 'fas fa-fw fa-envelope';
-      clickon = 'onclick="LnPrint.dashboard.draw.messages(Udata.user);"'
+      clickon = 'onclick="LnPrint.dashboard.draw.messages(LnPrint.user);"'
     }else if(card == 'fou'){
       title = 'Balance';
       icon = 'fab fa-fw fa-btc';
-      clickon = 'onclick="LnPrint.dashboard.draw.founds(Udata.user);"';
+      clickon = 'onclick="LnPrint.dashboard.draw.founds(LnPrint.user);"';
     }else if(card == 'wor'){
       title = 'Works';
       icon = 'fas fa-fw fa-print';
-      clickon = 'onclick="LnPrint.dashboard.draw.works(Udata.user);"';
+      clickon = 'onclick="LnPrint.dashboard.draw.works(LnPrint.user);"';
     }else if(card == 'shi'){
       title = 'Cart/Shipments';
       icon = 'fas fa-fw fa-shopping-cart';
-      clickon = 'onclick="LnPrint.dashboard.draw.shipments(Udata.user);"';
+      clickon = 'onclick="LnPrint.dashboard.draw.shipments(LnPrint.user);"';
     }else{
       title = '';
       icon = '';
@@ -62,7 +62,7 @@ LnPrint.dashboard.print = {
           <div class="col-6" style="padding-left: 0px;padding-right: 0px;">
             <button
               id="withdrawButton" class="btn btn-danger btn-block"
-              onclick="if(Udata.user.account.balance > 0){LnPrint.modal.new({from:'balanceCard',name:'ocWithdraw'})}else{LnPrint.notifyMsg({type:'alert',text:'`+noFound+`'})}">
+              onclick="if(LnPrint.user.account.balance > 0){LnPrint.modal.new({from:'balanceCard',name:'ocWithdraw'})}else{LnPrint.notifyMsg({type:'alert',text:'`+noFound+`'})}">
                 onchain</br>
                 withdraw
             </button>
@@ -79,7 +79,7 @@ LnPrint.dashboard.print = {
           </div>
           <div class="col-6" style="padding-left: 0px;padding-right: 0px;">
             <button id="payInvoiceButton" class="btn btn-danger btn-block"
-              onclick="if(Udata.user.account.balance > 0){LnPrint.modal.new({from:'balanceCard',name:'withdraw'})}else{LnPrint.notifyMsg({type:'alert',text:'`+noFound+`'})}">
+              onclick="if(LnPrint.user.account.balance > 0){LnPrint.modal.new({from:'balanceCard',name:'withdraw'})}else{LnPrint.notifyMsg({type:'alert',text:'`+noFound+`'})}">
               pay</br>
               invoice
             </button>

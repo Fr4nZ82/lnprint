@@ -5,7 +5,7 @@ LnPrint.admin = {
   draw:{
     overview: (userData)=>{                                                     //DRAW OVERVIEW
       let summary = userData.summary
-      LnPrint.clear.page()
+      LnPrint.clear.contentWrapper()
       LnPrint.draw.drawingspace()
       LnPrint.draw.row(0)
       LnPrint.draw.column(0,'mescolumn',6)
@@ -21,12 +21,12 @@ LnPrint.admin = {
     },
     messages: (userData)=>{                                                     //DRAW MESSAGES
       let messages = userData.messages
-      LnPrint.clear.page()
+      LnPrint.clear.contentWrapper()
       LnPrint.backward.push({func: LnPrint.admin.draw.messages, args: [userData]})
     },
     node: (userData)=>{                                                       //DRAW FOUNDS
       let founds = userData.account
-      LnPrint.clear.page()
+      LnPrint.clear.contentWrapper()
       LnPrint.draw.drawingspace()
       LnPrint.draw.row(0)
       LnPrint.draw.row(1)
@@ -41,7 +41,7 @@ LnPrint.admin = {
     },
     products: ()=>{                                                       //DRAW PRODUCTS
       LnPrint.req.products((products)=>{
-        LnPrint.clear.page()
+        LnPrint.clear.contentWrapper()
         LnPrint.draw.drawingspace()
         LnPrint.draw.row(0)
         LnPrint.draw.column(0,'productscolumn',12)
@@ -232,7 +232,7 @@ LnPrint.admin = {
           $('#formPresets').append('<option value="'+pre.name+'" id="formPresets-'+(i+1)+'" '+preSelected+'>'+pre.name+'</option>')
         })
       }
-      LnPrint.clear.page()
+      LnPrint.clear.contentWrapper()
       LnPrint.draw.drawingspace()
       LnPrint.draw.row(0)
       LnPrint.draw.column(0,'addproductcolumn',12)
@@ -484,7 +484,7 @@ LnPrint.admin = {
       onClose = onClose || noop
       selectedPreset = selectedPreset || false
       LnPrint.admin.req.presets((presets)=>{
-        //LnPrint.clear.page()
+        //LnPrint.clear.contentWrapper()
         LnPrint.draw.overlay('preset',true,true,true)
         LnPrint.draw.oRow(0,'preset')
         LnPrint.draw.oRow(1,'preset')
@@ -838,12 +838,12 @@ LnPrint.admin = {
     },
     works: (userData)=>{                                                        //DRAW WORKS
       works = userData.works
-      LnPrint.clear.page()
+      LnPrint.clear.contentWrapper()
       LnPrint.backward.push({func: LnPrint.admin.draw.works, args: [userData]})
     },
     shipments: (userData)=>{                                                    //DRAW SHIPMENTS
       shipments = userData.shipments
-      LnPrint.clear.page()
+      LnPrint.clear.contentWrapper()
       LnPrint.backward.push({func: LnPrint.admin.draw.shipment, args: [userData]})
     }
   },

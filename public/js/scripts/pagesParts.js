@@ -1,5 +1,5 @@
 LnPrint.pagesParts = {
-  intestation: (loggedUser)=>{ return `
+  intestation: ()=>{ return `
     <div id="logobig" class="container-fluid">
       <div class="row align-items-center justify-content-center">
         <div id="logoimgdiv" class="col-sm-6">
@@ -24,7 +24,7 @@ LnPrint.pagesParts = {
             Registered user?<br>Go directly to your
             <a id="dashboardIntestation" class="linkondark font-weight-bold toDashboardLinks" href="javascript:void(0);"
             onclick="`+(()=>{
-              if(loggedUser){
+              if(LnPrint.loggedUser){
                 return `LnPrint.req.changepage('dashboard')`
               }else{
                 return `LnPrint.modal.new({from:'dashboard',name:'keyQuery'})`
@@ -35,9 +35,9 @@ LnPrint.pagesParts = {
       </div>
     </div>
   `},
-  navbar: (page,loggedUser,isAdmin)=>{return `
+  navbar: ()=>{return `
     <nav id="naviga" class="navbar sticky-top navbar-dark navbar-expand-sm"`+(()=>{
-      if(page != 'home'){
+      if(LnPrint.page != 'home'){
         return ` style="border-bottom-left-radius: 0;border-bottom-right-radius: 0"`
       }else{return ''}})()+`>
 
@@ -46,7 +46,7 @@ LnPrint.pagesParts = {
         <!-- SMALL LOGO -->
 
         <a id="logosmalla" class="navbar-brand navbar-nav" href="javascript:void(0);"`+(()=>{
-          if(page == 'home'){
+          if(LnPrint.page == 'home'){
             return ` onclick="$('html,body').stop().animate({scrollTop:0}, 500);" style="padding: 0px;"`
           }else{
             return ` onclick="LnPrint.req.changepage('home')" style="padding: 0px;"`
@@ -58,34 +58,34 @@ LnPrint.pagesParts = {
 
         <!-- NAVBAR LINKS -->
         <div class="collapse navbar-collapse" id="navbarlinks">`+(()=>{
-          if(!isAdmin || page != 'admin'){return `
+          if(!LnPrint.isAdmin || LnPrint.page != 'admin'){return `
           <ul id="navButtons" class="navbar-nav mr-auto">
 
-            <li class="nav-item`+(()=>{if(page=='home'){return ' active'}else{return ''}})()+`">
+            <li class="nav-item`+(()=>{if(LnPrint.page=='home'){return ' active'}else{return ''}})()+`">
               <a class="nav-link" href="javascript:void(0);"
               onclick="`+(()=>{
-            if(page=='home'){
+            if(LnPrint.page=='home'){
               return `$('html,body').stop().animate({scrollTop:0}, 500);`
             }else{
               return `LnPrint.req.changepage('home');`
             }})()+`">Home</a>
             </li>
 
-            <li class="nav-item`+(()=>{if(page=='products'){return ' active'}else{return ''}})()+`">
+            <li class="nav-item`+(()=>{if(LnPrint.page=='products'){return ' active'}else{return ''}})()+`">
               <a class="nav-link" href="javascript:void(0);"
               onclick="`+(()=>{
-            if(page=='products'){
+            if(LnPrint.page=='products'){
               return `$('html,body').stop().animate({scrollTop:0}, 500);`
             }else{
               return `LnPrint.req.changepage('products');`
             }})()+`">Products</a>
             </li>
 
-            <li class="nav-item`+(()=>{if(page=='dashboard'){return ' active'}else{return ''}})()+`">
+            <li class="nav-item`+(()=>{if(LnPrint.page=='dashboard'){return ' active'}else{return ''}})()+`">
               <a id="dashboardNav" class="nav-link toDashboardLinks" href="javascript:void(0);"
               onclick="`+(()=>{
-            if(loggedUser){
-              if(page=='dashboard'){
+            if(LnPrint.loggedUser){
+              if(LnPrint.page=='dashboard'){
                 return `$('html,body').stop().animate({scrollTop:0}, 500);`
               }else{
                 return `LnPrint.req.changepage('dashboard');`
@@ -117,11 +117,11 @@ LnPrint.pagesParts = {
           <!-- /HAMBURGER -->
 
       `+(()=>{
-        if(loggedUser){return `
+        if(LnPrint.loggedUser){return `
             <!-- USER AND BELL -->
             <div id="userandbell" class="row">
           `+(()=>{
-            if(page != 'admin'){return `
+            if(LnPrint.page != 'admin'){return `
               <i id="bellicon" class="fas fa-fw fa-bell navbar-icon">
                 <span id="bellcounts" class="label">23</span>
               </i>
@@ -140,7 +140,7 @@ LnPrint.pagesParts = {
 
     </nav>
   `},
-  home: (loggedUser)=>{return `
+  home: ()=>{return `
     <div id='hwdiv' class="container">
       <br><h4>
       <a id="SBSG" class="badge badgeT" href="javascript:void(0);"
@@ -157,7 +157,7 @@ LnPrint.pagesParts = {
         LN users!
       </p>
       <p class="badgeh" id="step2"
-      onclick="LnPrint.modal.new({from:'guide',name:'`+(()=>{if(!loggedUser){return 'keyQuery'}else{return 'userInfo'}})()+`'})">
+      onclick="LnPrint.modal.new({from:'guide',name:'`+(()=>{if(!LnPrint.loggedUser){return 'keyQuery'}else{return 'userInfo'}})()+`'})">
       Save your key!</p>
       <p class="badgep">
         No need e-mail, no need password, no need your data.
@@ -234,30 +234,30 @@ LnPrint.pagesParts = {
       <!-- Sidebar -->
       <ul id="thesidebar" class="thesidebar sidebar navbar-nav">
         <li class="nav-item active">
-          <a class="nav-link" href="javascript:void(0);" onclick="LnPrint.dashboard.draw.overview(Udata.user);">
+          <a class="nav-link" href="javascript:void(0);" onclick="LnPrint.dashboard.draw.overview(LnPrint.user);">
             <i class="fas fa-fw fa-table"></i>
             <span>Overview</span>
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="javascript:void(0);" onclick="LnPrint.dashboard.draw.messages(Udata.user);">
+          <a class="nav-link" href="javascript:void(0);" onclick="LnPrint.dashboard.draw.messages(LnPrint.user);">
             <i class="fas fa-fw fa-envelope"></i>
             <span>Messages</span>
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="javascript:void(0);" onclick="LnPrint.dashboard.draw.founds(Udata.user);">
+          <a class="nav-link" href="javascript:void(0);" onclick="LnPrint.dashboard.draw.founds(LnPrint.user);">
             <i class="fab fa-fw fa-btc"></i>
             <span>Founds</span>
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="javascript:void(0);" onclick="LnPrint.dashboard.draw.works(Udata.user);">
+          <a class="nav-link" href="javascript:void(0);" onclick="LnPrint.dashboard.draw.works(LnPrint.user);">
             <i class="fas fa-fw fa-print"></i>
             <span>Works</span></a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="javascript:void(0);" onclick="LnPrint.dashboard.draw.shipments(Udata.user);">
+          <a class="nav-link" href="javascript:void(0);" onclick="LnPrint.dashboard.draw.shipments(LnPrint.user);">
             <i class="fas fa-fw fa-shopping-cart"></i>
             <span>Cart</span></a>
         </li>
@@ -314,41 +314,41 @@ LnPrint.pagesParts = {
       <!-- Sidebar -->
       <ul id="thesidebar" class="thesidebar sidebar navbar-nav">
         <li class="nav-item active">
-          <a class="nav-link" href="javascript:void(0);" onclick="LnPrint.admin.draw.overview(Udata.user);">
+          <a class="nav-link" href="javascript:void(0);" onclick="LnPrint.admin.draw.overview(LnPrint.user);">
             <i class="fas fa-fw fa-table"></i>
             <span>Overview</span>
           </a>
         </li>
         <li class="nav-item active">
-          <a class="nav-link" href="javascript:void(0);" onclick="LnPrint.admin.draw.users(Udata.user);">
+          <a class="nav-link" href="javascript:void(0);" onclick="LnPrint.admin.draw.users(LnPrint.user);">
             <i class="fas fa-fw fa-users"></i>
             <span>Users</span>
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="javascript:void(0);" onclick="LnPrint.admin.draw.messages(Udata.user);">
+          <a class="nav-link" href="javascript:void(0);" onclick="LnPrint.admin.draw.messages(LnPrint.user);">
             <i class="fas fa-fw fa-envelope"></i>
             <span>Messages</span>
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="javascript:void(0);" onclick="LnPrint.admin.draw.node(Udata.user);">
+          <a class="nav-link" href="javascript:void(0);" onclick="LnPrint.admin.draw.node(LnPrint.user);">
             <i class="fas fa-fw fa-bolt"></i>
             <span>LND node</span>
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="javascript:void(0);" onclick="LnPrint.admin.draw.products(Udata.user);">
+          <a class="nav-link" href="javascript:void(0);" onclick="LnPrint.admin.draw.products(LnPrint.user);">
             <i class="fas fa fa-archive"></i>
             <span>Products</span></a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="javascript:void(0);" onclick="LnPrint.admin.draw.works(Udata.user);">
+          <a class="nav-link" href="javascript:void(0);" onclick="LnPrint.admin.draw.works(LnPrint.user);">
             <i class="fas fa-fw fa-print"></i>
             <span>Works</span></a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="javascript:void(0);" onclick="LnPrint.admin.draw.shipments(Udata.user);">
+          <a class="nav-link" href="javascript:void(0);" onclick="LnPrint.admin.draw.shipments(LnPrint.user);">
             <i class="fas fa-fw fa-shopping-cart"></i>
             <span>Cart</span></a>
         </li>

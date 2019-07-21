@@ -9,10 +9,10 @@ LnPrint.req = {
       {
         ifYes:(res)=>{
           console.log("#!!-req- questa è la risposta del server:",res)
-          console.log("#!!-req- ricarico la pagina (/)")
-          location.reload()
-          console.log("#!!-req- scroll top")
-          $(window).scrollTop(0)
+          LnPrint.update(()=>{
+            LnPrint.drawPage()
+            $(window).scrollTop(0)
+          })
         }
       }
     )
@@ -112,11 +112,11 @@ LnPrint.req = {
                   `
                 )
                 $('#step2').attr('onclick',"LnPrint.modal.new({from:'guide',name:'userInfo'})")
-                Udata.user = {}
-                Udata.user._id = res._id
-                Udata.user.btcaddress = res.btcaddress
-                if(!Udata.user.account){Udata.user.account = {}}
-                Udata.user.account.balance = res.balance
+                LnPrint.user = {}
+                LnPrint.user._id = res._id
+                LnPrint.user.btcaddress = res.btcaddress
+                if(!LnPrint.user.account){LnPrint.user.account = {}}
+                LnPrint.user.account.balance = res.balance
                 //???socketA = io()
               }else{
                 LnPrint.req.changepage(from)
@@ -138,8 +138,8 @@ LnPrint.req = {
       {type: 'gen_invoice', amt: amt, from: from},
       {
         ifYes:(res)=>{
-          if(Udata.user){
-            Udata.user.account.payreq.push(res)
+          if(LnPrint.user){
+            LnPrint.user.account.payreq.push(res)
           }
           cb(res)
         },
@@ -155,11 +155,11 @@ LnPrint.req = {
       {type: 'gen_newAddress', from: from},
       {
         ifYes:(res)=>{
-          if(Udata.user){
-            if(Udata.user.usedAddress){
-              Udata.user.usedAddress.push(res._id)
+          if(LnPrint.user){
+            if(LnPrint.user.usedAddress){
+              LnPrint.user.usedAddress.push(res._id)
             }else{
-              Udata.user.usedAddress = [res._id]
+              LnPrint.user.usedAddress = [res._id]
             }
           }
           LnPrint.modal.new({name:'address',from:from,addressData:res})
@@ -205,12 +205,12 @@ LnPrint.req = {
   payFromAccount: (amt,from,work,cb)=>{
     cb = cb || noop
     work = work || 'no_Work_or_donation'
-    if(amt <= Udata.user.account.balance){
+    if(amt <= LnPrint.user.account.balance){
       LnPrint.post(
         {type: 'payFromAccount', amt: amt, work: work, from:from},
         {
           ifYes:(res)=>{
-            Udata.user.account = res.account
+            LnPrint.user.account = res.account
             $(notifyModal).on('hidden.bs.modal',()=>{
               LnPrint.modal.close('all',()=>{})
             })
@@ -228,9 +228,9 @@ LnPrint.req = {
       {
         ifYes:(res)=>{
           LnPrint.modal.close('all')
-          Udata.user.account.balance -= res.txData.amt
+          LnPrint.user.account.balance -= res.txData.amt
           res.txData.date = new Date(res.txData.date)
-          Udata.user.account.ochistory.push(res.txData)
+          LnPrint.user.account.ochistory.push(res.txData)
           if(thisPageName == 'dashboard'){
             console.log('#!!-onLoad- ridisegno ultima pagina visitata')
             LnPrint.redraw()

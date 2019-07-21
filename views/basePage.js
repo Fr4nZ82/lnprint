@@ -24,6 +24,10 @@ const basePage = `
         </div>
       </div>
 
+      <div id="mainwrapper">
+
+      </div>
+
       <button id="addAppBtn" class="btn footerbtn" href="javascript:void(0);">install app</button>
       <button id="donateBtn" class="btn footerbtn" href="javascript:void(0);" onclick="LnPrint.modal.new({from:'donate',name:'deposit'})">Donate</button>
 

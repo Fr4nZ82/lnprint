@@ -2,7 +2,7 @@ LnPrint.dashboard = {
   draw:{
     overview: (userData)=>{                                                     //DRAW OVERVIEW
       summary = userData.summary
-      LnPrint.clear.page()
+      LnPrint.clear.contentWrapper()
       LnPrint.draw.drawingspace()
       LnPrint.draw.row(0)
       LnPrint.draw.column(0,'mescolumn',6)
@@ -18,12 +18,12 @@ LnPrint.dashboard = {
     },
     messages: (userData)=>{                                                     //DRAW MESSAGES
       messages = userData.messages
-      LnPrint.clear.page();
+      LnPrint.clear.contentWrapper();
       LnPrint.backward.push({func: LnPrint.dashboard.draw.messages, args: [userData]})
     },
     founds: (userData)=>{                                                       //DRAW FOUNDS
       let _founds=userData.account
-      LnPrint.clear.page()
+      LnPrint.clear.contentWrapper()
       LnPrint.draw.drawingspace()
       LnPrint.draw.row(0)
       LnPrint.draw.row(1)
@@ -59,14 +59,14 @@ LnPrint.dashboard = {
     },
     works: (userData)=>{                                                        //DRAW WORKS
       works = userData.works
-      LnPrint.clear.page();
+      LnPrint.clear.contentWrapper();
       LnPrint.backward.push({func: LnPrint.dashboard.draw.works, args: [userData]})
     },
     shipments: (userData)=>{                                                    //DRAW SHIPMENTS
       var shipments = userData.shipments,
           works = userData.works,
           cart = userData.cart
-      LnPrint.clear.page()
+      LnPrint.clear.contentWrapper()
       LnPrint.draw.drawingspace()
       LnPrint.draw.row(0)
       LnPrint.draw.column(0,'cartcolumn',12)

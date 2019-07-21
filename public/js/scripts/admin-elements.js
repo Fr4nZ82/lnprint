@@ -4,19 +4,19 @@ LnPrint.admin.print = {
     if(card == 'mes'){
       title = 'Messages';
       icon = 'fas fa-fw fa-envelope';
-      clickon = 'onclick="LnPrint.admin.draw.messages(Udata.user);"'
+      clickon = 'onclick="LnPrint.admin.draw.messages(LnPrint.user);"'
     }else if(card == 'fou'){
       title = 'Balance';
       icon = 'fab fa-fw fa-btc';
-      clickon = 'onclick="LnPrint.admin.draw.founds(Udata.user);"';
+      clickon = 'onclick="LnPrint.admin.draw.founds(LnPrint.user);"';
     }else if(card == 'wor'){
       title = 'Works';
       icon = 'fas fa-fw fa-print';
-      clickon = 'onclick="LnPrint.admin.draw.works(Udata.user);"';
+      clickon = 'onclick="LnPrint.admin.draw.works(LnPrint.user);"';
     }else if(card == 'shi'){
       title = 'Shipments';
       icon = 'fas fa-fw fa-shopping-cart';
-      clickon = 'onclick="LnPrint.admin.draw.shipments(Udata.user);"';
+      clickon = 'onclick="LnPrint.admin.draw.shipments(LnPrint.user);"';
     }else{
       title = '';
       icon = '';
@@ -248,9 +248,8 @@ LnPrint.admin.print = {
           `+(()=>{
             if(edit){
               return 'value="'+edit.readyToSell+'"'
-            }else{
-              return 'value="0"'
             }
+            return 'value="0"'
           })()+`>
 
         </div>

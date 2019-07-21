@@ -17,14 +17,14 @@ ioSock.on('deposit_done', function (socketData) {
   //console.log('#!!-onLoad- socket emit deposit_done:',socketData)
   //console.log('#!!-onLoad- deposit FULMINE!!!')
   LnPrint.modal.new({name: 'fulmine',from: 'eventDeposit', paymentData: 'none',autoclose: true})
-  Udata.user.account.balance += socketData.amt
+  LnPrint.user.account.balance += socketData.amt
   socketData.date = new Date(socketData.date)
-  Udata.user.account.history.push(socketData)
-  Udata.user.account.payreq.forEach(function(payreq,index){
+  LnPrint.user.account.history.push(socketData)
+  LnPrint.user.account.payreq.forEach(function(payreq,index){
     if(payreq._id == socketData.payreq){
-      //console.log('#!!-onLoad- elimino da Udata.user.account.payreq la payreq con id',payreq.id)
+      //console.log('#!!-onLoad- elimino da LnPrint.user.account.payreq la payreq con id',payreq.id)
       if (index > -1) {
-        Udata.user.account.payreq.splice(index, 1)
+        LnPrint.user.account.payreq.splice(index, 1)
       }
     }
   })
@@ -33,9 +33,9 @@ ioSock.on('deposit_done', function (socketData) {
   }
 })
 ioSock.on('ocdeposit_done', function (socketData) {
-  Udata.user.account.balance += socketData.amt
+  LnPrint.user.account.balance += socketData.amt
   socketData.date = new Date(socketData.date)
-  Udata.user.account.ochistory.push(socketData)
+  LnPrint.user.account.ochistory.push(socketData)
   LnPrint.notifyMsg({type:'msg',text:'onchain payment received!'},()=>{
     if(LnPrint.page == 'dashboard'){
       LnPrint.redraw()
@@ -49,9 +49,9 @@ ioSock.on('ocdeposit_fail', function(socketData) {
 //WITHDRAW EVENTS
 ioSock.on('withdraw_done', function (socketData) {
   LnPrint.modal.new({name: 'fulmine', from: 'eventWithdraw', paymentData: socketData,autoclose:true})
-  Udata.user.account.balance -= socketData.amt
+  LnPrint.user.account.balance -= socketData.amt
   socketData.date = new Date(socketData.date)
-  Udata.user.account.history.push(socketData)
+  LnPrint.user.account.history.push(socketData)
   if(LnPrint.page == 'dashboard'){
     LnPrint.redraw()
   }
@@ -105,105 +105,27 @@ window.addEventListener("load", function(event) {
   //SERVICE WORKER
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('sw.js').then(function(registration) {
-      //Registration was successful
-      //console.log('ServiceWorker registration successful with scope: ', registration.scope)
-    }, function(err) {
-      // registration failed :(
-      //console.log('ServiceWorker registration failed: ', err)
-    })
+    }, function(err) {console.log(err)})
   }
   
-  //get data from server to draw pages
-  LnPrint.req.getUserData((response)=>{
-    if(response.user){
+  //get data from server and draw pages
+  LnPrint.update(()=>{
 
-      let loggedUser, isAdmin = response.user.admin || false
+    LnPrint.drawPage()
 
-      LnPrint.page = response.page.name
-      LnPrint.conf = response.conf
-
-      if(response.user._id !== undefined && response.user._id != ''){
-        loggedUser = true
-        Udata.user = response.user
-
-        //fix date format for each tx in the user account history
-        Udata.user.account.history.forEach((tx,i)=>{
-          Udata.user.account.history[i].date = new Date(Number(tx.date.toString()))
-        })
-
-        //create the summary for the overview page
-        Udata.user.summary = {
-          mes: ()=>{return 'ToDo'},
-          fou: ()=>{return Udata.user.account.balance},
-          wor: ()=>{return 'ToDo'},
-          shi: ()=>{return 'ToDo'}
-        }
-        
-        
-
-      }else{
-        loggedUser = false
-        if(!!Udata.user){
-          delete Udata.user
-        }
+    setTimeout(function () {
+      if(transy <= 0.5){
+        stickyBarHyster = false
       }
-
-      $('#backLoading').after(LnPrint.pagesParts.navbar(LnPrint.page,loggedUser,isAdmin))
-
-      if(LnPrint.page == 'home'){
-        console.log('home is the page')
-        $('#backLoading').after(LnPrint.pagesParts.intestation(loggedUser))
-        $('#naviga').after(LnPrint.pagesParts.home(loggedUser))
-      }
-      if(LnPrint.page == 'products'){
-        $('body').css('overflow','hidden')
-        $('#naviga').after(LnPrint.pagesParts.products())
-        LnPrint.products.draw.list()
-      }
-      if(LnPrint.page == 'dashboard'){
-        $('#naviga').after(LnPrint.pagesParts.dashboard())
-        LnPrint.dashboard.draw.overview(Udata.user)
-      }
-
-      if(response.user.admin === true){
-        if(LnPrint.page == 'admin'){
-          $('#naviga').after(LnPrint.pagesParts.admin())
-          LnPrint.admin.draw.overview(Udata.user)
-        }else{
-          $('#navButtons')
-        .append(`
-          <li class="nav-item">
-          <a id="adminNav" class="nav-link" href="javascript:void(0);"
-          onclick="LnPrint.req.changepage('admin');">Admin</a></li>
-        `)
-        }
-      }
-
-      //STICKYBAR OBSERVER
-      if($('#logobig').length){
-        createObserver()
-      }else{
-        $('#logosmall').css('opacity', '1').css('height','35')
-        $('#logosmalla').css('display','flex')
-      }
-      setTimeout(function () {
-        if(transy <= 0.5){
-          stickyBarHyster = false
-        }
-        LnPrint.adjust(LnPrint.page)
-      }, timeouts)
-      $(window).resize(()=>{
-        if(stickyBarHyster){stickyBarHyster = false}else{stickyBarHyster = true}
-        LnPrint.adjust(LnPrint.page)
-      })
-
-      
-    }else{
-      LnPrint.req.changepage('home')
-    }
+      LnPrint.adjust(LnPrint.page)
+    }, timeouts)
     
-
+    $(window).resize(()=>{
+      if(stickyBarHyster){stickyBarHyster = false}else{stickyBarHyster = true}
+      LnPrint.adjust(LnPrint.page)
+    })
   })
+  
   
 })
 //SET MOBILE FUNCTION
@@ -223,6 +145,11 @@ $.getScript( '/js/plugin/jquery.qrcode.min.js', function() {
 })
 
 //PREPARE MODALS TO START AND CONTROL THAT MODALS IS NOT BUSY FOREVER
+$(document).on('show.bs.modal', function (event) {
+  console.log('draw modal')
+  var modalData = event.relatedTarget
+  LnPrint.modal.draw[modalData.name](modalData)
+})
 let noForever = 0
 setInterval(function(){
   if(LnPrint.modal.busy > 0){
@@ -231,21 +158,13 @@ setInterval(function(){
       LnPrint.modal.action.queue = []
       LnPrint.modal.busy = 0
       noForever = 0
-      if(LnPrint.page == 'dashboard'){
-        LnPrint.redraw()
-      }
       LnPrint.modal.close('all',()=>{alert('sry, something crashed and modals results busy for too long time')})
+      location.reload()
     }
   }else{
     noForever = 0
   }
 },300)
-
-$(document).on('show.bs.modal', function (event) {
-  console.log('draw modal')
-  var modalData = event.relatedTarget
-  LnPrint.modal.draw[modalData.name](modalData)
-})
 
 //REMOVE FOCUS FROM HAMBURGER WHEN NAVBAR COLLAPSE
 $('#navbarlinks').on('shown.bs.collapse hidden.bs.collapse', ()=>{

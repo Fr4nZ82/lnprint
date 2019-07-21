@@ -1,5 +1,5 @@
 var LNP = require('../app')
-LNP.pauselog = (req,intestation,mc)=>{ 
+LNP.pauselog = (req,intestation,mc)=>{
   mc = mc || 'no'
   if(mc == 'mc'){
     console.log(intestation + " remote ip: " + LNP.clc.red.bgWhiteBright(req.connection.remoteAddress))

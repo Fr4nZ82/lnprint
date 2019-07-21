@@ -392,8 +392,8 @@ LnPrint.modal = {
       $('#theAmount').on('input change',function(){
         if(Math.sign($(this).val()) === 1 && $(this).val() <= LnPrint.conf.maxInvoiceAmt){
           $('#genInvoiceBtn').removeAttr('disabled')
-          if(!!Udata.user){
-            if(Udata.user.account.balance >= $(this).val()){
+          if(!!LnPrint.user){
+            if(LnPrint.user.account.balance >= $(this).val()){
               $('#payBtn').removeAttr('disabled')
             }else{
               $('#payBtn').attr('disabled','disabled')
@@ -434,7 +434,7 @@ LnPrint.modal = {
         $(modalData.id +' .modal-body')
         .append(LnPrint.modal.print.ocWithdrawContent(modalData.from,bf))
         $('#theAmount').on('input change',function(){
-          if(Math.sign($(this).val()) === 1 && Udata.user.account.balance >= $(this).val()){
+          if(Math.sign($(this).val()) === 1 && LnPrint.user.account.balance >= $(this).val()){
             $('#sendCoinsBtn').removeAttr('disabled')
           }else{
             $('#sendCoinsBtn').attr('disabled','disabled')

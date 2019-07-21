@@ -4,7 +4,7 @@ LnPrint.products = {
       LnPrint.products.cache = []
       LnPrint.req.products((products)=>{
         //console.log(products)
-        LnPrint.clear.page()
+        LnPrint.clear.contentWrapper()
         LnPrint.draw.drawingspace()
         LnPrint.draw.row(0)
         LnPrint.draw.column(0,'productscolumn',12)
@@ -134,7 +134,7 @@ LnPrint.products = {
             draft = true
           }
 
-          if(Udata.user){
+          if(LnPrint.user){
             $('.orderProductButton').click(()=>{
               //console.log('click',LnPrint.products.cache)
               toggleMouseHover(false,true)
