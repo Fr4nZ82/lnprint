@@ -109,7 +109,7 @@ LnPrint.drawPage = (cb)=>{
     $('#logosmalla').css('display','flex')
   }
   LnPrint.adjust(LnPrint.page)
-  LnPrint.saveHistory({func: LnPrint.req.changepage, args:[LnPrint.page]})
+  LnPrint.saveHistory({func: ['req','changepage'], args:[LnPrint.page]})
   cb()
 }
 
@@ -159,17 +159,47 @@ LnPrint.update = (cb)=>{
 LnPrint.saveHistory = (f)=>{
   if(LnPrint.pushHistorySwitch){
     console.log('saveHistory',history)
-  LnPrint.snapshots.push({func: f.func, args: f.args})
-  window.history.pushState({stateNumber: LnPrint.snapshots.length-1},LnPrint.page,'/')
+
+    LnPrint.snapshots.push({func: f.func, args: f.args})
+    
+    console.log('snapshots',LnPrint.snapshots)
+    console.log('snapshots stringified:',JSON.stringify(LnPrint.snapshots))
+    console.log('snapshots parsed',JSON.parse(JSON.stringify(LnPrint.snapshots)))
+
+    window.sessionStorage.setItem('snapshots',JSON.stringify(LnPrint.snapshots))
+
+    window.history.pushState({stateNumber: LnPrint.snapshots.length-1},LnPrint.page,'/')
   }else{
     console.log('switch off, history not saved')
     LnPrint.pushHistorySwitch = true
   }
 }
 
+LnPrint.snapshotToFunction = (commandArray, cb, obj = LnPrint)=>{
+  commandArrayCopy = commandArray.slice()
+  console.log('snapshotToFunction recursion, commandArray:',commandArray,'obj:',obj)
+  obj = obj[commandArrayCopy.shift()]
+  console.log('shift done, LnPrint.snapshots stringified:',JSON.stringify(LnPrint.snapshots))
+  if (commandArrayCopy.length) LnPrint.snapshotToFunction(commandArrayCopy, cb, obj)
+  else{
+    console.log('end of recursion, return obj:',obj)
+    return cb(obj)
+  }
+  
+
+}
+
 LnPrint.redraw = ()=>{
+
   var args = LnPrint.snapshots[LnPrint.snapshots.length-1].args || []
-  LnPrint.snapshots[LnPrint.snapshots.length-1].func(...args)
+
+  let snapshotId = LnPrint.snapshots.length-1
+  let commandArray = LnPrint.snapshots[snapshotId].func
+
+  let func = LnPrint.snapshotToFunction(commandArray,(func)=>{
+    func(...args)
+  })
+  
 }
 //DRAWER
 LnPrint.clear = {

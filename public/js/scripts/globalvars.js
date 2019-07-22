@@ -9,7 +9,8 @@ var LnPrint = {
   node: {
     uri:'',
     alias:''
-  }
+  },
+  noop: function(){}
 }
 var noop = function(){}
 var mobile

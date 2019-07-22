@@ -66,17 +66,17 @@ window.onpopstate = (event)=>{
     if(event.state.stateNumber > -1){
       console.log('popstate',event)
       let stateNumber = event.state.stateNumber,
-          func, args
+          args = LnPrint.snapshots[stateNumber].args || []
       if(LnPrint.snapshots[stateNumber]){
-        func = LnPrint.snapshots[stateNumber].func
-        args = LnPrint.snapshots[event.state.stateNumber].args || []
+        LnPrint.snapshotToFunction(LnPrint.snapshots[stateNumber].func,(func)=>{
+          LnPrint.pushHistorySwitch = false
+          console.log('onpopstate call func:',func)
+          func(...args)          
+        })
       }else{
-        func = noop
-        args = []
+        LnPrint.req.changepage('home')
+        location.reload()
       }
-      
-      LnPrint.pushHistorySwitch = false
-      func(...args)
     }else{
       console.log('stateNumber is undefined')
     }
@@ -140,7 +140,24 @@ window.addEventListener("load", function(event) {
     //insteadd of pushing a state, the first time the state must be replaced
     LnPrint.pushHistorySwitch = false
     LnPrint.drawPage(()=>{
-      LnPrint.snapshots.push({func: LnPrint.req.changepage, args: [LnPrint.page]})
+      let ssSnapshotsJson = window.sessionStorage.getItem('snapshots') || false
+      this.console.log('ssSnapshotsJson',ssSnapshotsJson)
+      let ssSnapshots
+      if(ssSnapshotsJson){
+        ssSnapshots = JSON.parse(ssSnapshotsJson)
+      }else{
+        ssSnapshots = false
+      }
+      console.log('ssSnapshot',ssSnapshots)
+      if(ssSnapshots && ssSnapshots.length > 0){
+        console.log('ssSnapshot is not false and its length is > 0')
+        LnPrint.snapshots = ssSnapshots
+      }else{
+        console.log('ssSnapshot is false or void, push a new snapshot of the current page and save sessionstorage')
+        LnPrint.snapshots.push({func: ['req','changepage'], args: [LnPrint.page]})
+        window.sessionStorage.setItem('snapshots',JSON.stringify(LnPrint.snapshots))
+      }
+      console.log('replace state on load')
       window.history.replaceState({stateNumber: LnPrint.snapshots.length-1},LnPrint.page,'/')
     })
 
