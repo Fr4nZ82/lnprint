@@ -68,7 +68,7 @@ LnPrint.adjust = (pag)=>{
 
 LnPrint.drawPage = (cb)=>{
   cb = cb || noop
-  console.log('drawPage, snapshots:',LnPrint.snapshots)
+  //console.log('drawPage, snapshots:',LnPrint.snapshots)
   LnPrint.clear.page()
 
   $('#mainwrapper').append(LnPrint.pagesParts.navbar())
@@ -158,31 +158,31 @@ LnPrint.update = (cb)=>{
 
 LnPrint.saveHistory = (f)=>{
   if(LnPrint.pushHistorySwitch){
-    console.log('saveHistory',history)
+    //console.log('saveHistory',history)
 
     LnPrint.snapshots.push({func: f.func, args: f.args})
     
-    console.log('snapshots',LnPrint.snapshots)
-    console.log('snapshots stringified:',JSON.stringify(LnPrint.snapshots))
-    console.log('snapshots parsed',JSON.parse(JSON.stringify(LnPrint.snapshots)))
+    //console.log('snapshots',LnPrint.snapshots)
+    //console.log('snapshots stringified:',JSON.stringify(LnPrint.snapshots))
+    //console.log('snapshots parsed',JSON.parse(JSON.stringify(LnPrint.snapshots)))
 
     window.sessionStorage.setItem('snapshots',JSON.stringify(LnPrint.snapshots))
 
     window.history.pushState({stateNumber: LnPrint.snapshots.length-1},LnPrint.page,'/')
   }else{
-    console.log('switch off, history not saved')
+    //console.log('switch off, history not saved')
     LnPrint.pushHistorySwitch = true
   }
 }
 
 LnPrint.snapshotToFunction = (commandArray, cb, obj = LnPrint)=>{
   commandArrayCopy = commandArray.slice()
-  console.log('snapshotToFunction recursion, commandArray:',commandArray,'obj:',obj)
+  //console.log('snapshotToFunction recursion, commandArray:',commandArray,'obj:',obj)
   obj = obj[commandArrayCopy.shift()]
-  console.log('shift done, LnPrint.snapshots stringified:',JSON.stringify(LnPrint.snapshots))
+  //console.log('shift done, LnPrint.snapshots stringified:',JSON.stringify(LnPrint.snapshots))
   if (commandArrayCopy.length) LnPrint.snapshotToFunction(commandArrayCopy, cb, obj)
   else{
-    console.log('end of recursion, return obj:',obj)
+    //console.log('end of recursion, return obj:',obj)
     return cb(obj)
   }
   

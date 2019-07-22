@@ -1,6 +1,6 @@
 LnPrint.req = {
   changepage: (pagename)=>{
-    console.log("#!!-req- Chiamata funzione changepage:",pagename)
+    //console.log("#!!-req- Chiamata funzione changepage:",pagename)
 
     LnPrint.page = pagename
     //console.log("#!!-req- Chiamata funzione changepage:",LnPrint.page)
