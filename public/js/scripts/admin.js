@@ -17,12 +17,12 @@ LnPrint.admin = {
       $('#foucolumn').append(LnPrint.admin.print.overviewCard('fou',summary.fou()+' satoshis'))
       $('#worcolumn').append(LnPrint.admin.print.overviewCard('wor',summary.wor()+' active works'))
       $('#shicolumn').append(LnPrint.admin.print.overviewCard('shi',summary.shi()+' shipments'))
-      LnPrint.backward.push({func: LnPrint.admin.draw.overview, args: [userData]})
+      LnPrint.saveHistory({func: LnPrint.admin.draw.overview, args: [userData]})
     },
     messages: (userData)=>{                                                     //DRAW MESSAGES
       let messages = userData.messages
       LnPrint.clear.contentWrapper()
-      LnPrint.backward.push({func: LnPrint.admin.draw.messages, args: [userData]})
+      LnPrint.saveHistory({func: LnPrint.admin.draw.messages, args: [userData]})
     },
     node: (userData)=>{                                                       //DRAW FOUNDS
       let founds = userData.account
@@ -37,7 +37,7 @@ LnPrint.admin = {
       $('#channelscolumn').append(LnPrint.admin.print.channelsTable(founds))
       $('#transactionscolumn').append(LnPrint.admin.print.transTable(founds))
       LnPrint.admin.populate.chanTable(userData)
-      LnPrint.backward.push({func: LnPrint.admin.draw.node, args: [userData]})
+      LnPrint.saveHistory({func: LnPrint.admin.draw.node, args: [userData]})
     },
     products: ()=>{                                                       //DRAW PRODUCTS
       LnPrint.req.products((products)=>{
@@ -47,7 +47,7 @@ LnPrint.admin = {
         LnPrint.draw.column(0,'productscolumn',12)
         $('#productscolumn').append(LnPrint.admin.print.productsTable(products))
       })
-      LnPrint.backward.push({func:LnPrint.admin.draw.products})
+      LnPrint.saveHistory({func:LnPrint.admin.draw.products})
     },
     addProduct: (edit)=>{
       edit = edit || false
@@ -150,7 +150,7 @@ LnPrint.admin = {
         imgWidth: LnPrint.conf.productImgWidth,
         uploadcompleted: (e,data)=>{
           ++uploadDoneCounter
-          console.log('uploadDoneCounter: '+uploadDoneCounter+' nPhotos: '+nPhotos)
+          //console.log('uploadDoneCounter: '+uploadDoneCounter+' nPhotos: '+nPhotos)
           if(uploadDoneCounter == nPhotos){
             setTimeout(function () {
               waitUpload = false
@@ -209,7 +209,7 @@ LnPrint.admin = {
               blob.name = data.files[0].name
               blob.lastModified = (new Date()).getTime()
               blob.mainPhoto = mainPhoto
-              console.log('UpdateCroppedFile(blob) blob -> ',blob)
+              //console.log('UpdateCroppedFile(blob) blob -> ',blob)
               UpdateCroppedFile(blob)
               if(mainPhoto == 'yes'){
                 validMainPhoto()
@@ -438,7 +438,7 @@ LnPrint.admin = {
           }
 
           function uploadEach(productId){
-            console.log('upload each start... nPhotos:',nPhotos)
+            //console.log('upload each start... nPhotos:',nPhotos)
             if(nPhotos > 0){
               $('#thefiles').next().find('.ff_fileupload_actions button.ff_fileupload_start_upload').each(function(i,el){
                 $('.ff_fileupload_hidden input[type=hidden]').remove()
@@ -455,7 +455,7 @@ LnPrint.admin = {
           }
 
           nPhotos = $('#pMainPhoto option').length - 1
-          console.log('nPhotos',nPhotos)
+          //console.log('nPhotos',nPhotos)
           if(edit){
             insertProductData._id = edit._id
             LnPrint.admin.req.updateProduct(insertProductData,nPhotos,(productId)=>{
@@ -471,14 +471,14 @@ LnPrint.admin = {
           location.redirect('/')
         }
         var uploadCheck = setInterval(function () {
-          console.log('waiting upload', waitUpload)
+          //console.log('waiting upload', waitUpload)
           if(!waitUpload){
             LnPrint.admin.draw.products()
             clearInterval(uploadCheck)
           }
         }, 1000)
       }
-      LnPrint.backward.push({func:noop})
+      LnPrint.saveHistory({func:noop})
     },
     editPresets: (selectedPreset,onClose)=>{
       onClose = onClose || noop
@@ -550,7 +550,7 @@ LnPrint.admin = {
               })
               $('#savePresetNameBtn').on('click',()=>{
                 function addPreset(){
-                  console.log('new preset added')
+                  //console.log('new preset added')
                   if(isNewPreset && actualPreset != ''){
                     deleteOption($('#'+$('#presetselect').data('lastOpt')))
                   }
@@ -586,7 +586,7 @@ LnPrint.admin = {
         })
         .on('focusin', function(){
           $('#presetselect').data('lastOpt', $('#presetselect option:selected').attr('id'))
-          console.log('focusin',$('#presetselect option:selected').attr('id'))
+          //console.log('focusin',$('#presetselect option:selected').attr('id'))
         })
         $('#delPresetBtn').on('click',()=>{
           var $selectedOption = $('#presetselect option:selected'),
@@ -606,9 +606,9 @@ LnPrint.admin = {
         })
         $('#presetselect')
         .on('change',()=>{
-          console.log('change')
+          //console.log('change')
           doFB($('#presetselect option:selected').data('formData'),()=>{
-            console.log('changed')
+            //console.log('changed')
             if(isNewPreset && actualPreset != '' && $('#presetselect').data('lastOpt') != 'formPresetNotSelected'){
               deleteOption($('#'+$('#presetselect').data('lastOpt')),$('#presetselect option:selected'))
               showEdit()
@@ -620,7 +620,7 @@ LnPrint.admin = {
         })
         .on('focusin', function(){
           $('#presetselect').data('lastOpt', $('#presetselect option:selected').attr('id'))
-          console.log('focusin',$('#presetselect option:selected').attr('id'))
+          //console.log('focusin',$('#presetselect option:selected').attr('id'))
         })
 
         $('#presetselect option').each(function(i){
@@ -652,13 +652,13 @@ LnPrint.admin = {
                 }
               ],
               onAddField: function(fieldId,hh) {
-                console.log('field added')
+                //console.log('field added')
                 isSavedPreset = false
                 toggleSaveBtn(false)
                 $('#previewPresetBtn').prop('disabled',false)
               },
               onSave: function(evt, formData) {
-                console.log('saved')
+                //console.log('saved')
                 LnPrint.admin.req.savePreset(actualPreset,formData,(res)=>{
                   $('#presetselect option:selected').data('formData',formData).data('name',$('#presetselect option:selected').val())
                   hideRender()
@@ -710,7 +710,7 @@ LnPrint.admin = {
         }
         function deleteOption($sO,$nextO){
           $nextO = $nextO || false
-          console.log('option '+$sO.text()+' removed')
+          //console.log('option '+$sO.text()+' removed')
           $sO.remove()
           if($nextO){
             $("#presetselect").val($nextO.val())
@@ -731,10 +731,10 @@ LnPrint.admin = {
           cbYes = cbYes || noop
           var $selectedOption = $('#presetselect option:selected')
           if(isSavedPreset && clearType != 'delete'){
-            console.log('all fields cleared')
+            //console.log('all fields cleared')
             LnPrint.fB.actions.clearFields()
             setTimeout(function () {
-              console.log('cbYes!')
+              //console.log('cbYes!')
               cbYes()
             }, 600)
           }else{
@@ -750,7 +750,7 @@ LnPrint.admin = {
               name:'prompt',
               text:text,
               cbYes: ()=>{
-                console.log('all fields cleared')
+                //console.log('all fields cleared')
                 LnPrint.fB.actions.clearFields()
                 setTimeout(function () {
                   cbYes()
@@ -767,7 +767,7 @@ LnPrint.admin = {
           }
           if(presetBuilderDone){
             clearPresetBuilder(false,()=>{
-              console.log('doFB -> formData: ', formData)
+              //console.log('doFB -> formData: ', formData)
               if(formData){
                 LnPrint.fB.actions.setData(formData)
               }
@@ -777,7 +777,7 @@ LnPrint.admin = {
           }else{
             jQuery(function($) {
                 $('.buildWrap').formBuilder(fBOptions).promise.then((formBuilder)=>{
-                  console.log('doFB -> formData: ', formData)
+                  //console.log('doFB -> formData: ', formData)
                   savedFormData = formData
                   LnPrint.fB = formBuilder
                   $('.form-actions').hide()
@@ -790,7 +790,7 @@ LnPrint.admin = {
                     }
                     clearPresetBuilder('reset',()=>{
                       if(oldFormData){
-                        console.log('resetPresetBtn oldFormData',oldFormData)
+                        //console.log('resetPresetBtn oldFormData',oldFormData)
                         LnPrint.fB.actions.setData(oldFormData)
                         isSavedPreset = true
                         toggleSaveBtn(true)
@@ -827,7 +827,7 @@ LnPrint.admin = {
                   }, 100)
                   LnPrint.intervals.push(presetEditControl)
                   // setInterval(function () {
-                  //   console.log('(savedFormData == formData):',(savedFormData == LnPrint.fB.formData),'savedFormData',savedFormData,'actualPreset',actualPreset,'isNewPreset',isNewPreset,'isSavedPreset',isSavedPreset,'fB',LnPrint.fB.formData)
+                  //   //console.log('(savedFormData == formData):',(savedFormData == LnPrint.fB.formData),'savedFormData',savedFormData,'actualPreset',actualPreset,'isNewPreset',isNewPreset,'isSavedPreset',isSavedPreset,'fB',LnPrint.fB.formData)
                   // }, 100)
                   cb()
                 })
@@ -839,17 +839,17 @@ LnPrint.admin = {
     works: (userData)=>{                                                        //DRAW WORKS
       works = userData.works
       LnPrint.clear.contentWrapper()
-      LnPrint.backward.push({func: LnPrint.admin.draw.works, args: [userData]})
+      LnPrint.saveHistory({func: LnPrint.admin.draw.works, args: [userData]})
     },
     shipments: (userData)=>{                                                    //DRAW SHIPMENTS
       shipments = userData.shipments
       LnPrint.clear.contentWrapper()
-      LnPrint.backward.push({func: LnPrint.admin.draw.shipment, args: [userData]})
+      LnPrint.saveHistory({func: LnPrint.admin.draw.shipment, args: [userData]})
     }
   },
   populate:{
     chanTable: (userData)=>{
-      console.log(userData)
+      //console.log(userData)
     }
   }
 }

@@ -281,7 +281,7 @@ LnPrint.products = {
 
         toggleMouseHover(true)
       })
-      LnPrint.backward.push({func:LnPrint.products.draw.list})
+      LnPrint.saveHistory({func:LnPrint.products.draw.list})
     },
     photoPreview:(pId,toggleMouseHover)=>{
       toggleMouseHover(false)

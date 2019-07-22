@@ -60,6 +60,30 @@ ioSock.on('withdraw_fail', function (socketData) {
   LnPrint.notifyMsg(socketData.message,()=>{LnPrint.modal.close(all)})
 })
 
+//ONPOPSTATE EVENT
+window.onpopstate = (event)=>{
+  if(event.state != null){
+    if(event.state.stateNumber > -1){
+      console.log('popstate',event)
+      let stateNumber = event.state.stateNumber,
+          func, args
+      if(LnPrint.snapshots[stateNumber]){
+        func = LnPrint.snapshots[stateNumber].func
+        args = LnPrint.snapshots[event.state.stateNumber].args || []
+      }else{
+        func = noop
+        args = []
+      }
+      
+      LnPrint.pushHistorySwitch = false
+      func(...args)
+    }else{
+      console.log('stateNumber is undefined')
+    }
+  }else{
+    console.log('popevent is null?',event)
+  }
+}
 
 //PROGRESSIVE APP INSTALL PROMPT
 $('#addAppBtn').hide()
@@ -92,6 +116,7 @@ $('#addAppBtn').on('click', (e) => {
 
 //ONLOAD SCRIPT
 window.addEventListener("load", function(event) {
+  console.log('page loaded')
   LnPrint.loading.hide()
   //HIDE BACKLOADING IF FIRST ATTEMPT FAIL
   setTimeout(function () {
@@ -105,13 +130,19 @@ window.addEventListener("load", function(event) {
   //SERVICE WORKER
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('sw.js').then(function(registration) {
-    }, function(err) {console.log(err)})
+    }, function(err) {
+      //console.log(err)
+    })
   }
   
   //get data from server and draw pages
   LnPrint.update(()=>{
-
-    LnPrint.drawPage()
+    //insteadd of pushing a state, the first time the state must be replaced
+    LnPrint.pushHistorySwitch = false
+    LnPrint.drawPage(()=>{
+      LnPrint.snapshots.push({func: LnPrint.req.changepage, args: [LnPrint.page]})
+      window.history.replaceState({stateNumber: LnPrint.snapshots.length-1},LnPrint.page,'/')
+    })
 
     setTimeout(function () {
       if(transy <= 0.5){
@@ -146,7 +177,7 @@ $.getScript( '/js/plugin/jquery.qrcode.min.js', function() {
 
 //PREPARE MODALS TO START AND CONTROL THAT MODALS IS NOT BUSY FOREVER
 $(document).on('show.bs.modal', function (event) {
-  console.log('draw modal')
+  //console.log('draw modal')
   var modalData = event.relatedTarget
   LnPrint.modal.draw[modalData.name](modalData)
 })

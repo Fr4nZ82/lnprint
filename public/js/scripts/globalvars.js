@@ -1,6 +1,7 @@
 //GENERAL
 var LnPrint = {
-  backward: [],
+  pushHistorySwitch: true,
+  snapshots: [],
   forward: [],
   intervals: [],
   bitcoinReady: false,

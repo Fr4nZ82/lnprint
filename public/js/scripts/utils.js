@@ -1,7 +1,7 @@
 //ADJUST THINGS ON LOAD AND ON RESIZE
 LnPrint.adjust = (pag)=>{
   navLinkShift = ($('#navButtons').find('li').length - 2)*40
-  console.log('adjust..')
+  //console.log('adjust..')
   if(pag == 'dashboard' || pag == 'products' || pag == 'admin'){
     $('#navbarlinks').collapse('hide')
     $('#navbarlinks').on('shown.bs.collapse', ()=>{
@@ -60,14 +60,15 @@ LnPrint.adjust = (pag)=>{
       $('#logobig').css('height',heightMinusNavbar + 'px');
 
     }
-    ////console.log('trans!!!!!!!!!!!!!')
+    //console.log('trans!!!!!!!!!!!!!')
     trans(transy,transx)
   }
   //$('#backLoading').hide()
 }
 
-LnPrint.drawPage = ()=>{
-
+LnPrint.drawPage = (cb)=>{
+  cb = cb || noop
+  console.log('drawPage, snapshots:',LnPrint.snapshots)
   LnPrint.clear.page()
 
   $('#mainwrapper').append(LnPrint.pagesParts.navbar())
@@ -108,7 +109,8 @@ LnPrint.drawPage = ()=>{
     $('#logosmalla').css('display','flex')
   }
   LnPrint.adjust(LnPrint.page)
-
+  LnPrint.saveHistory({func: LnPrint.req.changepage, args:[LnPrint.page]})
+  cb()
 }
 
 LnPrint.update = (cb)=>{
@@ -153,22 +155,21 @@ LnPrint.update = (cb)=>{
 
   })
 }
-LnPrint.goBackward = (saveForward)=>{
-  saveForward = saveForward || true
-  var tempFwd = LnPrint.backward.pop()
-  var args = LnPrint.backward[LnPrint.backward.length-1].args || []
-  LnPrint.backward[LnPrint.backward.length-1].func(...args)
-  if(saveForward){
-    LnPrint.forward.push(tempFwd)
+
+LnPrint.saveHistory = (f)=>{
+  if(LnPrint.pushHistorySwitch){
+    console.log('saveHistory',history)
+  LnPrint.snapshots.push({func: f.func, args: f.args})
+  window.history.pushState({stateNumber: LnPrint.snapshots.length-1},LnPrint.page,'/')
+  }else{
+    console.log('switch off, history not saved')
+    LnPrint.pushHistorySwitch = true
   }
 }
-LnPrint.goForward = ()=>{
-  LnPrint.forward[LnPrint.forward.length-1]()
-  LnPrint.backward.push(LnPrint.forward.pop)
-}
+
 LnPrint.redraw = ()=>{
-  var args = LnPrint.backward[LnPrint.backward.length-1].args || []
-  LnPrint.backward[LnPrint.backward.length-1].func(...args)
+  var args = LnPrint.snapshots[LnPrint.snapshots.length-1].args || []
+  LnPrint.snapshots[LnPrint.snapshots.length-1].func(...args)
 }
 //DRAWER
 LnPrint.clear = {
@@ -178,9 +179,9 @@ LnPrint.clear = {
     }
     $('#content-wrapper').empty()
     if(LnPrint.intervals.length){
-      console.log('LnPrint.intervals',LnPrint.intervals)
+      //console.log('LnPrint.intervals',LnPrint.intervals)
       LnPrint.intervals.forEach((interval)=>{
-        console.log('interval to clear:',interval)
+        //console.log('interval to clear:',interval)
         clearInterval(interval)
       })
       LnPrint.intervals = []
@@ -192,9 +193,9 @@ LnPrint.clear = {
     }
     $('#mainwrapper').empty()
     if(LnPrint.intervals.length){
-      console.log('LnPrint.intervals',LnPrint.intervals)
+      //console.log('LnPrint.intervals',LnPrint.intervals)
       LnPrint.intervals.forEach((interval)=>{
-        console.log('interval to clear:',interval)
+        //console.log('interval to clear:',interval)
         clearInterval(interval)
       })
       LnPrint.intervals = []
@@ -324,13 +325,13 @@ LnPrint.notifyMsg = (msgData, cb, cbNo)=>{//ALERT & MESSAGE WITH MODAL
 LnPrint.post = (_req,actions)=>{
   LnPrint.modal.action.waitResponse('wait')
   actions.ifErr = actions.ifErr || noop
-  console.log('request:',_req)
+  //console.log('request:',_req)
   $.ajax({
     type: 'POST',
     url: '/',
     data: _req,
     success: function(response){
-      console.log('response:',response)
+      //console.log('response:',response)
       LnPrint.modal.action.waitResponse('done')
       LnPrint.loading.hide()
       if(response){
@@ -398,7 +399,7 @@ LnPrint.standardErrorBehavior = ()=>{
 LnPrint.scrollToId = (elemId,shift,divToScroll,animTime)=>{
   divToScroll = divToScroll || 'html,body'
   animTime = animTime || 700
-  console.log('#!!-links- scroll a elemento ', $(elemId));
+  //console.log('#!!-links- scroll a elemento ', $(elemId));
   $(divToScroll).animate(
      {
        scrollTop: $(elemId).offset().top + shift
@@ -409,7 +410,7 @@ LnPrint.readQR = (photoBtn,cb)=>{
   $photoBtn = $('#'+photoBtn)
   var selectedDeviceId = false
   const codeReader = new ZXing.BrowserQRCodeReader()
-  console.log('ZXing code reader initialized')
+  //console.log('ZXing code reader initialized')
   codeReader.getVideoInputDevices().then((videoInputDevices) => {
     const sourceSelect = document.getElementById('sourceSelect')
     const sSlabel = document.getElementById('sSlabel')
@@ -432,7 +433,7 @@ LnPrint.readQR = (photoBtn,cb)=>{
         sourceOption.text = element.label
         sourceOption.value = element.deviceId
         if(selectedDeviceId == element.deviceId){
-          console.log('selected',element.label)
+          //console.log('selected',element.label)
           sourceOption.selected = true
         }
         sourceSelect.appendChild(sourceOption)
@@ -459,7 +460,7 @@ LnPrint.readQR = (photoBtn,cb)=>{
                                       z-index:99999;flex-direction:column;flex-wrap:nowrap;
                                       justify-content:space-between;background-color:#000000;`)
       codeReader.decodeFromInputVideoDevice(selectedDeviceId, 'vpreview').then((result) => {
-        console.log(result)
+        //console.log(result)
         closeVPreview()
         return cb(null,result)
       }).catch((err) => {
@@ -469,13 +470,13 @@ LnPrint.readQR = (photoBtn,cb)=>{
           return cb(err)
         }
       })
-      console.log(`Started continous decode from camera with id ${selectedDeviceId}`)
+      //console.log(`Started continous decode from camera with id ${selectedDeviceId}`)
     }
     var closeVPreview = () => {
       videoPreviewDiv.style.display = 'none'
       hideSS()
       codeReader.reset()
-      console.log('Reset.')
+      //console.log('Reset.')
       return cb(null,false)
     }
     document.getElementById(photoBtn).addEventListener('click', showVPreview)
