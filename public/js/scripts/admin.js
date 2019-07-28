@@ -21,7 +21,7 @@ LnPrint.admin = {
     messages: (userData)=>{                                                     //DRAW MESSAGES
       let messages = userData.messages
       LnPrint.clear.contentWrapper()
-      //LnPrint.saveHistory({func: ['admin','draw','messages'], args: [userData]})
+      //LnPrint.saveHistory({funcs: ['admin','draw','messages'], args: [userData]})
     },
     node: (userData)=>{                                                       //DRAW FOUNDS
       let founds = userData.account
@@ -36,7 +36,7 @@ LnPrint.admin = {
       $('#channelscolumn').append(LnPrint.admin.print.channelsTable(founds))
       $('#transactionscolumn').append(LnPrint.admin.print.transTable(founds))
       LnPrint.admin.populate.chanTable(userData)
-      //LnPrint.saveHistory({func: ['admin','draw','node'], args: [userData]})
+      //LnPrint.saveHistory({funcs: ['admin','draw','node'], args: [userData]})
     },
     products: ()=>{                                                       //DRAW PRODUCTS
       LnPrint.req.products((products)=>{
@@ -46,7 +46,7 @@ LnPrint.admin = {
         LnPrint.draw.column(0,'productscolumn',12)
         $('#productscolumn').append(LnPrint.admin.print.productsTable(products))
       })
-      //LnPrint.saveHistory({func:['admin','draw','products']})
+      //LnPrint.saveHistory({funcs:['admin','draw','products']})
     },
     addProduct: (edit)=>{
       edit = edit || false
@@ -477,7 +477,7 @@ LnPrint.admin = {
           }
         }, 1000)
       }
-      //LnPrint.saveHistory({func:'noop'})
+      //LnPrint.saveHistory({funcs:'noop'})
     },
     editPresets: (selectedPreset,onClose)=>{
       onClose = onClose || noop
@@ -838,12 +838,12 @@ LnPrint.admin = {
     works: (userData)=>{                                                        //DRAW WORKS
       works = userData.works
       LnPrint.clear.contentWrapper()
-      //LnPrint.saveHistory({func: ['admin','draw','works'], args: [userData]})
+      //LnPrint.saveHistory({funcs: ['admin','draw','works'], args: [userData]})
     },
     shipments: (userData)=>{                                                    //DRAW SHIPMENTS
       shipments = userData.shipments
       LnPrint.clear.contentWrapper()
-      //LnPrint.saveHistory({func: ['admin','draw','shipment'], args: [userData]})
+      //LnPrint.saveHistory({funcs: ['admin','draw','shipment'], args: [userData]})
     }
   },
   populate:{

@@ -1,18 +1,21 @@
 LnPrint.req = {
-  changepage: (pagename)=>{
+  changepage: (pagename,cb)=>{
+    cb=cb||noop
     //console.log("#!!-req- Chiamata funzione changepage:",pagename)
-
     LnPrint.page = pagename
-    //console.log("#!!-req- Chiamata funzione changepage:",LnPrint.page)
+    //console.log("#!!-req- Chiamata funzione changepage:",JSON.stringify(LnPrint.snapshots))
     LnPrint.post(
       {type:'page',name:LnPrint.page},
       {
         ifYes:(res)=>{
-          //console.log("#!!-req- questa è la risposta del server:",res)
+          //console.log("#!!-req- risposta del server:",JSON.stringify(LnPrint.snapshots))
           LnPrint.update(()=>{
-            LnPrint.drawPage()
+            LnPrint.drawPage(cb)
             $(window).scrollTop(0)
           })
+        },
+        ifErr:()=>{
+          LnPrint.standardErrorBehavior()
         }
       }
     )

@@ -64,24 +64,35 @@ ioSock.on('withdraw_fail', function (socketData) {
 window.onpopstate = (event)=>{
   if(event.state != null){
     if(event.state.stateNumber > -1){
-      //console.log('popstate',event)
       let stateNumber = event.state.stateNumber,
           args = LnPrint.snapshots[stateNumber].args || []
       if(LnPrint.snapshots[stateNumber]){
-        LnPrint.snapshotToFunction(LnPrint.snapshots[stateNumber].func,(func)=>{
+        var snapshotsNow = LnPrint.snapshots[stateNumber].funcs.slice()
+        LnPrint.snapshotToFunctions(snapshotsNow,(funcs)=>{
+          args.forEach((arg,ii)=>{
+            if(ii < funcs.length-1){
+              args[ii].push(()=>{
+                LnPrint.pushHistorySwitch = false
+                funcs[ii+1](...args[ii+1])
+              })
+            }
+          })
           LnPrint.pushHistorySwitch = false
-          //console.log('onpopstate call func:',func)
-          func(...args)          
+          funcs[0](...args[0])
         })
       }else{
         LnPrint.req.changepage('home')
         location.reload()
       }
     }else{
-      //console.log('stateNumber is undefined')
+      LnPrint.req.changepage('home')
+      location.reload()
+      console.log('stateNumber is undefined')
     }
   }else{
-    //console.log('popevent is null?',event)
+    LnPrint.req.changepage('home')
+    location.reload()
+    console.log('popevent is null?',event)
   }
 }
 
@@ -141,24 +152,20 @@ window.addEventListener("load", function(event) {
     LnPrint.pushHistorySwitch = false
     LnPrint.drawPage(()=>{
       let ssSnapshotsJson = window.sessionStorage.getItem('snapshots') || false
-      //console.log('ssSnapshotsJson',ssSnapshotsJson)
       let ssSnapshots
       if(ssSnapshotsJson){
         ssSnapshots = JSON.parse(ssSnapshotsJson)
       }else{
         ssSnapshots = false
       }
-      //console.log('ssSnapshot',ssSnapshots)
       if(ssSnapshots && ssSnapshots.length > 0){
-        //console.log('ssSnapshot is not false and its length is > 0')
         LnPrint.snapshots = ssSnapshots
       }else{
-        //console.log('ssSnapshot is false or void, push a new snapshot of the current page and save sessionstorage')
-        LnPrint.snapshots.push({func: ['req','changepage'], args: [LnPrint.page]})
+        LnPrint.snapshots.push({funcs: [['req','changepage']], args: [[LnPrint.page]]})
         window.sessionStorage.setItem('snapshots',JSON.stringify(LnPrint.snapshots))
       }
-      //console.log('replace state on load')
       window.history.replaceState({stateNumber: LnPrint.snapshots.length-1},LnPrint.page,'/')
+      LnPrint.pushHistorySwitch = true
     })
 
     setTimeout(function () {

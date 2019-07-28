@@ -18,7 +18,7 @@ LnPrint.dashboard = {
     messages: (userData)=>{                                                     //DRAW MESSAGES
       messages = userData.messages
       LnPrint.clear.contentWrapper();
-      //LnPrint.saveHistory({func: ['dashboard','draw','messages'], args: [userData]})
+      //LnPrint.saveHistory({funcs: ['dashboard','draw','messages'], args: [userData]})
     },
     founds: (userData)=>{                                                       //DRAW FOUNDS
       let _founds=userData.account
@@ -53,12 +53,21 @@ LnPrint.dashboard = {
         "autoWidth": false,
         scrollY:150
       })
-      //LnPrint.saveHistory({func: ['dashboard','draw','founds'], args: [userData]})
+      LnPrint.saveHistory({
+        funcs: [
+          ['req','changepage'],
+          ['dashboard','draw','founds']
+        ],
+        args: [
+          ['dashboard'],
+          [userData]
+        ]
+      })
     },
     works: (userData)=>{                                                        //DRAW WORKS
       works = userData.works
       LnPrint.clear.contentWrapper();
-      //LnPrint.saveHistory({func: ['dashboard','draw','works'], args: [userData]})
+      //LnPrint.saveHistory({funcs: ['dashboard','draw','works'], args: [userData]})
     },
     shipments: (userData)=>{                                                    //DRAW SHIPMENTS
       var shipments = userData.shipments,
@@ -71,7 +80,7 @@ LnPrint.dashboard = {
       LnPrint.draw.column(0,'shipmentscolumn',12)
       $('#cartcolumn').append(LnPrint.dashboard.print.cartTable(cart,works))
       $('#shipmentscolumn').append(LnPrint.dashboard.print.shipmentsTable(shipments,works))
-      //LnPrint.saveHistory({func: ['dashboard','draw','shipments'], args: [userData]})
+      //LnPrint.saveHistory({funcs: ['dashboard','draw','shipments'], args: [userData]})
     }
   }
 }

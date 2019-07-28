@@ -68,7 +68,6 @@ LnPrint.adjust = (pag)=>{
 
 LnPrint.drawPage = (cb)=>{
   cb = cb || noop
-  //console.log('drawPage, snapshots:',LnPrint.snapshots)
   LnPrint.clear.page()
 
   $('#mainwrapper').append(LnPrint.pagesParts.navbar())
@@ -109,7 +108,7 @@ LnPrint.drawPage = (cb)=>{
     $('#logosmalla').css('display','flex')
   }
   LnPrint.adjust(LnPrint.page)
-  LnPrint.saveHistory({func: ['req','changepage'], args:[LnPrint.page]})
+  LnPrint.saveHistory({funcs: [['req','changepage']], args:[[LnPrint.page]]})
   cb()
 }
 
@@ -137,7 +136,6 @@ LnPrint.update = (cb)=>{
           wor: ()=>{return 'ToDo'},
           shi: ()=>{return 'ToDo'}
         }
-
       }else{
         LnPrint.loggedUser = false
         if(LnPrint.user){
@@ -145,48 +143,42 @@ LnPrint.update = (cb)=>{
         }
       }
       cb()
-      
-
     }else{
       LnPrint.req.changepage('home')
       location.reload()
     }
-    
-
   })
 }
 
 LnPrint.saveHistory = (f)=>{
   if(LnPrint.pushHistorySwitch){
-    //console.log('saveHistory',history)
-
-    LnPrint.snapshots.push({func: f.func, args: f.args})
-    
-    //console.log('snapshots',LnPrint.snapshots)
-    //console.log('snapshots stringified:',JSON.stringify(LnPrint.snapshots))
-    //console.log('snapshots parsed',JSON.parse(JSON.stringify(LnPrint.snapshots)))
-
+    LnPrint.snapshots.push({funcs: f.funcs, args: f.args})
     window.sessionStorage.setItem('snapshots',JSON.stringify(LnPrint.snapshots))
-
     window.history.pushState({stateNumber: LnPrint.snapshots.length-1},LnPrint.page,'/')
   }else{
-    //console.log('switch off, history not saved')
     LnPrint.pushHistorySwitch = true
   }
 }
 
-LnPrint.snapshotToFunction = (commandArray, cb, obj = LnPrint)=>{
-  commandArrayCopy = commandArray.slice()
-  //console.log('snapshotToFunction recursion, commandArray:',commandArray,'obj:',obj)
-  obj = obj[commandArrayCopy.shift()]
-  //console.log('shift done, LnPrint.snapshots stringified:',JSON.stringify(LnPrint.snapshots))
-  if (commandArrayCopy.length) LnPrint.snapshotToFunction(commandArrayCopy, cb, obj)
-  else{
-    //console.log('end of recursion, return obj:',obj)
-    return cb(obj)
-  }
-  
-
+LnPrint.snapshotToFunctions = (funcsArray, cb, obj = LnPrint, func = [], funcs = [], n = -1,cycles = 0)=>{
+    cycles++
+    if(func.length){
+      func = func.slice()
+      obj = obj[func.shift()]
+      LnPrint.snapshotToFunctions(funcsArray, cb, obj, func, funcs, n,cycles)
+    }else{
+      var funcsArrayCopy = funcsArray.slice()
+      func = funcsArrayCopy.shift()
+      if(n > -1){
+        funcs[n] = obj
+      }
+      n++
+      if(funcsArray.length){
+        LnPrint.snapshotToFunctions(funcsArrayCopy, cb, LnPrint, func, funcs, n,cycles)
+      }else{
+        cb(funcs)
+      }
+    }
 }
 
 LnPrint.redraw = ()=>{
@@ -194,12 +186,13 @@ LnPrint.redraw = ()=>{
   var args = LnPrint.snapshots[LnPrint.snapshots.length-1].args || []
 
   let snapshotId = LnPrint.snapshots.length-1
-  let commandArray = LnPrint.snapshots[snapshotId].func
+  let commandArray = LnPrint.snapshots[snapshotId].funcs
 
-  let func = LnPrint.snapshotToFunction(commandArray,(func)=>{
-    func(...args)
+  let funcs = LnPrint.snapshotToFunctions(commandArray,(funcs)=>{
+    funcs.forEach(function(f,i){
+      f(...args[i])
+    })
   })
-  
 }
 //DRAWER
 LnPrint.clear = {
@@ -429,7 +422,6 @@ LnPrint.standardErrorBehavior = ()=>{
 LnPrint.scrollToId = (elemId,shift,divToScroll,animTime)=>{
   divToScroll = divToScroll || 'html,body'
   animTime = animTime || 700
-  //console.log('#!!-links- scroll a elemento ', $(elemId));
   $(divToScroll).animate(
      {
        scrollTop: $(elemId).offset().top + shift
@@ -440,7 +432,6 @@ LnPrint.readQR = (photoBtn,cb)=>{
   $photoBtn = $('#'+photoBtn)
   var selectedDeviceId = false
   const codeReader = new ZXing.BrowserQRCodeReader()
-  //console.log('ZXing code reader initialized')
   codeReader.getVideoInputDevices().then((videoInputDevices) => {
     const sourceSelect = document.getElementById('sourceSelect')
     const sSlabel = document.getElementById('sSlabel')
@@ -463,7 +454,6 @@ LnPrint.readQR = (photoBtn,cb)=>{
         sourceOption.text = element.label
         sourceOption.value = element.deviceId
         if(selectedDeviceId == element.deviceId){
-          //console.log('selected',element.label)
           sourceOption.selected = true
         }
         sourceSelect.appendChild(sourceOption)
@@ -490,7 +480,6 @@ LnPrint.readQR = (photoBtn,cb)=>{
                                       z-index:99999;flex-direction:column;flex-wrap:nowrap;
                                       justify-content:space-between;background-color:#000000;`)
       codeReader.decodeFromInputVideoDevice(selectedDeviceId, 'vpreview').then((result) => {
-        //console.log(result)
         closeVPreview()
         return cb(null,result)
       }).catch((err) => {
@@ -500,13 +489,11 @@ LnPrint.readQR = (photoBtn,cb)=>{
           return cb(err)
         }
       })
-      //console.log(`Started continous decode from camera with id ${selectedDeviceId}`)
     }
     var closeVPreview = () => {
       videoPreviewDiv.style.display = 'none'
       hideSS()
       codeReader.reset()
-      //console.log('Reset.')
       return cb(null,false)
     }
     document.getElementById(photoBtn).addEventListener('click', showVPreview)
@@ -526,7 +513,6 @@ LnPrint.genKey = ()=>{
   keyPair = '';
   return privkey;
 }
-//**dataURL to blob to dataURL**
 LnPrint.dataURLtoBlob = (dataurl)=>{
     var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
         bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
