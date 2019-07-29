@@ -434,6 +434,13 @@ input[type=number] {
   flex-direction: column;
   max-width: 1024px; }
 
+.workinprogress{
+  color: rgb(255, 0, 0);
+  font-weight: bold;
+  font-size: x-large;
+  text-align: center;
+}
+
 .drawingrow {
   margin-left: -7.5px !important;
   margin-right: -7.5px !important; }

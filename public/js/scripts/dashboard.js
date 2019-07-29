@@ -17,8 +17,18 @@ LnPrint.dashboard = {
     },
     messages: (userData)=>{                                                     //DRAW MESSAGES
       messages = userData.messages
-      LnPrint.clear.contentWrapper();
-      //LnPrint.saveHistory({funcs: ['dashboard','draw','messages'], args: [userData]})
+      LnPrint.clear.contentWrapper()
+      LnPrint.draw.drawingspace(true)
+      LnPrint.saveHistory({
+        funcs: [
+          ['req','changepage'],
+          ['dashboard','draw','messages']
+        ],
+        args: [
+          ['dashboard'],
+          [userData]
+        ]
+      })
     },
     founds: (userData)=>{                                                       //DRAW FOUNDS
       let _founds=userData.account
@@ -66,8 +76,18 @@ LnPrint.dashboard = {
     },
     works: (userData)=>{                                                        //DRAW WORKS
       works = userData.works
-      LnPrint.clear.contentWrapper();
-      //LnPrint.saveHistory({funcs: ['dashboard','draw','works'], args: [userData]})
+      LnPrint.clear.contentWrapper()
+      LnPrint.draw.drawingspace(true)
+      LnPrint.saveHistory({
+        funcs: [
+          ['req','changepage'],
+          ['dashboard','draw','works']
+        ],
+        args: [
+          ['dashboard'],
+          [userData]
+        ]
+      })
     },
     shipments: (userData)=>{                                                    //DRAW SHIPMENTS
       var shipments = userData.shipments,
@@ -80,7 +100,16 @@ LnPrint.dashboard = {
       LnPrint.draw.column(0,'shipmentscolumn',12)
       $('#cartcolumn').append(LnPrint.dashboard.print.cartTable(cart,works))
       $('#shipmentscolumn').append(LnPrint.dashboard.print.shipmentsTable(shipments,works))
-      //LnPrint.saveHistory({funcs: ['dashboard','draw','shipments'], args: [userData]})
+      LnPrint.saveHistory({
+        funcs: [
+          ['req','changepage'],
+          ['dashboard','draw','shipments']
+        ],
+        args: [
+          ['dashboard'],
+          [userData]
+        ]
+      })
     }
   }
 }

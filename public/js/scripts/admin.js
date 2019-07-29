@@ -21,7 +21,17 @@ LnPrint.admin = {
     messages: (userData)=>{                                                     //DRAW MESSAGES
       let messages = userData.messages
       LnPrint.clear.contentWrapper()
-      //LnPrint.saveHistory({funcs: ['admin','draw','messages'], args: [userData]})
+      LnPrint.draw.drawingspace(true)
+      LnPrint.saveHistory({
+        funcs: [
+          ['req','changepage'],
+          ['admin','draw','messages']
+        ],
+        args: [
+          ['admin'],
+          [userData]
+        ]
+      })
     },
     node: (userData)=>{                                                       //DRAW FOUNDS
       let founds = userData.account
@@ -36,7 +46,17 @@ LnPrint.admin = {
       $('#channelscolumn').append(LnPrint.admin.print.channelsTable(founds))
       $('#transactionscolumn').append(LnPrint.admin.print.transTable(founds))
       LnPrint.admin.populate.chanTable(userData)
-      //LnPrint.saveHistory({funcs: ['admin','draw','node'], args: [userData]})
+      LnPrint.draw.drawingspace(true)
+      LnPrint.saveHistory({
+        funcs: [
+          ['req','changepage'],
+          ['admin','draw','node']
+        ],
+        args: [
+          ['admin'],
+          [userData]
+        ]
+      })
     },
     products: ()=>{                                                       //DRAW PRODUCTS
       LnPrint.req.products((products)=>{
@@ -46,7 +66,16 @@ LnPrint.admin = {
         LnPrint.draw.column(0,'productscolumn',12)
         $('#productscolumn').append(LnPrint.admin.print.productsTable(products))
       })
-      //LnPrint.saveHistory({funcs:['admin','draw','products']})
+      LnPrint.saveHistory({
+        funcs: [
+          ['req','changepage'],
+          ['admin','draw','products']
+        ],
+        args: [
+          ['admin'],
+          []
+        ]
+      })
     },
     addProduct: (edit)=>{
       edit = edit || false
@@ -477,7 +506,16 @@ LnPrint.admin = {
           }
         }, 1000)
       }
-      //LnPrint.saveHistory({funcs:'noop'})
+      LnPrint.saveHistory({
+        funcs: [
+          ['req','changepage'],
+          ['admin','draw','addProduct']
+        ],
+        args: [
+          ['admin'],
+          [edit]
+        ]
+      })
     },
     editPresets: (selectedPreset,onClose)=>{
       onClose = onClose || noop
@@ -834,16 +872,46 @@ LnPrint.admin = {
           }
         }
       })
+      LnPrint.saveHistory({
+        funcs: [
+          ['req','changepage'],
+          ['admin','draw','editPresets']
+        ],
+        args: [
+          ['admin'],
+          [selectedPreset,onClose]
+        ]
+      })
     },
     works: (userData)=>{                                                        //DRAW WORKS
       works = userData.works
       LnPrint.clear.contentWrapper()
-      //LnPrint.saveHistory({funcs: ['admin','draw','works'], args: [userData]})
+      LnPrint.draw.drawingspace(true)
+      LnPrint.saveHistory({
+        funcs: [
+          ['req','changepage'],
+          ['admin','draw','works']
+        ],
+        args: [
+          ['admin'],
+          [userData]
+        ]
+      })
     },
     shipments: (userData)=>{                                                    //DRAW SHIPMENTS
       shipments = userData.shipments
       LnPrint.clear.contentWrapper()
-      //LnPrint.saveHistory({funcs: ['admin','draw','shipment'], args: [userData]})
+      LnPrint.draw.drawingspace(true)
+      LnPrint.saveHistory({
+        funcs: [
+          ['req','changepage'],
+          ['admin','draw','shipments']
+        ],
+        args: [
+          ['admin'],
+          [userData]
+        ]
+      })
     }
   },
   populate:{

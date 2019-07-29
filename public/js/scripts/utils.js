@@ -3,14 +3,15 @@ LnPrint.adjust = (pag)=>{
   navLinkShift = ($('#navButtons').find('li').length - 2)*40
   //console.log('adjust..')
   if(pag == 'dashboard' || pag == 'products' || pag == 'admin'){
+
     $('#navbarlinks').collapse('hide')
     $('#navbarlinks').on('shown.bs.collapse', ()=>{
       $(".thesidebar").css("display",'flex')
-      $('#footer').css('border-top-left-radius','0')
+      $('#footer').css('border-top-left-radius','0').css('border-top-right-radius','0')
     });
     $('#navbarlinks').on('hidden.bs.collapse', ()=>{
       $(".thesidebar").css("display",'none')
-      $('#footer').css('border-top-left-radius','20px')
+      $('#footer').css('border-top-left-radius','20px').css('border-top-right-radius','20px')
     });
     if($('#wrapper').length){
       var heightMinusNavbar2 = window.innerHeight - $('#naviga').outerHeight() - $('#footer').outerHeight()
@@ -36,7 +37,7 @@ LnPrint.adjust = (pag)=>{
       $('#navbarlinks').on('hidden.bs.collapse', ()=>{$(".wrapper").css("height",'calc(100vh - 58px)')})
       if( $('#navbarlinks').css('display') == 'none' ){
         $(".thesidebar").css("display",'none');
-        $('#footer').css('border-top-left-radius','20px')
+        $('#footer').css('border-top-left-radius','20px').css('border-top-right-radius','20px')
       }
       $('#userandbell').css('margin-right','12px').css('order',0);
       $('#navicons').css('order',0);
@@ -45,7 +46,7 @@ LnPrint.adjust = (pag)=>{
       $('#hamburger').css('order',1);
     }else{
       $(".thesidebar").css("display",'flex');
-      $('#footer').css('border-top-left-radius','0')
+      $('#footer').css('border-top-left-radius','0').css('border-top-right-radius','0')
       $('#navbarcontentdiv').css('padding',0);
       $('#userandbell').css('margin-right',0).css('order',1);
       $('#navicons').css('order',1);
@@ -58,7 +59,7 @@ LnPrint.adjust = (pag)=>{
     if($('#logobig').length){
       var heightMinusNavbar = window.innerHeight - $('#naviga').outerHeight() - $('#footer').outerHeight();
       $('#logobig').css('height',heightMinusNavbar + 'px');
-
+      $('#footer').css('border-top-left-radius','20px').css('border-top-right-radius','20px')
     }
     //console.log('trans!!!!!!!!!!!!!')
     trans(transy,transx)
@@ -91,7 +92,7 @@ LnPrint.drawPage = (cb)=>{
     if(LnPrint.page == 'admin'){
       $('body').css('overflow','auto')
       $('#naviga').after(LnPrint.pagesParts.admin())
-      LnPrint.admin.draw.overview()
+      LnPrint.admin.draw.overview(LnPrint.user)
     }else{
       $('#navButtons').append(`
         <li class="nav-item">
@@ -226,10 +227,16 @@ LnPrint.clear = {
   }
 }
 LnPrint.draw = {
-  drawingspace: ()=>{
+  drawingspace: (wip)=>{
+    wip = wip || false
     $('#content-wrapper').append(
       '<div id="drawingspace" class="container-fluid"></div>'
     )
+    if(wip){
+      $('#drawingspace').addClass('h-100').append(
+        '<div id="workinprogress" class="row h-100 workinprogress"><div class="col my-auto">WORK IN<br>PROGRESS</div></div>'
+      )
+    }
   },
   row: (n)=>{
     $('#drawingspace').append(
