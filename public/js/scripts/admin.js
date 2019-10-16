@@ -178,7 +178,7 @@ LnPrint.admin = {
         imgWidth: LnPrint.conf.productImgWidth,
         uploadcompleted: (e,data)=>{
           ++uploadDoneCounter
-          //console.log('uploadDoneCounter: '+uploadDoneCounter+' nPhotos: '+nPhotos)
+          console.log('uploadDoneCounter: '+uploadDoneCounter+' nPhotos: '+nPhotos)
           if(uploadDoneCounter == nPhotos){
             setTimeout(function () {
               waitUpload = false
@@ -237,7 +237,7 @@ LnPrint.admin = {
               blob.name = data.files[0].name
               blob.lastModified = (new Date()).getTime()
               blob.mainPhoto = mainPhoto
-              //console.log('UpdateCroppedFile(blob) blob -> ',blob)
+              console.log('UpdateCroppedFile(blob) blob -> ',blob)
               UpdateCroppedFile(blob)
               if(mainPhoto == 'yes'){
                 validMainPhoto()
@@ -327,7 +327,7 @@ LnPrint.admin = {
               if(edit.photos.length){ //se il prodotto editato aveva foto
                 var fileBlob
                 edit.photos.forEach((photo)=>{ //per ogni photo che aveva
-                  //console.log(photo)
+                  console.log(photo)
                   fileBlob = LnPrint.dataURLtoBlob('data:image/jpeg;base64,' + photo.fileData) //crea un blob
                   fileBlob.name = photo.fileId //e gli assegna un nome file che però è il nome random che il server ha dato durante l'inserimento, è senza estensione
                   fileBlob.lastModified = (new Date()).getTime()
@@ -466,7 +466,7 @@ LnPrint.admin = {
           }
 
           function uploadEach(productId){
-            //console.log('upload each start... nPhotos:',nPhotos)
+            console.log('upload each start... nPhotos:',nPhotos)
             if(nPhotos > 0){
               $('#thefiles').next().find('.ff_fileupload_actions button.ff_fileupload_start_upload').each(function(i,el){
                 $('.ff_fileupload_hidden input[type=hidden]').remove()
@@ -483,7 +483,7 @@ LnPrint.admin = {
           }
 
           nPhotos = $('#pMainPhoto option').length - 1
-          //console.log('nPhotos',nPhotos)
+          console.log('nPhotos',nPhotos)
           if(edit){
             insertProductData._id = edit._id
             LnPrint.admin.req.updateProduct(insertProductData,nPhotos,(productId)=>{
@@ -499,7 +499,7 @@ LnPrint.admin = {
           location.redirect('/')
         }
         var uploadCheck = setInterval(function () {
-          //console.log('waiting upload', waitUpload)
+          console.log('waiting upload', waitUpload)
           if(!waitUpload){
             LnPrint.admin.draw.products()
             clearInterval(uploadCheck)
@@ -587,7 +587,7 @@ LnPrint.admin = {
               })
               $('#savePresetNameBtn').on('click',()=>{
                 function addPreset(){
-                  //console.log('new preset added')
+                  console.log('new preset added')
                   if(isNewPreset && actualPreset != ''){
                     deleteOption($('#'+$('#presetselect').data('lastOpt')))
                   }
@@ -623,7 +623,7 @@ LnPrint.admin = {
         })
         .on('focusin', function(){
           $('#presetselect').data('lastOpt', $('#presetselect option:selected').attr('id'))
-          //console.log('focusin',$('#presetselect option:selected').attr('id'))
+          console.log('focusin',$('#presetselect option:selected').attr('id'))
         })
         $('#delPresetBtn').on('click',()=>{
           var $selectedOption = $('#presetselect option:selected'),
@@ -643,9 +643,9 @@ LnPrint.admin = {
         })
         $('#presetselect')
         .on('change',()=>{
-          //console.log('change')
+          console.log('change')
           doFB($('#presetselect option:selected').data('formData'),()=>{
-            //console.log('changed')
+            console.log('changed')
             if(isNewPreset && actualPreset != '' && $('#presetselect').data('lastOpt') != 'formPresetNotSelected'){
               deleteOption($('#'+$('#presetselect').data('lastOpt')),$('#presetselect option:selected'))
               showEdit()
@@ -657,7 +657,7 @@ LnPrint.admin = {
         })
         .on('focusin', function(){
           $('#presetselect').data('lastOpt', $('#presetselect option:selected').attr('id'))
-          //console.log('focusin',$('#presetselect option:selected').attr('id'))
+          console.log('focusin',$('#presetselect option:selected').attr('id'))
         })
 
         $('#presetselect option').each(function(i){
@@ -689,13 +689,13 @@ LnPrint.admin = {
                 }
               ],
               onAddField: function(fieldId,hh) {
-                //console.log('field added')
+                console.log('field added')
                 isSavedPreset = false
                 toggleSaveBtn(false)
                 $('#previewPresetBtn').prop('disabled',false)
               },
               onSave: function(evt, formData) {
-                //console.log('saved')
+                console.log('saved')
                 LnPrint.admin.req.savePreset(actualPreset,formData,(res)=>{
                   $('#presetselect option:selected').data('formData',formData).data('name',$('#presetselect option:selected').val())
                   hideRender()
@@ -747,7 +747,7 @@ LnPrint.admin = {
         }
         function deleteOption($sO,$nextO){
           $nextO = $nextO || false
-          //console.log('option '+$sO.text()+' removed')
+          console.log('option '+$sO.text()+' removed')
           $sO.remove()
           if($nextO){
             $("#presetselect").val($nextO.val())
@@ -768,10 +768,10 @@ LnPrint.admin = {
           cbYes = cbYes || noop
           var $selectedOption = $('#presetselect option:selected')
           if(isSavedPreset && clearType != 'delete'){
-            //console.log('all fields cleared')
+            console.log('all fields cleared')
             LnPrint.fB.actions.clearFields()
             setTimeout(function () {
-              //console.log('cbYes!')
+              console.log('cbYes!')
               cbYes()
             }, 600)
           }else{
@@ -787,7 +787,7 @@ LnPrint.admin = {
               name:'prompt',
               text:text,
               cbYes: ()=>{
-                //console.log('all fields cleared')
+                console.log('all fields cleared')
                 LnPrint.fB.actions.clearFields()
                 setTimeout(function () {
                   cbYes()
@@ -804,7 +804,7 @@ LnPrint.admin = {
           }
           if(presetBuilderDone){
             clearPresetBuilder(false,()=>{
-              //console.log('doFB -> formData: ', formData)
+              console.log('doFB -> formData: ', formData)
               if(formData){
                 LnPrint.fB.actions.setData(formData)
               }
@@ -814,7 +814,7 @@ LnPrint.admin = {
           }else{
             jQuery(function($) {
                 $('.buildWrap').formBuilder(fBOptions).promise.then((formBuilder)=>{
-                  //console.log('doFB -> formData: ', formData)
+                  console.log('doFB -> formData: ', formData)
                   savedFormData = formData
                   LnPrint.fB = formBuilder
                   $('.form-actions').hide()
@@ -827,7 +827,7 @@ LnPrint.admin = {
                     }
                     clearPresetBuilder('reset',()=>{
                       if(oldFormData){
-                        //console.log('resetPresetBtn oldFormData',oldFormData)
+                        console.log('resetPresetBtn oldFormData',oldFormData)
                         LnPrint.fB.actions.setData(oldFormData)
                         isSavedPreset = true
                         toggleSaveBtn(true)
@@ -836,7 +836,7 @@ LnPrint.admin = {
                   })
                   $('#previewPresetBtn').on('click',()=>{
                     showRender()
-                    //console.log('preview')
+                    console.log('preview')
                     $('.renderWrap').formRender({formData: LnPrint.fB.formData})
                   }).prop('disabled',true)
                   presetBuilderDone = true
@@ -864,7 +864,7 @@ LnPrint.admin = {
                   }, 100)
                   LnPrint.intervals.push(presetEditControl)
                   // setInterval(function () {
-                  //   //console.log('(savedFormData == formData):',(savedFormData == LnPrint.fB.formData),'savedFormData',savedFormData,'actualPreset',actualPreset,'isNewPreset',isNewPreset,'isSavedPreset',isSavedPreset,'fB',LnPrint.fB.formData)
+                  console.log('(savedFormData == formData):',(savedFormData == LnPrint.fB.formData),'savedFormData',savedFormData,'actualPreset',actualPreset,'isNewPreset',isNewPreset,'isSavedPreset',isSavedPreset,'fB',LnPrint.fB.formData)
                   // }, 100)
                   cb()
                 })
@@ -916,7 +916,7 @@ LnPrint.admin = {
   },
   populate:{
     chanTable: (userData)=>{
-      //console.log(userData)
+      console.log(userData)
     }
   }
 }

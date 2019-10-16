@@ -30,7 +30,7 @@ module.exports = {
   thumbSize:              80,
   txMinConfirmations:     4,
   zombiesPurificationTime:300000,
-  txCheckingTime:         60000,
+  txCheckingTime:         10000,
   channelSyncTime:        15000,//120000,
   tickerUpdateTime:       60000,
   feesUpdateTime:         300000,

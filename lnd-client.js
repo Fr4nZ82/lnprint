@@ -1,17 +1,17 @@
-var lnService = require('./my-ln-service'),
+var lnService = require('ln-service'),
     config    = require('./cfg');
 
-const lnd = lnService.lightningDaemon({
+
+const {lnd} = lnService.authenticatedLndGrpc({
   cert: config.LND.cert,
-  host: config.LND.host,
-  macaroon: config.LND.macaroon
-});
-const lndUnlock = lnService.lightningDaemon({
-  cert: config.LND.cert,
-  host: config.LND.host,
   macaroon: config.LND.macaroon,
-  service: 'WalletUnlocker'
+  socket: config.LND.host,
 });
+const unauthenticatedLndGrpc = lnService.unauthenticatedLndGrpc({
+  cert: config.LND.cert,
+  socket: config.LND.host
+});
+const lndUnlock = unauthenticatedLndGrpc.lnd
 
 var lnClient = {
   TryUnlock: (cb)=>{
@@ -58,28 +58,31 @@ var lnClient = {
     })
   },
   listTx: (cb)=>{
-    lnService.getTransactions({lnd}, (error, result) => {
+    lnService.getChainTransactions({lnd}, (error, result) => {
       if(!!error){return cb(error)}
       return cb(null,result.transactions)
     })
   },
   genInvoice: (inv,cb)=>{
     console.log('#!!-LND- start of the genInvoice function')
-    let expire = new Date(Date.now() + config.invoiceExpireTime)//.toISOString(); //EXPIRE AFTER 5 MINUTES
-    lnService.createInvoice({expires_at: expire, include_address: true, lnd: lnd, tokens: inv.amt},(error, result) => {
+    let expire = new Date(Date.now() + config.invoiceExpireTime)
+    let desc = ''
+    if(inv.description){
+      desc = inv.description
+    }
+    lnService.createInvoice({expires_at: expire, description: desc, lnd: lnd, tokens: inv.amt},(error, result) => {
       if(error){
         console.log("#!!-LND- genInvoice error: ",error);
         return cb(error)
       }
       result.dateE = expire
-      result.description = 'toDo'
       result.from = inv.from
       result.work = 'toDo'
       return cb(null,result)
     })
   },
   decodeInvoice: (invoice,cb)=>{
-    lnService.decodeInvoice({invoice: invoice, lnd: lnd},(err,result)=>{
+    lnService.decodePaymentRequest({request: invoice, lnd: lnd},(err,result)=>{
       if(!!err){
         console.log("#!!-LND- decodeInvoice error: ",err)
       }else if(result){
@@ -89,11 +92,12 @@ var lnClient = {
     })
   },
   payInvoice: (invoice,cb)=>{
-    lnService.payInvoice({fee: config.LND.maxPaymentFee, invoice: invoice, lnd: lnd},(err,result)=>{
+    lnService.payViaPaymentRequest({max_fee: config.LND.maxPaymentFee, request: invoice, lnd: lnd},(err,result)=>{
       if(!!err){
         console.log("#!!-LND- payInvoice error: ",err)
       }else if(result){
         console.log('#!!-LND- payInvoice result:\n',result)
+        result.tokens=Math.round(result.mtokens / 1000)
       }
       return cb(err,result)
     })
@@ -130,7 +134,7 @@ var lnClient = {
          return cb(err)
        }
        lnClient.nodeInfo = nodeinfo
-       lnClient.iemitter = lnService.subscribeToInvoices({lnd, console})
+       lnClient.iemitter = lnService.subscribeToInvoices({lnd})
        return cb()
       });
     });

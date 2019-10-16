@@ -125,8 +125,8 @@ var LnPrint = ()=>{
                       if(result){console.log('#!!-APP- eliminata pending tx',txData._id)}
                     })
                   }
-                  MDB.collection('addresses').find({_id: {$in: txData.destAdrresses}})                //find all addresses in addresses collection matching with
-                  .toArray((err,txDestAddresses)=>{                                                   //addresses in the tx destAdrresses array
+                  MDB.collection('addresses').find({_id: {$in: txData.output_addresses}})                //find all addresses in addresses collection matching with
+                  .toArray((err,txDestAddresses)=>{                                                   //addresses in the tx output_addresses array
                     if(err){return console.log('error finding address',err)}
                     if(txDestAddresses.length){                                                       //if found one or more
                       txDestAddresses.forEach((destAddr)=>{                                           //then for each
@@ -567,7 +567,7 @@ var LnPrint = ()=>{
 
           //INVOICE EMITTER ON
           console.log("#!!-APP- iemitter on")
-          lnClient.iemitter.on('data',(invoiceData)=>{
+          lnClient.iemitter.on('invoice_updated',(invoiceData)=>{
             if(invoiceData.is_confirmed === true){
               console.log("#!!-APP- iemitter emit invoice settled!!",invoiceData)
               MDB.collection('invoices').findOneAndUpdate(

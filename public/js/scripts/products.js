@@ -3,7 +3,7 @@ LnPrint.products = {
     list: ()=>{
       LnPrint.products.cache = []
       LnPrint.req.products((products)=>{
-        //console.log(products)
+        console.log(products)
         LnPrint.clear.contentWrapper()
         LnPrint.draw.drawingspace()
         LnPrint.draw.row(0)
@@ -42,7 +42,7 @@ LnPrint.products = {
             top: $(el).position().top+30,
             left: $(el).position().left+15
           }
-          //console.log('append div')
+          console.log('append div')
           $('#ptablewrapper').append(LnPrint.products.print.productDetail(divData))
           $(el).height($('#proddetaildiv_'+i).height())
 
@@ -52,16 +52,16 @@ LnPrint.products = {
           .css('left',$(el).position().left+15)
           .hover(
             ()=>{
-              //console.log('mouse enter div')
+              console.log('mouse enter div')
               clearInterval(mouseExitTimeout)
               resetRowsStyle()
             },
             ()=>{
-              //console.log('mouse exit div')
+              console.log('mouse exit div')
               clearTimeout(mouseExitTimeout)
-              //console.log('timeout 810')
+              console.log('timeout 810')
               mouseExitTimeout = setTimeout(function () {
-                //console.log('div close')
+                console.log('div close')
                 resetRowsHeight()
               }, mouseExitTime)
             }
@@ -89,7 +89,7 @@ LnPrint.products = {
           $('.thetagdiv')
           .on('click mouseenter',function(){
             let tags = pr.tags.replace(/,/g, " ")
-            //console.log('show tag')
+            console.log('show tag')
             $(this).append('<div class="tagslistdiv">'+tags+'</div>')
             $('.tagslistdiv')
             .css('z-index',99999)
@@ -97,7 +97,7 @@ LnPrint.products = {
             .css('left',$('.thetagdiv').offset().left-3)
             setTimeout(function () {
               $('body').on('click scroll',function(){
-                //console.log('hide tag')
+                console.log('hide tag')
                 $('body').off()
                 $('.tagslistdiv').remove()
               })
@@ -136,7 +136,7 @@ LnPrint.products = {
 
           if(LnPrint.user){
             $('.orderProductButton').click(()=>{
-              //console.log('click',LnPrint.products.cache)
+              console.log('click',LnPrint.products.cache)
               toggleMouseHover(false,true)
               if(draft){
                 LnPrint.modal.new({name:'draftReq',from:'productTable',product:pr,onClose:()=>{toggleMouseHover(false,false)}})
@@ -174,13 +174,13 @@ LnPrint.products = {
             if(removeDiv){
               resetRowsHeight()
             }
-            //console.log('set hovers')
+            console.log('set hovers')
             $('#producttable .productrow').each(function(i){
               var _this = this
               $(_this).on('mouseenter click',function(e){
-                //console.log('e',e)
-                //console.log('hover on row ',$(_this).attr('pid'))
-                //console.log('clear showing in')
+                console.log('e',e)
+                console.log('hover on row ',$(_this).attr('pid'))
+                console.log('clear showing in')
                 $(_this).addClass('mousehover')
                 clearTimeout(showingIn)
                 clearTimeout(mouseExitTimeout)
@@ -200,13 +200,13 @@ LnPrint.products = {
                         .removeClass('mousehover')
                       },
                       complete:()=>{
-                        //console.log('complete')
+                        console.log('complete')
                         var halfblink = blinkTime / 2
-                        //console.log(halfblink)
+                        console.log(halfblink)
                         blink($(_this),halfblink)
 
                         blinkTimeout = setInterval(function (){
-                          //console.log('interval')
+                          console.log('interval')
                           if ($(_this).hasClass('mousehover')){
                             blink($(_this),halfblink)
                           }else{
@@ -221,14 +221,14 @@ LnPrint.products = {
                   }
 
                   mouseExitTimeout = setTimeout(function () {
-                    //console.log('div close')
+                    console.log('div close')
                     resetRowsHeight()
                   }, mouseExitTime)
                   var thisTimeOutTime = mouseEnterTime
                 }else{
                   var thisTimeOutTime = 200
                 }
-                //console.log('timeout 800')
+                console.log('timeout 800')
                 showingIn = setTimeout(function () {
 
                   toggleMouseHover(false,true)
@@ -240,14 +240,14 @@ LnPrint.products = {
                     var cpindex = (LnPrint.products.cache.map(pc=>pc.id)).indexOf(_product.id)
 
                     if(cpindex != -1){
-                      //console.log('product in cache:',LnPrint.products.cache[cpindex])
+                      console.log('product in cache:',LnPrint.products.cache[cpindex])
                       _product = LnPrint.products.cache[cpindex]
                       overlayDetail(_product,_this,i)
                       toggleMouseHover(false,false)
                     }else{
 
                       LnPrint.req.product(_product.id,false,(response)=>{
-                        //console.log('product from server:',response)
+                        console.log('product from server:',response)
                         _product = response
                         LnPrint.products.cache.push(_product)
                         LnPrint.products.cache.splice(50)
@@ -262,15 +262,15 @@ LnPrint.products = {
                 }, thisTimeOutTime)
               })
               .on('mouseleave',function(){
-                //console.log('mouse exit from row ',$(_this).attr('pid'))
-                //console.log('clear showing in')
+                console.log('mouse exit from row ',$(_this).attr('pid'))
+                console.log('clear showing in')
                 clearTimeout(showingIn)
                 $(_this).removeClass('mousehover')
               })
             })
             mouseHoverActive = true
           }else{
-            //console.log('unset hover')
+            console.log('unset hover')
             $('#producttable .productrow').each(function(){
               $(this).off()
             })

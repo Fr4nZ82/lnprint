@@ -1,18 +1,18 @@
 //ADJUST THINGS ON LOAD AND ON RESIZE
 LnPrint.adjust = (pag)=>{
   navLinkShift = ($('#navButtons').find('li').length - 2)*40
-  //console.log('adjust..')
+  console.log('adjust..')
   if(pag == 'dashboard' || pag == 'products' || pag == 'admin'){
 
     $('#navbarlinks').collapse('hide')
     $('#navbarlinks').on('shown.bs.collapse', ()=>{
       $(".thesidebar").css("display",'flex')
       $('#footer').css('border-top-left-radius','0').css('border-top-right-radius','0')
-    });
+    })
     $('#navbarlinks').on('hidden.bs.collapse', ()=>{
       $(".thesidebar").css("display",'none')
       $('#footer').css('border-top-left-radius','20px').css('border-top-right-radius','20px')
-    });
+    })
     if($('#wrapper').length){
       var heightMinusNavbar2 = window.innerHeight - $('#naviga').outerHeight() - $('#footer').outerHeight()
       $('.wrapper').css('height',heightMinusNavbar2 + 'px')
@@ -36,32 +36,32 @@ LnPrint.adjust = (pag)=>{
       $('#navbarlinks').on('shown.bs.collapse', ()=>{$(".wrapper").css("height",'calc(100vh - 138px)')})
       $('#navbarlinks').on('hidden.bs.collapse', ()=>{$(".wrapper").css("height",'calc(100vh - 58px)')})
       if( $('#navbarlinks').css('display') == 'none' ){
-        $(".thesidebar").css("display",'none');
+        $(".thesidebar").css("display",'none')
         $('#footer').css('border-top-left-radius','20px').css('border-top-right-radius','20px')
       }
-      $('#userandbell').css('margin-right','12px').css('order',0);
-      $('#navicons').css('order',0);
-      $('#navbarlinks').css('order',1);
-      $('#navButtons').css('text-align','right');
-      $('#hamburger').css('order',1);
+      $('#userandbell').css('margin-right','12px').css('order',0)
+      $('#navicons').css('order',0)
+      $('#navbarlinks').css('order',1)
+      $('#navButtons').css('text-align','right')
+      $('#hamburger').css('order',1)
     }else{
-      $(".thesidebar").css("display",'flex');
+      $(".thesidebar").css("display",'flex')
       $('#footer').css('border-top-left-radius','0').css('border-top-right-radius','0')
-      $('#navbarcontentdiv').css('padding',0);
-      $('#userandbell').css('margin-right',0).css('order',1);
-      $('#navicons').css('order',1);
-      $('#navbarlinks').css('order',0);
-      $('#navButtons').css('text-align','left');
-      $('#hamburger').css('order',0);
+      $('#navbarcontentdiv').css('padding',0)
+      $('#userandbell').css('margin-right',0).css('order',1)
+      $('#navicons').css('order',1)
+      $('#navbarlinks').css('order',0)
+      $('#navButtons').css('text-align','left')
+      $('#hamburger').css('order',0)
     }
   }else{
     //ADJUST LOGOBIG BANNER HEIGHT FOR ALL DEVICES
     if($('#logobig').length){
-      var heightMinusNavbar = window.innerHeight - $('#naviga').outerHeight() - $('#footer').outerHeight();
-      $('#logobig').css('height',heightMinusNavbar + 'px');
+      var heightMinusNavbar = window.innerHeight - $('#naviga').outerHeight() - $('#footer').outerHeight()
+      $('#logobig').css('height',heightMinusNavbar + 'px')
       $('#footer').css('border-top-left-radius','20px').css('border-top-right-radius','20px')
     }
-    //console.log('trans!!!!!!!!!!!!!')
+    console.log('trans!!!!!!!!!!!!!')
     trans(transy,transx)
   }
   //$('#backLoading').hide()
@@ -203,9 +203,9 @@ LnPrint.clear = {
     }
     $('#content-wrapper').empty()
     if(LnPrint.intervals.length){
-      //console.log('LnPrint.intervals',LnPrint.intervals)
+      console.log('LnPrint.intervals',LnPrint.intervals)
       LnPrint.intervals.forEach((interval)=>{
-        //console.log('interval to clear:',interval)
+        console.log('interval to clear:',interval)
         clearInterval(interval)
       })
       LnPrint.intervals = []
@@ -217,9 +217,9 @@ LnPrint.clear = {
     }
     $('#mainwrapper').empty()
     if(LnPrint.intervals.length){
-      //console.log('LnPrint.intervals',LnPrint.intervals)
+      console.log('LnPrint.intervals',LnPrint.intervals)
       LnPrint.intervals.forEach((interval)=>{
-        //console.log('interval to clear:',interval)
+        console.log('interval to clear:',interval)
         clearInterval(interval)
       })
       LnPrint.intervals = []
@@ -301,8 +301,8 @@ LnPrint.loading = {
         opacity: 0,
       }, 200, function() {
         $('#backLoading').hide()
-      });
-    }, 450);
+      })
+    }, 450)
   }
 }
 
@@ -353,16 +353,16 @@ LnPrint.notifyMsg = (msgData, cb, cbNo)=>{//ALERT & MESSAGE WITH MODAL
 
 //Ajax post, actions format: {ifYes: function, ifNo: function, ifErr: function}
 LnPrint.post = (_req,actions)=>{
-  LnPrint.modal.action.waitResponse('wait')
+  LnPrint.modal.action.waitResponse('wait',_req.type)
   actions.ifErr = actions.ifErr || noop
-  //console.log('request:',_req)
+  console.log('request:',_req)
   $.ajax({
     type: 'POST',
     url: '/',
     data: _req,
     success: function(response){
-      //console.log('response:',response)
-      LnPrint.modal.action.waitResponse('done')
+      console.log('response:',response)
+      LnPrint.modal.action.waitResponse('done',_req.type)
       LnPrint.loading.hide()
       if(response){
         if(response.message){
@@ -404,9 +404,9 @@ LnPrint.validateForm = (fieldsObj,buttonId)=>{
 }
 //COPY FUNCTION
 LnPrint.copyF = (elem,cb)=>{
-  cb = cb || noop;
-  //console.log('copyfunction avviata')
-  $('#'+elem).select();
+  cb = cb || noop
+  console.log('copyfunction avviata')
+  $('#'+elem).select()
   try {
     var successful = document.execCommand('copy')
     var msg
@@ -513,23 +513,23 @@ LnPrint.readQR = (photoBtn,cb)=>{
   })
 }
 LnPrint.genKey = ()=>{
-  let keyPair = bitcoinjs.ECPair.makeRandom({});
-  let privkeyhex = keyPair.privateKey.toString('hex');
-  let privkeybuffer = new bitcoinjs.Buffer.from(privkeyhex, 'hex');
+  let keyPair = bitcoinjs.ECPair.makeRandom({})
+  let privkeyhex = keyPair.privateKey.toString('hex')
+  let privkeybuffer = new bitcoinjs.Buffer.from(privkeyhex, 'hex')
   let privkey = bitcoinjs.wif.encode(128, privkeybuffer, true)
-  keyPair = '';
-  return privkey;
+  keyPair = ''
+  return privkey
 }
 LnPrint.dataURLtoBlob = (dataurl)=>{
     var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
-        bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+        bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n)
     while(n--){
-        u8arr[n] = bstr.charCodeAt(n);
+        u8arr[n] = bstr.charCodeAt(n)
     }
-    return new Blob([u8arr], {type:mime});
+    return new Blob([u8arr], {type:mime})
 }
 LnPrint.blobToDataURL = (blob, callback)=>{
-    var a = new FileReader();
-    a.onload = function(e) {callback(e.target.result);}
-    a.readAsDataURL(blob);
+    var a = new FileReader()
+    a.onload = function(e) {callback(e.target.result)}
+    a.readAsDataURL(blob)
 }

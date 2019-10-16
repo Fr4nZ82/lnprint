@@ -32,7 +32,11 @@ module.exports = (req,res)=>{
                 if(err[2] == 'payment is in transition'){
                   dataForClient={message:{type:'alert',text:'error: payment is in transition, wait confirmation or timeout'}}
                 }else{
-                  dataForClient={message:{type:'alert',text:'error: payment error'}}
+                  if(err[2].err.details == 'invoice is already paid'){
+                    dataForClient={message:{type:'alert',text:'error: invoice is already paid'}}
+                  }else{
+                    dataForClient={message:{type:'alert',text:'error: payment error'}}
+                  }
                 }
                 req.userSocketIds.forEach((sock)=>{
                   console.log('#!!-.POST/-'+req.body.type+'- socket:',sock)

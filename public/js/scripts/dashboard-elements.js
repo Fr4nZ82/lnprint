@@ -1,26 +1,26 @@
 LnPrint.dashboard.print = {
   overviewCard: (card,cardText)=>{
-    var icon, clickon, title;
+    var icon, clickon, title
     if(card == 'mes'){
-      title = 'Messages';
-      icon = 'fas fa-fw fa-envelope';
-      clickon = 'onclick="LnPrint.dashboard.draw.messages(LnPrint.user);"'
+      title = 'Messages'
+      icon = 'fas fa-fw fa-envelope'
+      clickon = 'onclick="LnPrint.dashboard.draw.messages(LnPrint.user)"'
     }else if(card == 'fou'){
-      title = 'Balance';
-      icon = 'fab fa-fw fa-btc';
-      clickon = 'onclick="LnPrint.dashboard.draw.founds(LnPrint.user);"';
+      title = 'Balance'
+      icon = 'fab fa-fw fa-btc'
+      clickon = 'onclick="LnPrint.dashboard.draw.founds(LnPrint.user)"'
     }else if(card == 'wor'){
-      title = 'Works';
-      icon = 'fas fa-fw fa-print';
-      clickon = 'onclick="LnPrint.dashboard.draw.works(LnPrint.user);"';
+      title = 'Works'
+      icon = 'fas fa-fw fa-print'
+      clickon = 'onclick="LnPrint.dashboard.draw.works(LnPrint.user)"'
     }else if(card == 'shi'){
-      title = 'Cart/Shipments';
-      icon = 'fas fa-fw fa-shopping-cart';
-      clickon = 'onclick="LnPrint.dashboard.draw.shipments(LnPrint.user);"';
+      title = 'Cart/Shipments'
+      icon = 'fas fa-fw fa-shopping-cart'
+      clickon = 'onclick="LnPrint.dashboard.draw.shipments(LnPrint.user)"'
     }else{
-      title = '';
-      icon = '';
-      clickon = '';
+      title = ''
+      icon = ''
+      clickon = ''
     }
     return `
       <div class="card text-white `+card+` o-hidden h-100">
@@ -177,14 +177,12 @@ LnPrint.dashboard.print = {
     `
     if(founds.history.length > 0){
       let tableBody = `<tbody>`, trColor, dt
-      //console.log(founds.history)
       founds.history.forEach((tx)=>{
         if(         tx.from == 'deposit'    ){    trColor = 'trcolorgreen'  }
         else if(    tx.from == 'withdraw'   ){    trColor = 'trcolorred'    }
         else if(    tx.from == 'payment'    ){    trColor = 'trcolorgrey'   }
         else if(    tx.from == 'donation'   ){    trColor = 'trcolorpink'   }
         else{trColor = ''}
-        //console.log(tx)
         dt = tx.date.getFullYear() + '/' +
             ('0' + (tx.date.getMonth()+1)).slice(-2) + '/' +
             ('0' + tx.date.getDate()).slice(-2) + ' - ' +

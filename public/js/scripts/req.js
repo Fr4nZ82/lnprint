@@ -1,14 +1,13 @@
 LnPrint.req = {
   changepage: (pagename,cb)=>{
     cb=cb||noop
-    //console.log("#!!-req- Chiamata funzione changepage:",pagename)
+    console.log("#!!-req- Chiamata funzione changepage:",pagename)
     LnPrint.page = pagename
-    //console.log("#!!-req- Chiamata funzione changepage:",JSON.stringify(LnPrint.snapshots))
     LnPrint.post(
       {type:'page',name:LnPrint.page},
       {
         ifYes:(res)=>{
-          //console.log("#!!-req- risposta del server:",JSON.stringify(LnPrint.snapshots))
+          console.log("#!!-req- risposta del server a changepage "+pagename)
           LnPrint.update(()=>{
             LnPrint.drawPage(cb)
             $(window).scrollTop(0)
@@ -25,7 +24,7 @@ LnPrint.req = {
       {type: 'req_user_data'},
       {
         ifYes:(res)=>{
-          //console.log('#!!-req- getUserData success response:',res)
+          console.log('#!!-req- getUserData success response:',res)
           cb(res)
         }
       }
@@ -36,7 +35,7 @@ LnPrint.req = {
       {type: 'req_ticker'},
       {
         ifYes:(res)=>{
-          //console.log("#!!-req- questa è la risposta del server:",res)
+          console.log("#!!-req- questa è la risposta del server:",res)
           cb(res)
         }
       }
@@ -47,7 +46,7 @@ LnPrint.req = {
       {type: 'req_bitcoinFees'},
       {
         ifYes:(res)=>{
-          //console.log("#!!-req- questa è la risposta del server:",res)
+          console.log("#!!-req- questa è la risposta del server:",res)
           cb(res)
         }
       }
@@ -235,7 +234,7 @@ LnPrint.req = {
           res.txData.date = new Date(res.txData.date)
           LnPrint.user.account.ochistory.push(res.txData)
           if(thisPageName == 'dashboard'){
-            //console.log('#!!-onLoad- ridisegno ultima pagina visitata')
+            console.log('#!!-onLoad- ridisegno ultima pagina visitata')
             LnPrint.redraw()
           }
         },

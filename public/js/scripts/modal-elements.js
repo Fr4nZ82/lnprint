@@ -309,7 +309,7 @@ LnPrint.modal.print={
   },
   order1:(product,from)=>{
     //delete product.mainPhoto
-    //console.log(product)
+    console.log(product)
     return `
       <div class="order-form">
         <div class="oform-group">
@@ -324,7 +324,7 @@ LnPrint.modal.print={
     `
   },
   draftReq:(product,from)=>{
-    //console.log('product',product)
+    console.log('product',product)
     return `
       <form action="presetForm" method="post" enctype="multipart/form-data">
         <div class="draftreq-form"></div>

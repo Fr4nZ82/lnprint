@@ -6,27 +6,29 @@ LnPrint.modal = {
   busy: 0,
   disabled: false,
   action:{
-    waitResponse:(word,cb)=>{
+    waitResponse:(word,cause)=>{
+      console.log('waitResponse '+word+' cause '+ cause + ' LnPrint.modal.busy = '+LnPrint.modal.busy)
+      cause = cause || 'unknown'
       var modal = LnPrint.modal
       if(word == 'wait'){
-        //console.log('modal disabled')
+        console.log('modal disabled waiting server response, cause: '+cause)
         modal.disabled = true
-        //console.log('++busy++ waiting server response')
+        console.log('++busy++ waiting server response, cause: '+cause)
         ++modal.busy
         modal.action.waiting = setTimeout(function () {
-          //console.log('modal enabled because server does not respon after timeout')
+          console.log('modal enabled because server does not respond to '+cause+' after timeout')
           modal.disabled = false
-          //console.log('--busy-- because server does not respon after timeout')
+          console.log('--busy-- because server does not respond to '+cause+' after timeout')
           --modal.busy
           modal.close('all')
           modal.action.waiting = false
-        }, ajaxTimeout)
+        }, ajaxTimeout,cause)
       }else if(word == 'done'){
         clearTimeout(modal.action.waiting)
         modal.action.waiting = false
-        //console.log('modal enabled')
+        console.log('modal enabled because server response arrived, cause: '+cause)
         modal.disabled = false
-        //console.log('--busy-- server rosponse arrived')
+        console.log('--busy-- server rosponse arrived, cause: '+cause)
         --modal.busy
       }
     },
@@ -48,27 +50,27 @@ LnPrint.modal = {
       Object.assign(_modalData,modalData)
       var _cb = ()=>{cb()}
 
-      //console.log('#!!-modal.new- status dei modal:', JSON.stringify(modal),modalData)
+      console.log('#!!-modal.new- status dei modal:', JSON.stringify(modal),modalData)
 
       if(modal.busy === 0){
         if((!!LnPrint.bitcoinReady && !!LnPrint.qrcodeReady) || _modalData.name == 'message'){
-          //console.log('#!!-modal.new- Un evento('+modalData.from+') crea un modal('+modalData.name+')')
+          console.log('#!!-modal.new- Un evento('+modalData.from+') crea un modal('+modalData.name+')')
 
           ++modal.busy
-          //console.log('++busy++ nuovo modal ('+modalData.name+') add html to DOM...')
+          console.log('++busy++ nuovo modal ('+modalData.name+') add html to DOM...')
           if(modalData.autoclose){
             ++modal.busy
-            //console.log('++busy++ because autoclose')
+            console.log('++busy++ because autoclose')
           }
 
           modal.active.push(modalData.name)
 
           $('#thebody').append(modal.print.voidModal(modal.active.length-1,(_modalId,_modalNumber)=>{
-            //console.log('#!!-modal.new- modal added to html')
+            console.log('#!!-modal.new- modal added to html')
             _modalData.id = _modalId
             _modalData.number = _modalNumber
             --modal.busy
-            //console.log('--busy-- modal add html to DOM finita: ', _modalId)
+            console.log('--busy-- modal add html to DOM finita: ', _modalId)
           }))
 
           if(_modalData.name == 'fulmine'){
@@ -77,30 +79,30 @@ LnPrint.modal = {
           $(_modalData.id)
           .on('show.bs.modal',function(){
             ++modal.busy
-            //console.log('++busy++ nuovo modal inizio apertura')
+            console.log('++busy++ nuovo modal inizio apertura')
           })
           .on('shown.bs.modal',function(){
-            //console.log('#!!-modal.new- modal showed: ',this)
+            console.log('#!!-modal.new- modal showed: ',this)
             --modal.busy
-            //console.log('--busy-- nuovo modal apertura finita')
+            console.log('--busy-- nuovo modal apertura finita')
             autosize($('.theKey'))
             cb(_modalData.id)
           })
           .on('hidden.bs.modal', function(){
-            //console.log('#!!-onLoad- closed modal: ',this)
+            console.log('#!!-onLoad- closed modal: ',this)
             if(modalData.onClose && typeof modalData.onClose == 'function'){
               modalData.onClose()
             }
             modal.last.modal = $(this).remove()
             modal.active.pop()
           })
-          //console.log(_modalData)
+          console.log(_modalData)
           $(_modalData.id)
           .modal('show',_modalData)
 
         }else{
           $('#backLoading').show().animate({opacity: 1}, 100)
-          //console.log('#!!-modal.new- modal non è pronto, lo metto in coda!')
+          console.log('#!!-modal.new- modal non è pronto, lo metto in coda!')
           modal.action.queue.push({
             action: modal.new,
             data: _modalData,
@@ -117,7 +119,7 @@ LnPrint.modal = {
           })
         }
       }else{
-        //console.log('#!!-modal.new- modal non è pronto, lo metto in coda!')
+        console.log('#!!-modal.new- modal non è pronto, lo metto in coda!')
         modal.action.queue.push({
           action: modal.new,
           data: _modalData,
@@ -127,49 +129,53 @@ LnPrint.modal = {
   },
   close: (n,cb)=>{
     cb = cb || noop
+    console.log('avvio funzione modal close, cb = ',cb.toString())
     var modal = LnPrint.modal
     var hMOM = modal.active.length-1
 
     if(hMOM > 0){
-      //console.log('#!!-modal.close- modal.close function avviata con n='+n+', active modals: ',modal.active)
+      console.log('#!!-modal.close- modal.close function avviata con n='+n+', active modals: ',modal.active)
       if(n == 'all'){
-        //console.log('#!!-modal.close- chiudo tutti i '+n+' modals, cioè dal '+(hMOM)+' al '+(hMOM))
+        console.log('#!!-modal.close- chiudo tutti i '+n+' modals, cioè dal '+(hMOM)+' al '+(hMOM))
         var _n = 'all'
         n = hMOM
-      }else if(n[0]){
-        //console.log('#!!-modal.close- chiudo '+n[1]+' modals, cioè dal '+(hMOM)+' al '+((hMOM)-n[1]))
+      }else if(n[0] && n[1]){
+        console.log('#!!-modal.close- chiudo '+n[1]+' modals, cioè dal '+(hMOM)+' al '+((hMOM)-n[1]))
         if(n[0] == 'auto'){
           --modal.busy
-          //console.log('--busy-- bacause autoclose')
+          console.log('--busy-- bacause autoclose')
           var _n = {}
           Object.assign(_n,n)
           n = n[1]
+        }else{
+          console.log('#!!-modal.close- chiudo '+n+' modals, cioè dal '+(hMOM)+' al '+((hMOM)-n))
+          var _n = n
         }
       }else{
-        //console.log('#!!-modal.close- chiudo '+n+' modals, cioè dal '+(hMOM)+' al '+((hMOM)-n))
+        console.log('#!!-modal.close- chiudo '+n+' modals, cioè dal '+(hMOM)+' al '+((hMOM)-n))
         var _n = n
       }
 
 
       var _cb = ()=>{cb()}
-      //console.log('#!!-modal.close- se modal.busy è 0 iniza il ciclo di chiusura. modal.busy = ',modal.busy)
+      console.log('#!!-modal.close- se modal.busy è 0 iniza il ciclo di chiusura. modal.busy = ',modal.busy)
       if(modal.busy === 0){
 
         ++modal.busy
-        //console.log('++busy++ inizio ciclo di chiusura')
+        console.log('++busy++ inizio ciclo di chiusura')
 
         var m = hMOM
 
         for(var i=m; i>(m-n); i=(i-1)){
-          //console.log('ciclo chiusura, i = '+i+' modal to close:',$('#dynamicModal'+i))
+          console.log('ciclo chiusura, i = '+i+' modal to close:',$('#dynamicModal'+i))
 
           if(i == (m-n+1)){
             $('#dynamicModal'+i)
             .on('hidden.bs.modal',()=>{
               --modal.busy
-              //console.log('--busy-- fine ciclo di chiusura')
+              console.log('--busy-- fine ciclo di chiusura')
 
-              //console.log('#!!-modal.close- modals chiusi, status dei modal:', modal)
+              console.log('#!!-modal.close- modals chiusi, status dei modal:', modal)
               cb()
             })
           }
@@ -179,7 +185,7 @@ LnPrint.modal = {
         }
 
       }else{
-        //console.log('#!!-modal.close- modal non è pronto, lo metto in coda!')
+        console.log('#!!-modal.close- modal non è pronto, lo metto in coda!')
         modal.action.queue.push({
           action: modal.close,
           data: _n,
@@ -187,38 +193,38 @@ LnPrint.modal = {
         })
       }
     }else{
-      //console.log('#!!-modal.close- non ci sono modal da chiudere!')
+      console.log('#!!-modal.close- non ci sono modal da chiudere!')
       cb()
     }
   },
   draw: {
     fulmine:(modalData)=>{
       var modal = LnPrint.modal
-      //console.log('DRAW FULMINE')
+      console.log('DRAW FULMINE')
       let modalId = modalData.id
       let modalNumber = modalData.number
       $(modalId).css('display','block').css('background-color','#000000').css('opacity', 0.97)
-      //console.log(1)
+      console.log(1)
       $(modalId+' .modal-content').replaceWith(`<div class="modal-content-fulmine modal-content"></div>`)
-      //console.log(2)
+      console.log(2)
       setTimeout(function () {
         $(modalId+' .modal-content').css('opacity',0)
-        //console.log(3)
+        console.log(3)
         setTimeout(function () {
           $(modalId+' .modal-content').css('opacity',1)
-          //console.log(4)
+          console.log(4)
           setTimeout(function () {
             $(modalId+' .modal-content').css('opacity',0)
-            //console.log(5)
+            console.log(5)
             setTimeout(function () {
               $(modalId+' .modal-content').css('opacity',1)
-              //console.log(6)
+              console.log(6)
               setTimeout(function () {
                 $(modalId+' .modal-content').css('opacity',0)
-                //console.log(7)
+                console.log(7)
                 setTimeout(function () {
                   $(modalId+' .modal-content').css('opacity',1)
-                  //console.log(8)
+                  console.log(8)
                   setTimeout(function () {
                     $(modalId+' .modal-content').css('opacity',0)
                     var afterFulmine = ()=>{
@@ -275,18 +281,18 @@ LnPrint.modal = {
       .append(LnPrint.modal.print.keyQueryContent(modalData.from))
     },
     login:(modalData)=>{
-      //console.log('#!!-modal.draw.login-')
+      console.log('#!!-modal.draw.login-')
       $(modalData.id +' .modal-content')
       .append(LnPrint.modal.print.commonStructure(modalData.name))
       $(modalData.id +' .modal-body')
       .append(LnPrint.modal.print.loginContent(modalData.from))
       $('#loginbtn').prop('disabled', true)
       $('#theLoginKey').on('input change', function() {
-        //console.log('controllo #theLoginKey..')
+        console.log('controllo #theLoginKey..')
         var notvalid = !(/^[5KL][1-9A-HJ-NP-Za-km-z]{50,51}$/.test($('#theLoginKey').val()))
-        //console.log('is invalid: '+notvalid)
+        console.log('is invalid: '+notvalid)
         var isEmpty = !$('#theLoginKey').val() != ''
-        //console.log('empty: '+isEmpty)
+        console.log('empty: '+isEmpty)
         $('#loginbtn').prop('disabled',(isEmpty || notvalid))
       })
     },
@@ -295,7 +301,7 @@ LnPrint.modal = {
       .append(LnPrint.modal.print.commonStructure(modalData.name))
       var prk = modalData.prk.toString()
       modalData.prk = ''
-      //console.log('#!!-modal.draw.register- disegno il modal')
+      console.log('#!!-modal.draw.register- disegno il modal')
       $(modalData.id +' .modal-body')
       .append(LnPrint.modal.print.registerContent(modalData.from,prk))
       $("#theRegisterKey").css('opacity', '0').css('height', '1px')
@@ -328,7 +334,7 @@ LnPrint.modal = {
       modalData.after()
     },
     message:(modalData)=>{
-      //console.log('msgToNotify: ',modalData)
+      console.log('msgToNotify: ',modalData)
       $(modalData.id +' .modal-content')
       .append('<p id="alertText"><h5>'+modalData.text+'</h5></p>')
       .addClass('messageModal')
@@ -377,7 +383,7 @@ LnPrint.modal = {
       })
     },
     userInfo:(modalData)=>{
-      //console.log('draw userinfo')
+      console.log('draw userinfo')
       $(modalData.id +' .modal-content')
       .append(LnPrint.modal.print.commonStructure(modalData.name))
       $(modalData.id +' .modal-body')
@@ -420,7 +426,7 @@ LnPrint.modal = {
       LnPrint.readQR('photoBtn',(err,qrValue)=>{
         if(err){return (()=>{
           alert(err)
-          //console.log(err)
+          console.log(err)
         })()}
         if(qrValue){
           $('#theWithdrawInvoice').val(qrValue.toString().toLowerCase())
@@ -455,7 +461,7 @@ LnPrint.modal = {
           if(err){
             return (()=>{
               alert(err)
-              //console.log(err)
+              console.log(err)
             })()
           }
           if(qrValue){
@@ -469,15 +475,15 @@ LnPrint.modal = {
       .append(LnPrint.modal.print.commonStructure(modalData.name,modalData.from))
       $(modalData.id +' .modal-body')
       .append(LnPrint.modal.print.invoiceContent(modalData.payreq,modalData.from))
-      //console.log(modalData)
+      console.log(modalData)
       $(modalData.id).on('hide.bs.modal',function(){
         clearInterval(invoiceExpInterval)
       })
       let invoiceTTL = Date.parse(modalData.payreq.dateE)
-      //console.log('invoiceTTL',invoiceTTL)
+      console.log('invoiceTTL',invoiceTTL)
       let invoiceExpInterval = setInterval(function() {
         let now = new Date().getTime()
-        //console.log('now:',now)
+        console.log('now:',now)
         let distance = invoiceTTL - now
         //let days = Math.floor(distance / (1000 * 60 * 60 * 24))
         //let hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
@@ -513,10 +519,10 @@ LnPrint.modal = {
       .append(LnPrint.modal.print.commonStructure(modalData.name,modalData.from))
       $(modalData.id +' .modal-body')
       .append(LnPrint.modal.print.draftReq(modalData.product,modalData.from))
-      //console.log(modalData)
+      console.log(modalData)
       LnPrint.req.preset(modalData.product.preset,(preset)=>{
         $('.draftreq-form').formRender({formData: preset.formData})
-        $('.formBuilder-injected-style').remove();
+        $('.formBuilder-injected-style').remove()
       })
     }
   }

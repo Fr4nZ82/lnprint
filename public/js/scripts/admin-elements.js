@@ -1,26 +1,26 @@
 LnPrint.admin.print = {
   overviewCard: (card,cardText)=>{
-    var icon, clickon, title;
+    var icon, clickon, title
     if(card == 'mes'){
-      title = 'Messages';
-      icon = 'fas fa-fw fa-envelope';
-      clickon = 'onclick="LnPrint.admin.draw.messages(LnPrint.user);"'
+      title = 'Messages'
+      icon = 'fas fa-fw fa-envelope'
+      clickon = 'onclick="LnPrint.admin.draw.messages(LnPrint.user)"'
     }else if(card == 'fou'){
-      title = 'Balance';
-      icon = 'fab fa-fw fa-btc';
-      clickon = 'onclick="LnPrint.admin.draw.founds(LnPrint.user);"';
+      title = 'Balance'
+      icon = 'fab fa-fw fa-btc'
+      clickon = 'onclick="LnPrint.admin.draw.founds(LnPrint.user)"'
     }else if(card == 'wor'){
-      title = 'Works';
-      icon = 'fas fa-fw fa-print';
-      clickon = 'onclick="LnPrint.admin.draw.works(LnPrint.user);"';
+      title = 'Works'
+      icon = 'fas fa-fw fa-print'
+      clickon = 'onclick="LnPrint.admin.draw.works(LnPrint.user)"'
     }else if(card == 'shi'){
-      title = 'Shipments';
-      icon = 'fas fa-fw fa-shopping-cart';
-      clickon = 'onclick="LnPrint.admin.draw.shipments(LnPrint.user);"';
+      title = 'Shipments'
+      icon = 'fas fa-fw fa-shopping-cart'
+      clickon = 'onclick="LnPrint.admin.draw.shipments(LnPrint.user)"'
     }else{
-      title = '';
-      icon = '';
-      clickon = '';
+      title = ''
+      icon = ''
+      clickon = ''
     }
     return `
       <div class="card text-white `+card+` o-hidden h-100">
@@ -31,7 +31,7 @@ LnPrint.admin.print = {
           </div>
           <div class="mr-5">`+cardText+`</div>
         </div>
-        <a class="card-footer text-white clearfix small z-1" href="javascript:void(0);" `+clickon+`>
+        <a class="card-footer text-white clearfix small z-1" href="javascript:void(0)" `+clickon+`>
           <span class="float-left">View Details</span>
           <span class="float-right">
             <i class="fas fa-angle-right"></i>

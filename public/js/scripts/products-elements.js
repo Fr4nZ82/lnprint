@@ -50,7 +50,7 @@ LnPrint.products.print = {
     }
   },
   productDetail:(divData)=>{
-    //console.log(divData)
+    console.log(divData)
     let _p = divData.product,
         _d = _p.description.slice(0,200),
         _h = 'auto',

@@ -17,10 +17,10 @@ module.exports = (req,res)=>{
         }
         let invoiceData = { 
           _id: payreq.id,
-          payment_secret:payreq.payment_secret,
+          payment_secret:payreq.secret,
           dateC: payreq.created_at,
           dateE: payreq.dateE,
-          invoice: payreq.invoice,
+          invoice: payreq.request,
           amt: payreq.tokens,
           fba: payreq.chain_address,
           description: payreq.description,

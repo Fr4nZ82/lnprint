@@ -14,15 +14,15 @@ ioSock.on('messageToAll', function (socketData) {
 
 //DEPOSIT EVENTS
 ioSock.on('deposit_done', function (socketData) {
-  //console.log('#!!-onLoad- socket emit deposit_done:',socketData)
-  //console.log('#!!-onLoad- deposit FULMINE!!!')
+  console.log('#!!-onLoad- socket emit deposit_done:',socketData)
+  console.log('#!!-onLoad- deposit FULMINE!!!')
   LnPrint.modal.new({name: 'fulmine',from: 'eventDeposit', paymentData: 'none',autoclose: true})
   LnPrint.user.account.balance += socketData.amt
   socketData.date = new Date(socketData.date)
   LnPrint.user.account.history.push(socketData)
   LnPrint.user.account.payreq.forEach(function(payreq,index){
     if(payreq._id == socketData.payreq){
-      //console.log('#!!-onLoad- elimino da LnPrint.user.account.payreq la payreq con id',payreq.id)
+      console.log('#!!-onLoad- elimino da LnPrint.user.account.payreq la payreq con id',payreq.id)
       if (index > -1) {
         LnPrint.user.account.payreq.splice(index, 1)
       }
@@ -116,9 +116,9 @@ $('#addAppBtn').on('click', (e) => {
   deferredPrompt.userChoice
     .then((choiceResult) => {
       if (choiceResult.outcome === 'accepted') {
-        //console.log('User accepted the A2HS prompt')
+        console.log('User accepted the A2HS prompt')
       } else {
-        //console.log('User dismissed the A2HS prompt')
+        console.log('User dismissed the A2HS prompt')
       }
       deferredPrompt = null
     })
@@ -127,7 +127,7 @@ $('#addAppBtn').on('click', (e) => {
 
 //ONLOAD SCRIPT
 window.addEventListener("load", function(event) {
-  //console.log('page loaded')
+  console.log('page loaded')
   LnPrint.loading.hide()
   //HIDE BACKLOADING IF FIRST ATTEMPT FAIL
   setTimeout(function () {
@@ -142,7 +142,7 @@ window.addEventListener("load", function(event) {
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('sw.js').then(function(registration) {
     }, function(err) {
-      //console.log(err)
+      console.log(err)
     })
   }
   
@@ -201,7 +201,7 @@ $.getScript( '/js/plugin/jquery.qrcode.min.js', function() {
 
 //PREPARE MODALS TO START AND CONTROL THAT MODALS IS NOT BUSY FOREVER
 $(document).on('show.bs.modal', function (event) {
-  //console.log('draw modal')
+  console.log('draw modal')
   var modalData = event.relatedTarget
   LnPrint.modal.draw[modalData.name](modalData)
 })
